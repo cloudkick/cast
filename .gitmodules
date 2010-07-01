@@ -1,0 +1,3 @@
+[submodule "extern/jspack"]
+	path = extern/jspack
+	url = git://github.com/pgriess/node-jspack.git
