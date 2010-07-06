@@ -27,6 +27,6 @@ require.paths.unshift(path.join(root, '../lib'));
 // installed path
 require.paths.unshift(path.join(root, '../lib/cast'));
 
-var agent = require('cast-client/entry');
+var client = require('cast-client/entry');
 
 client.run();
