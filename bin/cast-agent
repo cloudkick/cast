@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * Licensed to Cloudkick, Inc ('Cloudkick') under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,10 +16,17 @@
  * limitations under the License.
  */
 
-var sys = require("sys");
-var log = require('utils/log')
-var version = require('utils/version')
+/**
+ * Wrapper around agent entry point.
+ */
 
-exports.run = function() {
-  log.info(version.toString());
-};
+var root = path.dirname(__filename);
+
+// in-place path
+require.paths.unshift(path.join(root, '../lib'));
+// installed path
+require.paths.unshift(path.join(root, '../lib/cast'));
+
+var agent = require('cast-agent/entry');
+
+agent.run();
