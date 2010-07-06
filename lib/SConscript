@@ -17,7 +17,9 @@
 
 from os.path import join as pjoin
 
-utilssrc = ['log.js',
+utilssrc = ['config.js',
+            'log.js',
+            'pubsub.js',
             'version.js']
 
 agentsrc = ['entry.js']
