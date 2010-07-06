@@ -19,7 +19,7 @@
 /**
  * Wrapper around agent entry point.
  */
-
+var path = require('path');
 var root = path.dirname(__filename);
 
 // in-place path
