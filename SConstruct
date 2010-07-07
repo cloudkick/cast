@@ -39,7 +39,7 @@ def read_version(prefix, path):
   fp.close()
   return (versions['MAJOR'], versions['MINOR'], versions['PATCH'])
 
-env['version_major'], env['version_minor'], env['version_patch'] = read_version('CAST', 'lib/utils/version.js')
+env['version_major'], env['version_minor'], env['version_patch'] = read_version('CAST', 'lib/util/version.js')
 env['version_string'] = "%d.%d.%d"  % (env['version_major'], env['version_minor'], env['version_patch'])
 
 conf = Configure(env, custom_tests = {})

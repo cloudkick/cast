@@ -28,7 +28,7 @@ clientsrc = ['entry.js']
 
 src = [ ]
 
-src.extend([pjoin('utils', i) for i in utilssrc])
+src.extend([pjoin('util', i) for i in utilssrc])
 src.extend([pjoin('cast-agent', i) for i in agentsrc])
 src.extend([pjoin('cast-client', i) for i in clientsrc])
 
