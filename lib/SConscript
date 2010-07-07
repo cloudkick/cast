@@ -17,21 +17,23 @@
 
 from os.path import join as pjoin
 
-utilssrc = ['config.js',
-            'log.js',
-            'pubsub.js',
-            'version.js']
+src = {
+        'util':
+            [ 'config.js',
+              'log.js',
+              'pubsub.js',
+              'version.js'],
+        'cast-agent':
+            [ 'entry.js'],
+        'cast-client':
+            [ 'entry.js'],
+        'services':
+            [ 'http.js']
+}
 
-agentsrc = ['entry.js']
-
-clientsrc = ['entry.js']
-
-src = [ ]
-
-src.extend([pjoin('util', i) for i in utilssrc])
-src.extend([pjoin('cast-agent', i) for i in agentsrc])
-src.extend([pjoin('cast-client', i) for i in clientsrc])
-
-source = [File(x) for x in src]
+source = []
+for k in src.keys():
+  for p in src[k]:
+    source.append(File(pjoin(k, p)))
 
 Return("source")
