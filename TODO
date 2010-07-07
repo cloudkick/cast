@@ -8,5 +8,24 @@
 ** Define reverse pulling / Helen-like API for HTTP RPC in reverse
 ** Figure out authentication / SSL Certs / less pain
 
-* Create disk object cache
+* Create disk object cache module
+** Uploading New objects
+** Extracting objects
+** Symlink Management
 
+* Services Management
+** Port HTTP Interface
+*** start/stop/status etc
+** Separate HTTP Interface from Internal APIs for status
+** non-root for sv (?)
+
+* Client
+** Sub-command registration
+** getopt (hah)
+** 
+
+* Agent
+** Config file
+
+* Node Features
+** Single Binary builder
