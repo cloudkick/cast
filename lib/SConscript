@@ -28,7 +28,9 @@ src = {
         'cast-client':
             [ 'entry.js'],
         'services':
-            [ 'http.js']
+            [ 'http.js'],
+        'services/http':
+            [ 'test.js'],
 }
 
 source = []
