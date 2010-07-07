@@ -20,6 +20,7 @@ from os.path import join as pjoin
 src = {
         'util':
             [ 'config.js',
+              'getopt.js',
               'log.js',
               'pubsub.js',
               'version.js'],
