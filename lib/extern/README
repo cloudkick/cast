@@ -1,0 +1,23 @@
+This directory contains Third Party code and libraries used by cast.
+
+Please keep it up to date, and in alphabetical order.
+
+clutch 42373a7a518739 (July 4, 2010)
+  http://github.com/clement/clutch
+  License: MIT
+  Library used to route URLs to handlers in HTTP server.
+
+jspack 4753fb1a8de (May 22, 2010)
+  http://github.com/pgriess/node-jspack
+  License: MIT
+  Packing and Unpacking of binary data structures
+
+optparse cae3b09d324223 (June 28, 2010)
+  http://github.com/jfd/optparse-js
+  License: "MIT-style license"
+  Command Line argument parsing.
+
+stacktrace fe9d84729c5 (May 29, 2010)
+  http://github.com/emwendelin/javascript-stacktrace
+  License: BSD
+  Utility function to make a stack trace. Slightly modified to use CommonJS style exports.
