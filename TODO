@@ -1,0 +1,12 @@
+
+* General
+** Pick Template Library
+** Finish Dislocate
+** Open Source it
+
+* HTTP Interfaces
+** Define reverse pulling / Helen-like API for HTTP RPC in reverse
+** Figure out authentication / SSL Certs / less pain
+
+* Create disk object cache
+
