@@ -32,6 +32,11 @@ restler 95540ac028260 (May 28, 2010)
   License: MIT
   Higher level HTTP Client.
 
+sprintf 0.6
+  http://www.diveintojavascript.com/projects/sprintf-for-javascript
+  License: BSD
+  String formatting utility function.
+
 stacktrace fe9d84729c5 (May 29, 2010)
   http://github.com/emwendelin/javascript-stacktrace
   License: BSD
