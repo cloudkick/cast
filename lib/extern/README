@@ -27,6 +27,11 @@ optparse cae3b09d324223 (June 28, 2010)
   License: "MIT-style license"
   Command Line argument parsing.
 
+restler 95540ac028260 (May 28, 2010)
+  http://github.com/danwrong/restler
+  License: MIT
+  Higher level HTTP Client.
+
 stacktrace fe9d84729c5 (May 29, 2010)
   http://github.com/emwendelin/javascript-stacktrace
   License: BSD
