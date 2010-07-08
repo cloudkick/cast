@@ -17,6 +17,11 @@ jspack 4753fb1a8de (May 22, 2010)
   License: MIT
   Packing and Unpacking of binary data structures
 
+mu 3bd7403e9fb (May 31, 2010)
+  http://github.com/raycmorgan/Mu
+  License: MIT
+  Template Library
+
 optparse cae3b09d324223 (June 28, 2010)
   http://github.com/jfd/optparse-js
   License: "MIT-style license"
