@@ -21,7 +21,9 @@ src = {
         'util':
             [ 'config.js',
               'getopt.js',
+              'http.js',
               'log.js',
+              'misc.js',
               'pubsub.js',
               'version.js'],
         'cast-agent':
