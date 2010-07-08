@@ -27,7 +27,8 @@ src = {
         'cast-agent':
             [ 'entry.js'],
         'cast-client':
-            [ 'entry.js'],
+            [ 'commands.js',
+              'entry.js'],
         'services':
             [ 'http.js'],
         'services/http':
