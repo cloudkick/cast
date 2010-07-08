@@ -1,7 +1,4 @@
-
 * General
-** Pick Template Library
-** Finish Dislocate
 ** Open Source it
 
 * HTTP Interfaces
@@ -14,10 +11,32 @@
 ** Symlink Management
 
 * Services Management
+** Monitoring API - Runit Stats
+** Bootstrap layout of the Runit Service
+*** Test for feasability, dig in see if it can be extended
+*** Read things off disk to tell the health of the service runner (runit)
+*** Read pid files, log dirs...
 ** Port HTTP Interface
 *** start/stop/status etc
 ** Separate HTTP Interface from Internal APIs for status
 ** non-root for sv (?)
+** Health Checker - Pluggable Health Mechanism
+*** Socket banner
+*** Unix interface
+
+* Facter-like module
+** Expose facts
+
+* Log Service
+** Ring buffer last 2 mb of data
+
+* BItTorrent
+** File distribution
+
+
+* Templating
+** Django like, context/skeleton files
+** Render agent side
 
 * Client
 ** Sub-command registration
@@ -29,3 +48,10 @@
 
 * Node Features
 ** Single Binary builder
+
+* JSON Config
+** Need a spot for templates to start...
+
+* Dislocate
+** Lots of integration stuff
+
