@@ -2,6 +2,11 @@ This directory contains Third Party code and libraries used by cast.
 
 Please keep it up to date, and in alphabetical order.
 
+async  353f4416e1c27 (July 7, 2010)
+  http://github.com/caolan/async
+  License: MIT
+  Common patterns for asynchronous code in node
+
 clutch 42373a7a518739 (July 4, 2010)
   http://github.com/clement/clutch
   License: MIT
