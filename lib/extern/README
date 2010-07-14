@@ -12,6 +12,11 @@ clutch 42373a7a518739 (July 4, 2010)
   License: MIT
   Library used to route URLs to handlers in HTTP server.
 
+expresso 527e9dfb913b (July 14, 2010)
+  http://github.com/visionmedia/expresso
+  License: MIT
+  Testing Framework for test cases
+
 jspack 4753fb1a8de (May 22, 2010)
   http://github.com/pgriess/node-jspack
   License: MIT
