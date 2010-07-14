@@ -54,7 +54,14 @@ source = SConscript("lib/SConscript")
 jslint = [env.Command(str(x)+".jslint", x, ["jslint $SOURCE || exit 0"]) for x in source]
 env.AlwaysBuild(jslint)
 
-Alias('jslint', jslint)
+env.Alias('jslint', jslint)
+
+tests = env.Glob('tests/*.js')
+print tests
+testcmd = env.Command('.tests_run', tests, "node lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
+env.AlwaysBuild(testcmd)
+env.Alias('test', testcmd)
+env.Alias('tests', 'test')
 
 targets = []
 
