@@ -34,7 +34,8 @@ src = {
         'services':
             [ 'http.js'],
         'services/http':
-            [ 'test.js'],
+            [ 'bundles.js',
+              'test.js'],
 }
 
 source = []
