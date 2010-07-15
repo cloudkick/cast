@@ -34,9 +34,9 @@ exports['PUT t.txt'] = function(assert, beforeExit) {
     data: hello,
   },
   function(res) {
+    n++;
     assert.equal(204, res.statusCode);
     assert.length(0, res.body);
-    n++;
     ps.emit('t.txt created');
   });
   beforeExit(function(){
@@ -52,9 +52,9 @@ exports['GET t.txt'] = function(assert, beforeExit) {
       method: 'GET'
     },
     function(res) {
+      n++;
       assert.equal(200, res.statusCode);
       assert.equal(hello, res.body)
-      n++;
     });
   });
   beforeExit(function(){
