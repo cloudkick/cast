@@ -54,10 +54,42 @@ exports['GET t.txt'] = function(assert, beforeExit) {
     function(res) {
       n++;
       assert.equal(200, res.statusCode);
-      assert.equal(hello, res.body)
+      assert.equal(hello, res.body);
+      ps.emit('t.txt read');
     });
   });
   beforeExit(function(){
     assert.equal(1, n, 'Responses Received');
+  });
+};
+
+exports['DELETE t.txt'] = function(assert, beforeExit) {
+  var n = 0;
+  ps.on('t.txt read', function() {
+    assert.response(getServer(), {
+      url: '/bundles/foo/t.txt',
+      method: 'DELETE'
+    },
+    function(res) {
+      n++;
+      assert.equal(204, res.statusCode);
+      assert.length(0, res.body);
+      ps.emit('t.txt deleted');
+    });
+  });
+
+  ps.on('t.txt deleted', function() {
+    assert.response(getServer(), {
+      url: '/bundles/foo/t.txt',
+      method: 'GET'
+    },
+    function(res) {
+      n++;
+      assert.equal(404, res.statusCode);
+    });
+  });
+
+  beforeExit(function(){
+    assert.equal(2, n, 'Responses Received');
   });
 };
