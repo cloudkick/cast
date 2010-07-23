@@ -64,7 +64,7 @@ env.Alias('tests', 'test')
 
 jscovbuild = env.Command('lib/extern/node-jscoverage/jscoverage', env.Glob('lib/extern/node-jscoverage/*.c'),
                         "cd lib/extern/node-jscoverage/ && ./configure && make")
-jsconvcopy = env.Command('lib-cov', env.Dir('lib'),
+jsconvcopy = env.Command('lib-cov', source,
                         ['rm -rf lib-cov',
                         'lib/extern/node-jscoverage/jscoverage --no-instrument=extern lib lib-cov'])
 env.Depends(jsconvcopy, jscovbuild)
