@@ -1,3 +1,4 @@
 config.log
 .scons*
 *~
+lib-cov

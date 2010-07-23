@@ -62,6 +62,17 @@ env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
 
+jscovbuild = env.Command('lib/extern/node-jscoverage/jscoverage', env.Glob('lib/extern/node-jscoverage/*.*'),
+                        "cd lib/extern/node-jscoverage/ && ./configure && make")
+jsconvcopy = env.Command('lib-cov', env.Dir('lib'),
+                        ['rm -rf lib-cov',
+                        'lib/extern/node-jscoverage/jscoverage --no-instrument=extern lib lib-cov'])
+env.Depends(jsconvcopy, jscovbuild)
+covcmd = env.Command('.tests_coverage', tests, "node lib/extern/expresso/bin/expresso -I lib-cov/ "+ " ".join([x.get_path() for x in tests]))
+env.Depends(covcmd, jsconvcopy)
+env.AlwaysBuild(covcmd)
+env.Alias('coverage', covcmd)
+env.Alias('cov', 'coverage')
 targets = []
 
 env.Default(targets)
