@@ -36,10 +36,6 @@ To install expresso alone (no build required) run:
 
     $ make install-expresso
 
-Install via [kiwi](http://github.com/visionmedia/kiwi):
-
-    $ kiwi install expresso
-
 Install via npm:
 
 	$ npm install expresso
@@ -104,10 +100,10 @@ running tests, you may use the `-I` or `--include` flag.
     $ expresso --include lib test/*
 
 The previous example is typically what I would recommend, since expresso
-supports test coverage via [node-jscoverage](http://github.com/visionmedia/expresso) (bundled with expresso),
+supports test coverage via [node-jscoverage](http://github.com/visionmedia/node-jscoverage) (bundled with expresso),
 so you will need to expose an instrumented version of you library.
 
-To instrument your library, simply run [node-jscoverage](http://github.com/visionmedia/expresso),
+To instrument your library, simply run [node-jscoverage](http://github.com/visionmedia/node-jscoverage),
 passing the _src_ and _dest_ directories:
 
     $ node-jscoverage lib lib-cov
@@ -177,6 +173,12 @@ The `Server` passed should __NOT__ be bound to a port, `assert.response()` will
 assign a dummy port ranging from `--port NUM` and up (defaults to 5000).
 
     assert.response(server, {
+	  	url: '/', timeout: 500
+    }, {
+		body: 'foobar'
+    });
+
+    assert.response(server, {
         url: '/',
         method: 'GET'
     },{
@@ -196,12 +198,33 @@ assign a dummy port ranging from `--port NUM` and up (defaults to 5000).
         status: 200
     }, 'Test POST');
 
+    assert.response(server, {
+        url: '/foo',
+        method: 'POST',
+        data: 'bar baz'
+    },{
+        body: '/foo bar baz',
+        status: 200
+    }, function(res){
+		// All done, do some more tests if needed
+	});
 
     assert.response(server, {
         url: '/'
     }, function(res){
         assert.ok(res.body.indexOf('tj') >= 0, 'Test assert.response() callback');
     });
+
+## Async Exports
+
+Sometimes it is useful to postpone running of tests until a callback or event has fired,
+currently the `exports.foo = function(){};` syntax is supported for this:
+    
+	setTimeout(function(){
+	    exports['test async exports'] = function(assert){
+	        assert.ok('wahoo');
+	    };
+	}, 100);
 
 Dropbox fails lots but here is an image with the colored output :)
 
