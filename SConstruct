@@ -51,7 +51,7 @@ Export("env")
 
 source = SConscript("lib/SConscript")
 
-jslint = [env.Command(str(x)+".jslint", x, ["jslint $SOURCE || exit 0"]) for x in source]
+jslint = [env.Command(pjoin('.jslint/', str(x))+".jslint", x, ["jslint $SOURCE || exit 0"]) for x in source]
 env.AlwaysBuild(jslint)
 
 env.Alias('jslint', jslint)
@@ -62,7 +62,7 @@ env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
 
-jscovbuild = env.Command('lib/extern/node-jscoverage/jscoverage', env.Glob('lib/extern/node-jscoverage/*.*'),
+jscovbuild = env.Command('lib/extern/node-jscoverage/jscoverage', env.Glob('lib/extern/node-jscoverage/*.c'),
                         "cd lib/extern/node-jscoverage/ && ./configure && make")
 jsconvcopy = env.Command('lib-cov', env.Dir('lib'),
                         ['rm -rf lib-cov',
