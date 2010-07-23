@@ -51,7 +51,10 @@ Export("env")
 
 source = SConscript("lib/SConscript")
 
-jslint = [env.Command(pjoin('.jslint/', str(x))+".jslint", x, ["jslint $SOURCE || exit 0"]) for x in source]
+testsource = env.Glob("tests/*.js")
+
+allsource = testsource + source
+jslint = [env.Command(pjoin('.jslint/', str(x))+".jslint", x, ["jslint $SOURCE || exit 0"]) for x in allsource]
 env.AlwaysBuild(jslint)
 
 env.Alias('jslint', jslint)
