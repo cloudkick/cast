@@ -2,3 +2,7 @@ config.log
 .scons*
 *~
 lib-cov
+*.o
+.deps
+*-h1
+lib/extern/node-jscoverage/*
