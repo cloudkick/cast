@@ -58,25 +58,25 @@ exports['sub once'] = function(assert, beforeExit) {
 exports['bad params'] = function(assert, beforeExit) {
   var n = 0;
   try {
-    ps.once()
+    ps.once();
   }
-  catch(e) {
+  catch(e1) {
     n++;
-    assert.match(e, /pubsub/);
+    assert.match(e1, /pubsub/);
   }
   try {
-    ps.on()
+    ps.on();
   }
-  catch(e) {
+  catch(e2) {
     n++;
-    assert.match(e, /pubsub/);
+    assert.match(e2, /pubsub/);
   }
   try {
-    ps.emit()
+    ps.emit();
   }
-  catch(e) {
+  catch(e3) {
     n++;
-    assert.match(e, /pubsub/);
+    assert.match(e3, /pubsub/);
   }
   beforeExit(function(){
     assert.equal(3, n, 'Exceptions thrown');

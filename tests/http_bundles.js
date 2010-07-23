@@ -31,7 +31,7 @@ exports['PUT t.txt'] = function(assert, beforeExit) {
   assert.response(getServer(), {
     url: '/bundles/foo/t.txt',
     method: 'PUT',
-    data: hello,
+    data: hello
   },
   function(res) {
     n++;
