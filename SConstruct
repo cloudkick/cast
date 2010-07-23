@@ -67,9 +67,10 @@ env.Alias('tests', 'test')
 
 jscovbuild = env.Command('lib/extern/node-jscoverage/jscoverage', env.Glob('lib/extern/node-jscoverage/*.c'),
                         "cd lib/extern/node-jscoverage/ && ./configure && make")
-jsconvcopy = env.Command('lib-cov', source,
+jsconvcopy = env.Command('lib-cov/out.list', allsource,
                         ['rm -rf lib-cov',
-                        'lib/extern/node-jscoverage/jscoverage --no-instrument=extern lib lib-cov'])
+                        'lib/extern/node-jscoverage/jscoverage --no-instrument=extern lib lib-cov',
+                        'echo $SOURCES>lib-cov/out.list'])
 env.Depends(jsconvcopy, jscovbuild)
 covcmd = env.Command('.tests_coverage', tests, "node lib/extern/expresso/bin/expresso -I lib-cov/ "+ " ".join([x.get_path() for x in tests]))
 env.Depends(covcmd, jsconvcopy)
