@@ -68,14 +68,15 @@ exports['expanduser with HOME unset hack'] = function(assert, beforeExit) {
     }
     process.env.HOME = orig;
     assert.equal(1, n, 'Exceptions thrown');
-  })
+  });
 };
 
 
 exports['missing getpwnam for expanduser'] = function(assert, beforeExit) {
   var n = 0;
+  var out;
   try {
-    var out = misc.expanduser("~root/foo/bar");
+    out = misc.expanduser("~root/foo/bar");
   }
   catch (e1) {
     n++;
@@ -83,7 +84,7 @@ exports['missing getpwnam for expanduser'] = function(assert, beforeExit) {
   }
 
   try {
-    var out = misc.expanduser("~root");
+    out = misc.expanduser("~root");
   }
   catch (e2) {
     n++;
