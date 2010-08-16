@@ -31,6 +31,8 @@ src = {
         'cast-client':
             [ 'commands.js',
               'entry.js'],
+        'runit':
+            [ 'service_stats.js'],
         'services':
             [ 'http.js'],
         'services/http':
