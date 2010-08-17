@@ -61,7 +61,7 @@ env.AlwaysBuild(jslint)
 env.Alias('jslint', jslint)
 
 tests = sorted(env.Glob('tests/*.js'))
-testcmd = env.Command('.tests_run', tests, "$NODE lib/extern/expresso/bin/expresso --serial -I lib/ "+ " ".join([x.get_path() for x in tests]))
+testcmd = env.Command('.tests_run', tests, "$NODE lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
