@@ -12,7 +12,7 @@ clutch 42373a7a518739 (July 4, 2010)
   License: MIT
   Library used to route URLs to handlers in HTTP server.
 
-expresso 20158f4969c3f4c (July 22, 2010)
+expresso 8805504fbb05c292 (August 11, 2010)
   http://github.com/visionmedia/expresso
   License: MIT
   Testing Framework for test cases

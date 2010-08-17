@@ -1,4 +1,22 @@
 
+0.6.2 / 2010-08-03
+==================
+
+  * Added `assert.type()`
+  * Renamed `assert.isNotUndefined()` to `assert.isDefined()`
+  * Fixed `assert.includes()` param ordering
+
+0.6.0 / 2010-07-31
+==================
+
+  * Added _docs/api.html_
+  * Added -w, --watch
+  * Added `Array` support to `assert.includes()`
+  * Added; outputting exceptions immediately. Closes #19
+  * Fixed `assert.includes()` param ordering
+  * Fixed `assert.length()` param ordering
+  * Fixed jscoverage links
+
 0.5.0 / 2010-07-16
 ==================
 
