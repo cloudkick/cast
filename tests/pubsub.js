@@ -82,3 +82,7 @@ exports['bad params'] = function(assert, beforeExit) {
     assert.equal(3, n, 'Exceptions thrown');
   });
 };
+
+exports.setup = function(done) {
+  require('util/pubsub').ensure("config", done);
+}

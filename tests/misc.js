@@ -91,7 +91,11 @@ exports['missing getpwnam for expanduser'] = function(assert, beforeExit) {
     assert.match(e2, /getpwnam/);
   }
 
-  beforeExit(function(){
+  beforeExit(function() {
     assert.equal(2, n, 'Exceptions thrown');
   });
 };
+
+exports.setup = function(done) {
+  require('util/pubsub').ensure("config", done);
+}

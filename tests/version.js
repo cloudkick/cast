@@ -30,3 +30,7 @@ exports['verion string'] = function(assert, beforeExit) {
     version.IS_DEV = orig;
   });
 };
+
+exports.setup = function(done) {
+  require('util/pubsub').ensure("config", done);
+}
