@@ -705,7 +705,7 @@ function runSuite(title, tests) {
     var setup = tests.setup || function(fn){ fn(); };
     
     // Iterate tests
-    (function next(){
+    function next(){
         if (keys.length) {
             var key,
                 test = tests[key = keys.shift()];
@@ -753,7 +753,8 @@ function runSuite(title, tests) {
             }
             if (!serial) next();
         }
-    })();
+    };
+    setup(next);
 }
 
 /**
