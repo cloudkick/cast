@@ -43,7 +43,7 @@ env['version_major'], env['version_minor'], env['version_patch'] = read_version(
 env['version_string'] = "%d.%d.%d"  % (env['version_major'], env['version_minor'], env['version_patch'])
 
 conf = Configure(env, custom_tests = {})
-
+conf.env['NODE'] = conf.env.WhereIs('node')
 conf.env.AppendUnique(RPATH = conf.env.get('LIBPATH'))
 env = conf.Finish()
 
@@ -54,14 +54,14 @@ source = SConscript("lib/SConscript")
 testsource = env.Glob("tests/*.js")
 
 allsource = testsource + source
-env["JSLINT"] = "node lib/extern/node-jslint/bin/jslint.js"
+env["JSLINT"] = "$NODE lib/extern/node-jslint/bin/jslint.js"
 jslint = [env.Command(pjoin('.jslint/', str(x))+".jslint", x, ["$JSLINT $SOURCE || exit 0"]) for x in allsource]
 env.AlwaysBuild(jslint)
 
 env.Alias('jslint', jslint)
 
-tests = env.Glob('tests/*.js')
-testcmd = env.Command('.tests_run', tests, "node lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
+tests = sorted(env.Glob('tests/*.js'))
+testcmd = env.Command('.tests_run', tests, "$NODE lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
@@ -73,7 +73,7 @@ jsconvcopy = env.Command('lib-cov/out.list', allsource,
                         'lib/extern/node-jscoverage/jscoverage --no-instrument=extern lib lib-cov',
                         'echo $SOURCES>lib-cov/out.list'])
 env.Depends(jsconvcopy, jscovbuild)
-covcmd = env.Command('.tests_coverage', tests, "node lib/extern/expresso/bin/expresso -I lib-cov/ "+ " ".join([x.get_path() for x in tests]))
+covcmd = env.Command('.tests_coverage', tests, "$NODE lib/extern/expresso/bin/expresso -I lib-cov/ "+ " ".join([x.get_path() for x in tests]))
 env.Depends(covcmd, jsconvcopy)
 env.AlwaysBuild(covcmd)
 env.Alias('coverage', covcmd)

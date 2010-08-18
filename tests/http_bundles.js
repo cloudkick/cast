@@ -35,8 +35,8 @@ exports['PUT t.txt'] = function(assert, beforeExit) {
   },
   function(res) {
     n++;
-    assert.equal(204, res.statusCode);
-    assert.length(0, res.body);
+    assert.equal(res.statusCode, 204);
+    assert.length(res.body, 0);
     ps.emit('t.txt created');
   });
   beforeExit(function(){
@@ -72,8 +72,8 @@ exports['DELETE t.txt'] = function(assert, beforeExit) {
     },
     function(res) {
       n++;
-      assert.equal(204, res.statusCode);
-      assert.length(0, res.body);
+      assert.equal(res.statusCode, 204);
+      assert.length(res.body, 0);
       ps.emit('t.txt deleted');
     });
   });
@@ -92,4 +92,8 @@ exports['DELETE t.txt'] = function(assert, beforeExit) {
   beforeExit(function(){
     assert.equal(2, n, 'Responses Received');
   });
+};
+
+exports.setup = function(done) {
+  require('util/pubsub').ensure("config", done);
 };

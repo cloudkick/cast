@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
+var path = require('path');
 var config = require('util/config');
 
-function resetconfig() {
-  config.config_current = {};
-}
-
-exports['basic config'] = function(assert, beforeExit) {
-  var n = 0;
-  config.setup(function(err) {
-    assert.isNull(err);
-    n++;
-    var conf = config.get();
-    assert.equal(8010, conf.port);
-  });
-
-  beforeExit(function(){
-    assert.equal(1, n, 'Config Received: '+ n);
+exports.setup = function(done) {
+  var ps = require('util/pubsub');
+  var path = require('path');
+  config.config_files = ["~/.xxx_no_such_file", path.join(__dirname, "test.conf")];
+  config.setup(function() {
+    process.nextTick(function() {
+      ps.emit("config");
+      done();
+    });
   });
 };
+
+exports['basic config'] = function(assert, beforeExit) {
+  var conf = config.get();
+  assert.equal(8010, conf.port);
+  assert.equal("tests/data_root", conf.data_root);
+};
+
