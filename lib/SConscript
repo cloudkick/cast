@@ -33,7 +33,7 @@ src = {
             [ 'commands.js',
               'entry.js'],
         'runit':
-            [ 'service_stats.js'],
+            [ 'services.js'],
         'services':
             [ 'http.js'],
         'services/http':
