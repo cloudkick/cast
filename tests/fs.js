@@ -29,13 +29,12 @@ exports['rmtree relative path'] = function(assert, beforeExit) {
     async.apply(exec, 'touch .tests/a/bc'),
     async.apply(exec, 'mkdir .tests/a/cd'),
     function(callback) {
-      console.log('HERE');
       fsutil.rmtree('.tests/a', function(err) {
-        console.log('THERE');
         assert.ifError(err);
         fs.stat('.tests/a', function(err, stats) {
           n++;
           assert.ok(err);
+          callback();
         });
       });
     }
