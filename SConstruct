@@ -60,6 +60,12 @@ env.AlwaysBuild(jslint)
 
 env.Alias('jslint', jslint)
 
+# dox just didn't work well when I last tried it, the JSdoc -> Markdown code was recursive and buggy.
+#env['JSDOX'] = "$NODE lib/extern/dox/bin/dox"
+#docscmd = env.Command('cast-api-docs.html', allsource, "$JSDOX -p -t 'Cloudkick Cast' "+ " ".join([x.get_path() for x in source]) + ">$TARGET")
+#env.Alias('docs', docscmd)
+
+
 tests = sorted(env.Glob('tests/*.js'))
 testcmd = env.Command('.tests_run', tests, "$NODE lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
 env.AlwaysBuild(testcmd)
