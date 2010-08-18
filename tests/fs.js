@@ -21,6 +21,34 @@ var path = require('path');
 var fsutil = require('util/fs');
 var async = require('extern/async');
 
+
+exports['rmtree relative path'] = function(assert, beforeExit) {
+  var n = 0;
+  async.series([
+    async.apply(exec, 'mkdir -p .tests/a/b/c/d'),
+    async.apply(exec, 'touch .tests/a/bc'),
+    async.apply(exec, 'mkdir .tests/a/cd'),
+    function(callback) {
+      console.log('HERE');
+      fsutil.rmtree('.tests/a', function(err) {
+        console.log('THERE');
+        assert.ifError(err);
+        fs.stat('.tests/a', function(err, stats) {
+          n++;
+          assert.ok(err);
+        });
+      });
+    }
+  ],
+  function() {
+    n++;
+  });
+
+  beforeExit(function() {
+    assert.equal(2, n);
+  });
+};
+
 exports['mkdir path has regular file'] = function(assert, beforeExit) {
   var n = 0;
   fs.writeFile('.tests/baz', 'test', function(err) {
