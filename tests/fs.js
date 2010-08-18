@@ -21,7 +21,6 @@ var path = require('path');
 var fsutil = require('util/fs');
 var async = require('extern/async');
 
-
 exports['rmtree relative path'] = function(assert, beforeExit) {
   var n = 0;
   async.series([
@@ -31,6 +30,7 @@ exports['rmtree relative path'] = function(assert, beforeExit) {
     function(callback) {
       fsutil.rmtree('.tests/a', function(err) {
         assert.ifError(err);
+        n++;
         fs.stat('.tests/a', function(err, stats) {
           n++;
           assert.ok(err);
@@ -44,7 +44,82 @@ exports['rmtree relative path'] = function(assert, beforeExit) {
   });
 
   beforeExit(function() {
-    assert.equal(2, n);
+    assert.equal(3, n);
+  });
+};
+
+exports['rmtree absolute path'] = function(assert, beforeExit) {
+  var n = 0;
+  async.series([
+    async.apply(exec, 'mkdir -p .tests/b/b/c/d'),
+    async.apply(exec, 'touch .tests/b/c'),
+    async.apply(exec, 'mkdir .tests/b/d'),
+    function(callback) {
+      var abspath = path.join(process.cwd(), '.tests/b');
+      fsutil.rmtree(abspath, function(err) {
+        assert.ifError(err);
+        n++;
+        fs.stat('.tests/b', function(err, stats) {
+          assert.ok(err);
+          n++;
+          callback();
+        });
+      });
+    }
+  ],
+  function() {
+    n++;
+  });
+
+  beforeExit(function() {
+    assert.equal(3, n);
+  });
+};
+
+exports['rmtree empty directory'] = function(assert, beforeExit) {
+  var n = 0;
+  async.series([
+    async.apply(exec, 'mkdir .tests/c'),
+    function(callback) {
+      fsutil.rmtree('.tests/c', function(err) {
+        assert.ifError(err);
+        n++;
+        fs.stat('.tests/c', function(err, stats) {
+          assert.ok(err);
+          n++;
+          callback();
+        });
+      });
+    }
+  ],
+  function() {
+    n++;
+  });
+
+  beforeExit(function() {
+    assert.equal(3, n);
+  });
+};
+
+exports['rmtree nonexistant path'] = function(assert, beforeExit) {
+  var n = 0;
+  fsutil.rmtree('.tests/d', function(err) {
+    assert.match(err.message, /ENOENT/);
+    n++;
+  });
+  beforeExit(function() {
+    assert.equal(1, n);
+  });
+};
+
+exports['rmtree no path'] = function(assert, beforeExit) {
+  var n = 0;
+  fsutil.rmtree('', function(err) {
+    assert.match(err.message, /nothing/);
+    n++;
+  });
+  beforeExit(function() {
+    assert.equal(1, n);
   });
 };
 
