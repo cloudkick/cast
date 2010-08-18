@@ -96,4 +96,4 @@ exports['DELETE t.txt'] = function(assert, beforeExit) {
 
 exports.setup = function(done) {
   require('util/pubsub').ensure("config", done);
-}
+};

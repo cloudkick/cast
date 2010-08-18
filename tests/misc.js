@@ -98,4 +98,4 @@ exports['missing getpwnam for expanduser'] = function(assert, beforeExit) {
 
 exports.setup = function(done) {
   require('util/pubsub').ensure("config", done);
-}
+};

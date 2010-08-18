@@ -28,7 +28,7 @@ exports.setup = function(done) {
       done();
     });
   });
-}
+};
 
 exports['basic config'] = function(assert, beforeExit) {
   var conf = config.get();
