@@ -32,6 +32,10 @@ src = {
         'cast-client':
             [ 'commands.js',
               'entry.js'],
+        'norris':
+            ['index.js'],
+        'norris/facts':
+            ['hostname.js'],
         'runit':
             [ 'services.js'],
         'services':
