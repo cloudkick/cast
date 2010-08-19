@@ -238,6 +238,7 @@ exports['mkdir implicit perms'] = function(assert, beforeExit) {
 
 exports.setup = function(done) {
   async.series([
+    async.apply(require('util/pubsub').ensure, "config"),
     async.apply(exec, 'rm -rf .tests'),
     async.apply(fs.mkdir, '.tests', 0700)
   ],
