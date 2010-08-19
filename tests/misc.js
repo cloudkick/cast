@@ -16,7 +16,9 @@
  */
 
 var misc = require('util/misc');
-
+var exec = require('child_process').exec;
+var async = require('extern/async');
+var fs =  require('fs');
 
 exports['object merge'] = function(assert, beforeExit) {
   var a = {foo: 1};
@@ -96,6 +98,41 @@ exports['missing getpwnam for expanduser'] = function(assert, beforeExit) {
   });
 };
 
+exports['templating to a tree'] = function(assert, beforeExit) {
+  var n = 0;
+
+  var tmpl = {
+    afile: "simple file",
+    subdir: {
+      "subfile": "subfile contents"
+    }
+  };
+
+  misc.template_to_tree("tests/.misctests/template", tmpl, function() {
+    console.log('template finished')
+    fs.stat('tests/.misctests/template', function(err, stats) {
+      assert.ifError(err);
+      assert.ok(stats.isDirectory());
+      n++;
+    });
+
+    fs.stat('tests/.misctests/template/subdir', function(err, stats) {
+      assert.ifError(err);
+      assert.ok(stats.isDirectory());
+      n++;
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(2, n, 'Checks ran');
+  });
+};
+
 exports.setup = function(done) {
-  require('util/pubsub').ensure("config", done);
+  async.series([
+    async.apply(require('util/pubsub').ensure, "config"),
+    async.apply(exec, 'rm -rf tests/.misctests'),
+    async.apply(fs.mkdir, 'tests/.misctests', 0700)
+  ],
+  done);
 };
