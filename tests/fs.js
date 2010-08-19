@@ -24,14 +24,14 @@ var async = require('extern/async');
 exports['rmtree relative path'] = function(assert, beforeExit) {
   var n = 0;
   async.series([
-    async.apply(exec, 'mkdir -p .tests/a/b/c/d'),
-    async.apply(exec, 'touch .tests/a/bc'),
-    async.apply(exec, 'mkdir .tests/a/cd'),
+    async.apply(exec, 'mkdir -p .fstests/a/b/c/d'),
+    async.apply(exec, 'touch .fstests/a/bc'),
+    async.apply(exec, 'mkdir .fstests/a/cd'),
     function(callback) {
-      fsutil.rmtree('.tests/a', function(err) {
+      fsutil.rmtree('.fstests/a', function(err) {
         assert.ifError(err);
         n++;
-        fs.stat('.tests/a', function(err, stats) {
+        fs.stat('.fstests/a', function(err, stats) {
           n++;
           assert.ok(err);
           callback();
@@ -51,15 +51,15 @@ exports['rmtree relative path'] = function(assert, beforeExit) {
 exports['rmtree absolute path'] = function(assert, beforeExit) {
   var n = 0;
   async.series([
-    async.apply(exec, 'mkdir -p .tests/b/b/c/d'),
-    async.apply(exec, 'touch .tests/b/c'),
-    async.apply(exec, 'mkdir .tests/b/d'),
+    async.apply(exec, 'mkdir -p .fstests/b/b/c/d'),
+    async.apply(exec, 'touch .fstests/b/c'),
+    async.apply(exec, 'mkdir .fstests/b/d'),
     function(callback) {
-      var abspath = path.join(process.cwd(), '.tests/b');
+      var abspath = path.join(process.cwd(), '.fstests/b');
       fsutil.rmtree(abspath, function(err) {
         assert.ifError(err);
         n++;
-        fs.stat('.tests/b', function(err, stats) {
+        fs.stat('.fstests/b', function(err, stats) {
           assert.ok(err);
           n++;
           callback();
@@ -79,12 +79,12 @@ exports['rmtree absolute path'] = function(assert, beforeExit) {
 exports['rmtree empty directory'] = function(assert, beforeExit) {
   var n = 0;
   async.series([
-    async.apply(exec, 'mkdir .tests/c'),
+    async.apply(exec, 'mkdir .fstests/c'),
     function(callback) {
-      fsutil.rmtree('.tests/c', function(err) {
+      fsutil.rmtree('.fstests/c', function(err) {
         assert.ifError(err);
         n++;
-        fs.stat('.tests/c', function(err, stats) {
+        fs.stat('.fstests/c', function(err, stats) {
           assert.ok(err);
           n++;
           callback();
@@ -103,7 +103,7 @@ exports['rmtree empty directory'] = function(assert, beforeExit) {
 
 exports['rmtree nonexistant path'] = function(assert, beforeExit) {
   var n = 0;
-  fsutil.rmtree('.tests/d', function(err) {
+  fsutil.rmtree('.fstests/d', function(err) {
     assert.match(err.message, /ENOENT/);
     n++;
   });
@@ -125,25 +125,25 @@ exports['rmtree no path'] = function(assert, beforeExit) {
 
 exports['mkdir path has regular file'] = function(assert, beforeExit) {
   var n = 0;
-  fs.writeFile('.tests/baz', 'test', function(err) {
+  fs.writeFile('.fstests/baz', 'test', function(err) {
     assert.ifError(err);
     n++;
-    fsutil.mkdir('.tests/baz/foo', 0700, function(err) {
+    fsutil.mkdir('.fstests/baz/foo', 0700, function(err) {
       assert.match(err.message, /File exists/);
       n++;
-      fs.stat('.tests/baz', function(err, stats) {
+      fs.stat('.fstests/baz', function(err, stats) {
         assert.ok(!stats.isDirectory());
         n++;
       });
     });
   });
-  fs.writeFile('.tests/fuz', 'test', function(err) {
+  fs.writeFile('.fstests/fuz', 'test', function(err) {
     assert.ifError(err);
     n++;
-    fsutil.mkdir('.tests/fuz', 0700, function(err) {
+    fsutil.mkdir('.fstests/fuz', 0700, function(err) {
       assert.match(err.message, /File exists/);
       n++;
-      fs.stat('.tests/baz', function(err, stats) {
+      fs.stat('.fstests/baz', function(err, stats) {
         assert.ok(!stats.isDirectory());
         n++;
       });
@@ -156,22 +156,22 @@ exports['mkdir path has regular file'] = function(assert, beforeExit) {
 
 exports['mkdir relative path'] = function(assert, beforeExit) {
   var n = 0;
-  fsutil.mkdir('.tests/foo/bar/foozle', 0700, function(err) {
+  fsutil.mkdir('.fstests/foo/bar/foozle', 0700, function(err) {
     assert.ifError(err);
     n++;
-    fs.stat('.tests/foo', function(err0, stats) {
+    fs.stat('.fstests/foo', function(err0, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       assert.equal(stats.mode & 0777, 0700);
       n++;
     });
-    fs.stat('.tests/foo/bar', function(err1, stats) {
+    fs.stat('.fstests/foo/bar', function(err1, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       assert.equal(stats.mode & 0777, 0700);
       n++;
     });
-    fs.stat('.tests/foo/bar/foozle', function(err2, stats) {
+    fs.stat('.fstests/foo/bar/foozle', function(err2, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       assert.equal(stats.mode & 0777, 0700);
@@ -185,23 +185,23 @@ exports['mkdir relative path'] = function(assert, beforeExit) {
 
 exports['mkdir absolute path'] = function(assert, beforeExit) {
   var n = 0;
-  var abspath = path.join(process.cwd(), '.tests/bar/foo/bazzle');
+  var abspath = path.join(process.cwd(), '.fstests/bar/foo/bazzle');
   fsutil.mkdir(abspath, 0700, function(err) {
     assert.ifError(err);
     n++;
-    fs.stat('.tests/bar', function(err0, stats) {
+    fs.stat('.fstests/bar', function(err0, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       assert.equal(stats.mode & 0777, 0700);
       n++;
     });
-    fs.stat('.tests/bar/foo', function(err1, stats) {
+    fs.stat('.fstests/bar/foo', function(err1, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       assert.equal(stats.mode & 0777, 0700);
       n++;
     });
-    fs.stat('.tests/bar/foo/bazzle', function(err2, stats) {
+    fs.stat('.fstests/bar/foo/bazzle', function(err2, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       assert.equal(stats.mode & 0777, 0700);
@@ -215,16 +215,16 @@ exports['mkdir absolute path'] = function(assert, beforeExit) {
 
 exports['mkdir implicit perms'] = function(assert, beforeExit) {
   var n = 0;
-  fsutil.mkdir('.tests/whammy/bar', function(err) {
+  fsutil.mkdir('.fstests/whammy/bar', function(err) {
     assert.ifError(err);
     n++;
-    fs.stat('.tests/whammy', function(err0, stats) {
+    fs.stat('.fstests/whammy', function(err0, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       assert.equal(stats.mode & 0777, 0755);
       n++;
     });
-    fs.stat('.tests/whammy/bar', function(err1, stats) {
+    fs.stat('.fstests/whammy/bar', function(err1, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       assert.equal(stats.mode & 0777, 0755);
@@ -239,8 +239,8 @@ exports['mkdir implicit perms'] = function(assert, beforeExit) {
 exports.setup = function(done) {
   async.series([
     async.apply(require('util/pubsub').ensure, "config"),
-    async.apply(exec, 'rm -rf .tests'),
-    async.apply(fs.mkdir, '.tests', 0700)
+    async.apply(exec, 'rm -rf .fstests'),
+    async.apply(fs.mkdir, '.fstests', 0700)
   ],
   done);
 };
