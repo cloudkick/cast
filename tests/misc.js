@@ -98,7 +98,8 @@ exports['missing getpwnam for expanduser'] = function(assert, beforeExit) {
   });
 };
 
-exports['templating to a tree'] = function(assert, beforeExit) {
+exports['templating to a tree'] = function(assert, beforeExit)
+{
   var n = 0;
 
   var tmpl = {
@@ -125,6 +126,16 @@ exports['templating to a tree'] = function(assert, beforeExit) {
   beforeExit(function() {
     assert.equal(2, n, 'Checks ran');
   });
+};
+
+exports['trimming whitespace'] = function(assert, beforeExit)
+{
+  assert.equal("foo", misc.trim("foo"));
+  assert.equal("foo", misc.trim(" foo"));
+  assert.equal("foo", misc.trim("foo "));
+  assert.equal("foo", misc.trim(" foo "));
+  assert.equal("fo o", misc.trim(" fo o "));
+  assert.equal("foo", misc.trim(" foo\n"));
 };
 
 exports.setup = function(done) {
