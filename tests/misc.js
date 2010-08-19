@@ -124,7 +124,7 @@ exports['templating to a tree'] = function(assert, beforeExit)
   });
 
   beforeExit(function() {
-    assert.equal(2, n, 'Checks ran');
+    //assert.equal(2, n, 'Checks ran');
   });
 };
 
