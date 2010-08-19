@@ -109,7 +109,6 @@ exports['templating to a tree'] = function(assert, beforeExit) {
   };
 
   misc.template_to_tree("tests/.misctests/template", tmpl, function() {
-    console.log('template finished')
     fs.stat('tests/.misctests/template', function(err, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
