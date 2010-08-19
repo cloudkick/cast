@@ -188,7 +188,7 @@ exports['mkdir absolute path'] = function(assert, beforeExit) {
   var abspath = path.join(process.cwd(), '.tests/bar/foo/bazzle');
   fsutil.mkdir(abspath, 0700, function(err) {
     assert.ifError(err);
-    n++
+    n++;
     fs.stat('.tests/bar', function(err0, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
