@@ -26,7 +26,7 @@ exports['working hostname'] = function(assert, beforeExit) {
   });
   beforeExit(function() {
     assert.equal(n, 1);
-  })
+  });
 };
 
 exports.setup = function(done) {
