@@ -16,6 +16,8 @@
  */
 
 var path = require('path');
+var exec = require('child_process').exec;
+var async = require('extern/async');
 var config = require('util/config');
 
 exports.setup = function(done) {
@@ -23,9 +25,15 @@ exports.setup = function(done) {
   var path = require('path');
   config.config_files = ["~/.xxx_no_such_file", path.join(__dirname, "test.conf")];
   config.setup(function() {
-    process.nextTick(function() {
-      ps.emit("config");
-      done();
+    async.series([
+      async.apply(exec, 'rm -rf .tests'),
+      async.apply(exec, 'mkdir .tests')
+    ],
+    function() {
+      process.nextTick(function() {
+        ps.emit("config");
+        done();
+      });
     });
   });
 };

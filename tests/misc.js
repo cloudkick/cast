@@ -109,14 +109,14 @@ exports['templating to a tree'] = function(assert, beforeExit)
     }
   };
 
-  misc.template_to_tree("tests/.misctests/template", tmpl, function() {
-    fs.stat('tests/.misctests/template', function(err, stats) {
+  misc.template_to_tree(".tests/misc/template", tmpl, function() {
+    fs.stat('.tests/misc/template', function(err, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       n++;
     });
 
-    fs.stat('tests/.misctests/template/subdir', function(err, stats) {
+    fs.stat('.tests/misc/template/subdir', function(err, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
       n++;
@@ -141,8 +141,7 @@ exports['trimming whitespace'] = function(assert, beforeExit)
 exports.setup = function(done) {
   async.series([
     async.apply(require('util/pubsub').ensure, "config"),
-    async.apply(exec, 'rm -rf tests/.misctests'),
-    async.apply(fs.mkdir, 'tests/.misctests', 0700)
+    async.apply(fs.mkdir, '.tests/misc', 0700)
   ],
   done);
 };
