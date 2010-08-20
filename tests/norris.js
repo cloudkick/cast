@@ -29,6 +29,18 @@ exports['working hostname'] = function(assert, beforeExit) {
   });
 };
 
+exports['working marchine arch'] = function(assert, beforeExit) {
+  var n = 0;
+  norris.get(function(facts)  {
+    n++;
+    assert.ok(facts.arch == "i386" || facts.arch == "x86_64", "expected i386 or x86_64: "+ facts.arch);
+    assert.ifError(facts.arch.length < 4);
+  });
+  beforeExit(function() {
+    assert.equal(n, 1);
+  });
+};
+
 exports.setup = function(done) {
   require('util/pubsub').ensure("config", done);
 };
