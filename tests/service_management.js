@@ -21,6 +21,7 @@ var exec = require('child_process').exec;
 var ps = require('util/pubsub');
 var misc = require('util/misc');
 var async = require('extern/async');
+var runit = require('lib/runit');
 
 var completed = 0;
 var total = 0;
@@ -42,25 +43,54 @@ function getServer()
 }
 
 
-has_paths(1);
-exports['GET services'] = function(assert, beforeExit) {
-  var n = 0;
 
-  assert.response(getServer(), {
-    url: '/services/',
-    method: 'GET'
-  },
-  function(res) {
-    n++;
-    try {
-      assert.equal(res.statusCode, 200);
-    }
-    finally {
-      finish_path();
-    }
+// For now these need to all be in the same test, this blows
+has_paths(1);
+exports["service management"] = function(assert, beforeExit) {
+  var n = 0;
+  var tasks = [];
+  var svcdir = new runit.RunitServiceDirectory('.tests/services');
+
+  // Add a bunch of tasks
+  // These all happen serially in the order they are added
+
+  tasks.push(function(callback) {
+    assert.response(getServer(), {
+      url: '/services/',
+      method: 'GET'
+    },
+    function(res) {
+      n++;
+      try {
+        assert.equal(res.statusCode, 200);
+        var data = JSON.parse(res.body);
+        assert.equal(typeof(data), 'array');
+        assert.equal(data.length, 0);
+      }
+      finally {
+        finish_path();
+        callback();
+      }
+    });
   });
+
+  tasks.push(function(callback) {
+    svcdir.create_service_layout('foo', function() {
+      
+
+    });
+    
+
+  });
+
+
+  async.series(tasks, function() {
+    n++;
+  });
+
+  // Execute the tasks
   beforeExit(function(){
-    assert.equal(1, n, 'Responses Received');
+    assert.equal(2, n, 'Tests Completed');
   });
 };
 
@@ -68,6 +98,7 @@ exports.setup = function(done) {
   async.series([
     async.apply(ps.ensure, "config"),
     async.apply(exec, "mkdir .tests/services"),
+    async.apply(exec, "mkdir .tests/services-available"),
     function(callback) {
       require('services/runit').load();
       ps.emit(ps.AGENT_STATE_START);
