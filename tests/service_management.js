@@ -358,7 +358,7 @@ exports["service management"] = function(assert, beforeExit) {
   });
 
   beforeExit(function(){
-    assert.equal(16, n, 'Tests Completed');
+    assert.equal(17, n, 'Tests Completed');
   });
 };
 
