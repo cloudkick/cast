@@ -183,9 +183,43 @@ exports["service management"] = function(assert, beforeExit) {
     });
   });
 
-  // TODO: Actually check that these are happening
+  // We have to wait (at most) 5 seconds for runit to poll
   tasks.push(function(callback) {
-    assert.response(getServier(), {
+    setTimeout(callback, 5000);
+  });
+
+  tasks.push(function(callback) {
+    assert.response(getServer(), {
+      url: '/services/foo/',
+      method: 'GET'
+    },
+    function(res) {
+      n++;
+      try {
+        assert.equal(res.statusCode, 200);
+        var data = JSON.parse(res.body);
+        assert.ok(data instanceof Object);
+        assert.equal(data.name, "foo");
+        assert.equal(data.enabled, true);
+        assert.equal(data.normally, "down");
+        var sstatus = data.status;
+        assert.isDefined(sstatus);
+        assert.isDefined(sstatus.time);
+        assert.isDefined(sstatus.pid);
+        assert.isDefined(sstatus.paused);
+        assert.isDefined(sstatus.term);
+        assert.isDefined(sstatus.state);
+      }
+      catch (err) {
+        return callback(err);
+      }
+      return callback();
+    });
+  });
+
+
+  tasks.push(function(callback) {
+    assert.response(getServer(), {
       url: '/services/foo/stop/',
       method: 'PUT'
     },
@@ -202,7 +236,7 @@ exports["service management"] = function(assert, beforeExit) {
   });
 
   tasks.push(function(callback) {
-    assert.response(getServier(), {
+    assert.response(getServer(), {
       url: '/services/foo/start/',
       method: 'PUT'
     },
@@ -219,7 +253,7 @@ exports["service management"] = function(assert, beforeExit) {
   });
 
   tasks.push(function(callback) {
-    assert.response(getServier(), {
+    assert.response(getServer(), {
       url: '/services/foo/restart/',
       method: 'PUT'
     },
@@ -235,6 +269,54 @@ exports["service management"] = function(assert, beforeExit) {
     });
   });
 
+  // We have to stop this to make expresso decide to exit
+  tasks.push(function(callback) {
+    assert.response(getServer(), {
+      url: '/services/foo/stop/',
+      method: 'PUT'
+    },
+    function(res) {
+      n++;
+      try {
+        assert.equal(res.statusCode, 200);
+      }
+      catch (err) {
+        callback(err);
+      }
+      return callback();
+    });
+  });
+
+  tasks.push(function(callback) {
+    assert.response(getServer(), {
+      url: '/services/foo/disable/',
+      method: 'PUT'
+    },
+    function(res) {
+      n++;
+      try {
+        assert.equal(res.statusCode, 200);
+      }
+      catch (err) {
+        callback(err);
+      }
+      return callback();
+    });
+  });
+
+  tasks.push(function(callback) {
+    path.exists('.tests/services/enabled/foo', function(exists) {
+      n++;
+      try {
+        assert.ok(!exists);
+      }
+      catch (err) {
+        callback(err);
+      }
+      return callback();
+    });
+  });
+
   // Execute the tasks
   async.series(tasks, function(err) {
     ps.emit(ps.AGENT_STATE_STOP);
@@ -242,7 +324,7 @@ exports["service management"] = function(assert, beforeExit) {
   });
 
   beforeExit(function(){
-    assert.equal(6, n, 'Tests Completed');
+    assert.equal(14, n, 'Tests Completed');
   });
 };
 
