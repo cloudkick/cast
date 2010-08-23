@@ -125,6 +125,23 @@ exports["service management"] = function(assert, beforeExit) {
 
   tasks.push(function(callback) {
     assert.response(getServer(), {
+      url: '/services/bar/',
+      method: 'GET'
+    },
+    function(res) {
+      n++;
+      try {
+        assert.equal(res.statusCode, 404);
+      }
+      catch (err) {
+        return callback(err);
+      }
+      return callback();
+    });
+  });
+
+  tasks.push(function(callback) {
+    assert.response(getServer(), {
       url: '/services/foo/restart/',
       method: 'PUT'
     },
@@ -269,6 +286,23 @@ exports["service management"] = function(assert, beforeExit) {
     });
   });
 
+  tasks.push(function(callback) {
+    assert.response(getServer(), {
+      url: '/services/bar/restart/',
+      method: 'PUT'
+    },
+    function(res) {
+      n++;
+      try {
+        assert.equal(res.statusCode, 404);
+      }
+      catch (err) {
+        callback(err);
+      }
+      return callback();
+    });
+  });
+
   // We have to stop this to make expresso decide to exit
   tasks.push(function(callback) {
     assert.response(getServer(), {
@@ -324,7 +358,7 @@ exports["service management"] = function(assert, beforeExit) {
   });
 
   beforeExit(function(){
-    assert.equal(14, n, 'Tests Completed');
+    assert.equal(16, n, 'Tests Completed');
   });
 };
 
