@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-var ps = require('util/pubsub');
 var sys = require('sys');
+var exec = require('child_process').exec;
+var ps = require('util/pubsub');
+var async = require('extern/async');
 
 function getServer()
 {
@@ -95,5 +97,8 @@ exports['DELETE t.txt'] = function(assert, beforeExit) {
 };
 
 exports.setup = function(done) {
-  require('util/pubsub').ensure("config", done);
+  async.series([
+    async.apply(ps.ensure, "config"),
+    async.apply(exec, "mkdir -p .tests/data_root/bundles/foo")
+  ], done);
 };

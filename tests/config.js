@@ -41,6 +41,6 @@ exports.setup = function(done) {
 exports['basic config'] = function(assert, beforeExit) {
   var conf = config.get();
   assert.equal(8010, conf.port);
-  assert.equal("tests/data_root", conf.data_root);
+  assert.equal(".tests/data_root", conf.data_root);
 };
 
