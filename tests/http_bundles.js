@@ -28,11 +28,10 @@ function getServer() {
 var hello = "Hello World";
 
 function verify_response_code(url, code, method, data) {
-  var method = method || 'GET';
   var req = {
     url: url,
     method: method
-  }
+  };
   if (data) {
     req.data = data;
   }
@@ -47,7 +46,7 @@ function verify_response_code(url, code, method, data) {
     beforeExit(function(){
       assert.equal(1, n, 'Responses Received');
     });
-  }
+  };
 }
 
 // The following tests can be executed asynchronously in any order
@@ -57,7 +56,7 @@ exports['GET /bundles/'] = function(assert, beforeExit) {
   var n = 0;
   assert.response(getServer(), {
     url: '/bundles/',
-    method: 'GET',
+    method: 'GET'
   },
   function(res) {
     n++;
@@ -127,7 +126,7 @@ exports['GET /bundles/foo/'] = function(assert, beforeExit) {
   ps.on('t.txt created', function() {
     assert.response(getServer(), {
       url: '/bundles/foo/',
-      method: 'GET',
+      method: 'GET'
     },
     function(res) {
       n++;
@@ -216,7 +215,7 @@ exports['PUT long.txt'] = function(assert, beforeExit) {
             clearInterval(intervalId);
           }
         }
-        var intervalId = setInterval(write_some, 5);
+        intervalId = setInterval(write_some, 5);
       }
     };
     assert.response(getServer(), req, function(res) {
