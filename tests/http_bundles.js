@@ -87,8 +87,17 @@ exports['PUT /bundles/foo/t.txt'] = verify_response_code('/bundles/bar/t.txt', 4
 // Uploading to the bundles directory
 exports['PUT /bundles/foo/../'] = verify_response_code('/bundles/foo/../', 404, 'PUT', hello);
 
+// Uploading to a file in the bundles directory
+exports['PUT /bundles/baz.txt/t.txt'] = verify_response_code('/bundles/baz.txt/t.txt', 404, 'PUT', hello);
+
 // Listing a file in the bundles directory
 exports['GET /bundles/baz.txt'] = verify_response_code('/bundles/baz.txt/', 404);
+
+// Get a file that is actually a directory
+exports['GET /bundles/foo/baz'] = verify_response_code('/bundles/foo/baz', 404);
+
+// Delete a file that is actually a directory
+exports['DELETE /bundles/foo/baz'] = verify_response_code('/bundles/foo/baz', 404);
 
 
 // These tests must be executed in series and enforce this using util/pubsub
