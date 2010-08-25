@@ -352,6 +352,7 @@ assert.response = function(server, req, res, msg){
         method = req.method || 'GET',
         status = res.status || res.statusCode,
         data = req.data || req.body,
+        streamer = req.streamer,
         timeout = req.timeout || 0;
 
     var request = client.request(method, req.url, req.headers);
@@ -417,7 +418,11 @@ assert.response = function(server, req, res, msg){
             callback(response);
         });
     });
-    request.end();
+    if (streamer) {
+      streamer(request);
+    } else {
+      request.end();
+    }
 };
 
 /**
