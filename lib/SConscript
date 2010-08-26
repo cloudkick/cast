@@ -33,6 +33,9 @@ src = {
         'cast-client':
             [ 'commands.js',
               'entry.js'],
+        'health':
+            ['index.js',
+             'checks/http.js'],
         'norris':
             ['index.js'],
         'norris/facts':
