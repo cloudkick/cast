@@ -39,7 +39,8 @@ src = {
             ['index.js'],
         'norris/facts':
             ['arch.js',
-             'hostname.js'],
+             'hostname.js',
+             'kernel.js'],
         'runit':
             [ 'services.js'],
         'services':
