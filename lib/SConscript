@@ -26,7 +26,8 @@ src = {
               'log.js',
               'misc.js',
               'pubsub.js',
-              'version.js'],
+              'version.js',
+              'ringbuf.js'],
         'cast-agent':
             [ 'entry.js'],
         'cast-client':
