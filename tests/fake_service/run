@@ -13,7 +13,7 @@ stream.on('connect', function() {
   stream.setEncoding('ascii');
       
   function report(signal) {
-    stream.write(svcname + ':' signal + '\n');
+    stream.write(svcname + ':' + signal + '\n');
   }
 
   // Report that we are running
@@ -26,7 +26,7 @@ stream.on('connect', function() {
   // Exit on command
   stream.on('data', function(data) {
     received += data;
-    if (received.match(/EXIT/) {
+    if (received.match(/EXIT/)) {
       process.exit(0);
     }
     else {
@@ -34,3 +34,5 @@ stream.on('connect', function() {
     }
   });
 });
+
+process.exit();
