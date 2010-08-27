@@ -51,7 +51,7 @@ Export("env")
 
 source = SConscript("lib/SConscript")
 
-testsource = env.Glob("tests/*.js")
+testsource = env.Glob("tests/*.js") + env.Glob("tests/checks/*.js")
 
 allsource = testsource + source
 env["JSLINT"] = "$NODE lib/extern/node-jslint/bin/jslint.js"
@@ -66,7 +66,7 @@ env.Alias('jslint', jslint)
 #env.Alias('docs', docscmd)
 
 
-tests = sorted(env.Glob('tests/*.js'))
+tests = sorted(testsource)
 testcmd = env.Command('.tests_run', tests, "$NODE lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
