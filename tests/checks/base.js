@@ -26,11 +26,11 @@ exports['test format arguments worky properly'] = function(assert, beforeExit) {
   var arguments3 = { 'ip_address': '4.3.2.1', 'port': 80, 'use_ssl': true };
   
   var check1 = new Check('test check 1', required_arguments, optional_arguments, default_values, 
-                                         arguments1)
+                                         arguments1);
   var check2 = new Check('test check 2', required_arguments, optional_arguments, default_values, 
-                                        arguments2)
+                                        arguments2);
   var check3 = new Check('test check 1', required_arguments, optional_arguments, default_values, 
-                                        arguments3)
+                                        arguments3);
                                          
   assert.deepEqual(check1.check_arguments, {'ip_address': '1.2.3.4', 'port': 80, 'use_ssl': true});
   assert.deepEqual(check2.check_arguments, {'ip_address': '4.3.2.1', 'port': 80, 'use_ssl': false});
@@ -38,14 +38,14 @@ exports['test format arguments worky properly'] = function(assert, beforeExit) {
 };
 
 exports['test class instantation'] = function(assert, beforeExit) {
-  var check = new Check('test check', ['option_1'], [], {'option_1': 'test'})
+  var check = new Check('test check', ['option_1'], [], {'option_1': 'test'});
   
   assert.length(check.result_history, 0);
   assert.equal(check.last_run_date, null);
 };
 
 exports['test result history'] = function(assert, beforeExit) {
-  var check = new Check('test check', ['option_1'], [], {'option_1': 'test'})
+  var check = new Check('test check', ['option_1'], [], {'option_1': 'test'});
   assert.length(check.result_history, 0);
   
   check.add_result(new CheckResult());

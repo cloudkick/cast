@@ -11,8 +11,8 @@ var routes = {
   '/': {'status_code': 200, 'body': ''},
   '/test1': {'status_code': 200, 'body': 'test hello world'},
   '/test2': {'status_code': 404, 'body': 'Not found'},
-  '/test3': {'status_code': 202, 'body': '...<p>test 12345 content</p>...'},
-}
+  '/test3': {'status_code': 202, 'body': '...<p>test 12345 content</p>...'}
+};
 
 exports['test invalid hostname'] = function(assert, beforeExit) {
   var n = 0;
