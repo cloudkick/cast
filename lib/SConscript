@@ -35,7 +35,8 @@ src = {
               'entry.js'],
         'health':
             ['index.js',
-             'checks/http.js'],
+             'checks/http.js',
+             'checks/tcp.js'],
         'norris':
             ['index.js'],
         'norris/facts':
