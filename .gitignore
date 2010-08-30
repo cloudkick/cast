@@ -6,3 +6,4 @@ lib-cov
 .deps
 *-h1
 lib/extern/node-jscoverage/*
+.tests
