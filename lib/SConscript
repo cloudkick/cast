@@ -20,14 +20,15 @@ from os.path import join as pjoin
 src = {
         'util':
             [ 'config.js',
+              'extract.js',
               'fs.js',
               'getopt.js',
               'http.js',
               'log.js',
               'misc.js',
               'pubsub.js',
-              'version.js',
-              'ringbuf.js'],
+              'ringbuf.js',
+              'version.js'],
         'cast-agent':
             [ 'entry.js'],
         'cast-client':
