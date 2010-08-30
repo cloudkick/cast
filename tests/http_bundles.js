@@ -101,7 +101,7 @@ exports['DELETE /bundles/foo/baz'] = verify_response_code('/bundles/foo/baz', 40
 
 // These tests must be executed in series and enforce this using util/pubsub
 
-exports['PUT t.txt'] = function(assert, beforeExit) {
+exports['PUT t.txt'] = function(assert, beforeExit, callback) {
   // Make sure adding a file to a bundle succeeds
   var n = 0;
   assert.response(getServer(), {
@@ -113,121 +113,129 @@ exports['PUT t.txt'] = function(assert, beforeExit) {
     n++;
     assert.equal(res.statusCode, 204);
     assert.length(res.body, 0);
-    ps.emit('t.txt created');
+    callback();
   });
   beforeExit(function(){
     assert.equal(1, n, 'Responses Received');
   });
 };
 
-exports['GET /bundles/foo/'] = function(assert, beforeExit) {
+exports['GET /bundles/foo/'] = ['PUT t.txt', function(assert, beforeExit, callback) {
   // Make sure listing the bundle shows the file
   var n = 0;
-  ps.on('t.txt created', function() {
-    assert.response(getServer(), {
-      url: '/bundles/foo/',
-      method: 'GET'
-    },
-    function(res) {
-      n++;
-      assert.equal(res.statusCode, 200);
-      var data = JSON.parse(res.body);
-      assert.ok(data instanceof Array);
-      assert.equal(data.length, 1);
-      assert.equal(data[0], "t.txt");
-      ps.emit('t.txt listed');
-    });
+  assert.response(getServer(), {
+    url: '/bundles/foo/',
+    method: 'GET'
+  },
+  function(res) {
+    n++;
+    assert.equal(res.statusCode, 200);
+    var data = JSON.parse(res.body);
+    assert.ok(data instanceof Array);
+    assert.equal(data.length, 1);
+    assert.equal(data[0], "t.txt");
+    callback();
   });
+
   beforeExit(function(){
     assert.equal(1, n, 'Responses Received');
   });
-};
+}];
 
-exports['GET t.txt'] = function(assert, beforeExit) {
+exports['GET t.txt'] = ['GET /bundles/foo', function(assert, beforeExit, callback) {
   // Make sure we can download the file and the contents are correct
   var n = 0;
-  ps.on('t.txt listed', function() {
-    assert.response(getServer(), {
-      url: '/bundles/foo/t.txt',
-      method: 'GET'
-    },
-    function(res) {
-      n++;
-      assert.equal(200, res.statusCode);
-      assert.equal(hello, res.body);
-      ps.emit('t.txt read');
-    });
+  assert.response(getServer(), {
+    url: '/bundles/foo/t.txt',
+    method: 'GET'
+  },
+  function(res) {
+    n++;
+    assert.equal(200, res.statusCode);
+    assert.equal(hello, res.body);
+    callback();
   });
+
   beforeExit(function(){
     assert.equal(1, n, 'Responses Received');
   });
-};
+}];
 
-exports['DELETE t.txt'] = function(assert, beforeExit) {
+exports['DELETE t.txt'] = ['GET t.txt', function(assert, beforeExit, callback) {
   // Make sure we can delete the file
   var n = 0;
-  ps.on('t.txt read', function() {
-    assert.response(getServer(), {
-      url: '/bundles/foo/t.txt',
-      method: 'DELETE'
-    },
-    function(res) {
-      n++;
-      assert.equal(res.statusCode, 204);
-      assert.length(res.body, 0);
-      ps.emit('t.txt deleted');
-    });
-  });
-
-  // And that it gets deleted
-  ps.on('t.txt deleted', function() {
-    assert.response(getServer(), {
-      url: '/bundles/foo/t.txt',
-      method: 'GET'
-    },
-    function(res) {
-      n++;
-      assert.equal(404, res.statusCode);
-      ps.emit('t.txt verified deleted');
-    });
+  assert.response(getServer(), {
+    url: '/bundles/foo/t.txt',
+    method: 'DELETE'
+  },
+  function(res) {
+    n++;
+    assert.equal(res.statusCode, 204);
+    assert.length(res.body, 0);
+    callback();
   });
 
   beforeExit(function(){
-    assert.equal(2, n, 'Responses Received');
+    assert.equal(1, n, 'Responses Received');
   });
-};
+}];
 
-exports['PUT long.txt'] = function(assert, beforeExit) {
+exports['GET t.txt (deleted)'] = ['DELETE t.txt', function(assert, beforeExit, callback) {
+  // And that it gets deleted
+  assert.response(getServer(), {
+    url: '/bundles/foo/t.txt',
+    method: 'GET'
+  },
+  function(res) {
+    n++;
+    assert.equal(404, res.statusCode);
+    callback();
+  });
+
+  beforeExit(function(){
+    assert.equal(1, n, 'Responses Received');
+  });
+}];
+
+
+/**
+ * This test is designed to test slowly streaming a long file to the bundles
+ * handler to test the handoff to sys.pump.
+ */
+
+exports['PUT long.txt'] = ['GET t.txt (deleted)', function(assert, beforeExit, callback) {
   var n = 0;
-  ps.on('t.txt verified deleted', function() {
-    var req = {
-      url: '/bundles/foo/long.txt',
-      method: 'PUT',
-      headers: {
-        'Transfer-Encoding': 'chunked'
-      },
-      streamer: function(request) {
-        var intervalId;
-        function write_some() {
-          request.write(misc.randstr(1024));
-          if (++n === 1000) {
-            request.end();
-            clearInterval(intervalId);
-          }
-        }
-        intervalId = setInterval(write_some, 5);
+
+  // This thing slowly writes data to the request for ~5s
+  function streamer(request) {
+    var intervalId;
+    function write_some() {
+      request.write(misc.randstr(1024));
+      if (++n === 1000) {
+        request.end();
+        clearInterval(intervalId);
       }
-    };
-    assert.response(getServer(), req, function(res) {
-      n++;
-      assert.equal(204, res.statusCode);
-    });
+    }
+    intervalId = setInterval(write_some, 5);
+  };
+
+  var req = {
+    url: '/bundles/foo/long.txt',
+    method: 'PUT',
+    headers: {'Transfer-Encoding': 'chunked'},
+    streamer: streamer
+  };
+
+  assert.response(getServer(), req, function(res) {
+    n++;
+    assert.equal(204, res.statusCode);
+    callback();
   });
 
   beforeExit(function(){
     assert.equal(1001, n, 'Responses Received');
   });
-};
+}];
 
 exports.setup = function(done) {
   async.series([
