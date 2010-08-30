@@ -16,6 +16,11 @@ expresso 8805504fbb05c292 (August 11, 2010)
   http://github.com/visionmedia/expresso
   License: MIT
   Testing Framework for test cases
+  
+uuid d0cad69cbf3e1bc31f3f (August 29, 2010)
+  http://github.com/tlrobinson/narwhal/tree/master/lib/
+  License: BSD
+  Library for generating random UUIDs (taken from narwal).
 
 jspack 4753fb1a8de (May 22, 2010)
   http://github.com/pgriess/node-jspack
