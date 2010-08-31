@@ -677,7 +677,7 @@ function runSuite(title, tests) {
       testfn = tests[key];
       requirements = [];
     }
-    else if (typeof(tests[key]) === 'array') {
+    else if (tests[key] instanceof Array) {
       testfn = tests[key].pop();
       requirements = tests[key];
       if (typeof(testfn) !== 'function') {

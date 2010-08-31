@@ -67,7 +67,7 @@ env.Alias('jslint', jslint)
 
 
 tests = sorted(testsource)
-testcmd = env.Command('.tests_run', tests, "$NODE lib/extern/whiskey/bin/whiskey -I lib/ "+ " ".join([x.get_path() for x in tests]))
+testcmd = env.Command('.tests_run', tests, "$NODE lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
@@ -79,7 +79,7 @@ jsconvcopy = env.Command('lib-cov/out.list', allsource,
                         'lib/extern/node-jscoverage/jscoverage --no-instrument=extern lib lib-cov',
                         'echo $SOURCES>lib-cov/out.list'])
 env.Depends(jsconvcopy, jscovbuild)
-covcmd = env.Command('.tests_coverage', tests, "$NODE lib/extern/whiskey/bin/whiskey -I lib-cov/ "+ " ".join([x.get_path() for x in tests]))
+covcmd = env.Command('.tests_coverage', tests, "$NODE lib/extern/expresso/bin/expresso -I lib-cov/ "+ " ".join([x.get_path() for x in tests]))
 env.Depends(covcmd, jsconvcopy)
 env.AlwaysBuild(covcmd)
 env.Alias('coverage', covcmd)
