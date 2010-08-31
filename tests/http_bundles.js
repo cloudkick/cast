@@ -274,6 +274,8 @@ exports.setup = function(done) {
   async.series([
     async.apply(ps.ensure, "config"),
     async.apply(exec, "mkdir -p .tests/data_root/bundles/foo/foo-3.0.tar.gz"),
+    async.apply(exec, "touch .tests/data_root/bundles/foo/foobar"),
+    async.apply(exec, "touch .tests/data_root/bundles/foo/bar-1.0.tar.gz"),
     async.apply(exec, "touch .tests/data_root/bundles/baz")
   ], done);
 };
