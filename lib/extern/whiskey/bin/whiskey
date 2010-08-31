@@ -62,6 +62,12 @@ var testcount = 0;
 var only = [];
 
 /**
+* Fail on first error.
+ */
+
+var fail_fast = false;
+
+/**
  * Boring output.
  */
  
@@ -140,6 +146,10 @@ while (args.length) {
       } else {
         throw new Error('--require requires a path');
       }
+      break;
+    case '-f':
+    case '--fail-fast':
+      fail_fast = true;
       break;
     case '-c':
     case '--cov':
@@ -633,6 +643,10 @@ function error(suite, test, err) {
       ? test
       : suite + ' ' + test;
   print('\n   [bold]{' + label + '}: [red]{' + name + '}' + stack + '\n');
+  
+  if (fail_fast) {
+    process.exit(1);
+  }
 }
 
 /**
@@ -747,7 +761,10 @@ function runSuite(title, tests) {
  */
 
 function report() {
-  process.emit('beforeExit');
+  if (!fail_fast) {
+    process.emit('beforeExit');
+  }
+    
   if (failures) {
     print('\n   [bold]{Failures}: [red]{' + failures + '}\n\n');
   } else {
