@@ -46,6 +46,7 @@ src = {
             [ 'services.js'],
         'services':
             [ 'http.js',
+              'p2p.js',
               'runit.js'],
         'services/http':
             [ 'bundles.js',
