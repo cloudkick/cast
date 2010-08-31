@@ -26,6 +26,11 @@ var NORMAL_COMMANDS = {
   'services': ['list', 'restart']
 }
 
+var stdout_data = [];
+global.process.stdout.write = function (string) {
+  stdout_data.push(string);
+};
+
 var parser = new CommandParser(COMMANDS_PATH, GLOBAL_COMMANDS, NORMAL_COMMANDS);
 parser.banner = 'moo';
 
@@ -67,6 +72,37 @@ exports['test exception is thrown on invalid number of arguments'] = function(as
   });
 };
 
+exports['test global help'] = function(assert, beforeExit) {
+  stdout_data = [];
+  
+  assert.equal(stdout_data.length, 0);
+  parser.parse(['bin', 'file', 'help']);
+  assert.match(stdout_data.join(''), /.*available commands.*/i)
+};
+
+exports['test command help'] = function(assert, beforeExit) {
+  stdout_data = [];
+  
+  assert.equal(stdout_data.length, 0);
+  parser.parse(['bin', 'file', 'help', 'services']);
+  assert.match(stdout_data.join(''), /.*available sub-commands for command.*/i)
+  
+  beforeExit(function() {
+    stdout_data = [];
+  });
+};
+
+exports['test sub-command help'] = function(assert, beforeExit) {
+  stdout_data = [];
+  
+  assert.equal(stdout_data.length, 0);
+  parser.parse(['bin', 'file', 'help', 'services', 'list']);
+  assert.match(stdout_data.join(''), /.*help for services list.*/i)
+  
+  beforeExit(function() {
+    stdout_data = [];
+  });
+};
 exports['test global command'] = function(assert, beforeExit) {
   var value = parser.parse(['bin', 'file', 'hello']);
   
