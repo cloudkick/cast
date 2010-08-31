@@ -22,7 +22,7 @@ src = {
             [ 'config.js',
               'extract.js',
               'fs.js',
-              'getopt.js',
+              'command_parser.js',
               'http.js',
               'log.js',
               'misc.js',
@@ -32,8 +32,7 @@ src = {
         'cast-agent':
             [ 'entry.js'],
         'cast-client':
-            [ 'commands.js',
-              'entry.js'],
+            [ 'entry.js'],
         'health':
             ['index.js',
              'checks/http.js',
