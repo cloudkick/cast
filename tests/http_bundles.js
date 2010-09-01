@@ -17,6 +17,7 @@
 
 var sys = require('sys');
 var fs = require('fs');
+var crypto = require('crypto');
 var exec = require('child_process').exec;
 var ps = require('util/pubsub');
 var misc = require('util/misc');
@@ -267,6 +268,62 @@ exports['PUT bar-1.0.tar.gz'] = function(assert, beforeExit) {
 
   beforeExit(function(){
     assert.equal(1002, n, 'Responses Received');
+  });
+};
+
+exports['PUT foo-4.0.tar.gz'] = function(assert, beforeExit) {
+  var n = 0;
+  ps.on('foo-1.0.tar.gz listed', function() {
+    fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
+      n++;
+      var md5 = crypto.createHash('md5');
+      md5.update(data);
+
+      assert.response(getServer(), {
+        url: '/bundles/foo/foo-4.0.tar.gz',
+        method: 'PUT',
+        data: data,
+        headers: {'Content-MD5': md5.digest('base64')}
+      },
+      function(res) {
+        n++;
+        console.log(res.body);
+        assert.equal(res.statusCode, 204);
+      });
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(n, 2);
+  });
+};
+
+exports['PUT foo-4.1.tar.gz'] = function(assert, beforeExit) {
+  var n = 0;
+  ps.on('foo-1.0.tar.gz listed', function() {
+    fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
+      n++;
+      var md5 = crypto.createHash('md5');
+      md5.update(data);
+      // Flip one bit
+      data[9] = data[9] ^ 010;
+
+      assert.response(getServer(), {
+        url: '/bundles/foo/foo-4.1.tar.gz',
+        method: 'PUT',
+        data: data,
+        headers: {'Content-MD5': md5.digest('base64')}
+      },
+      function(res) {
+        n++;
+        console.log(res.body);
+        assert.equal(res.statusCode, 400);
+      });
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(n, 2);
   });
 };
 
