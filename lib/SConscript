@@ -23,6 +23,7 @@ src = {
               'fs.js',
               'command_parser.js',
               'http.js',
+              'http_pumpfile.js',
               'log.js',
               'misc.js',
               'pubsub.js',
