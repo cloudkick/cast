@@ -20,7 +20,7 @@ var crypto = require('crypto');
 var fs = require('fs');
 
 var test = require('util/test');
-var extract = require('util/extract');
+var extract = require('util/tarball');
 
 var cwd = process.cwd();
 var data_path = path.join(cwd, 'tests/data');

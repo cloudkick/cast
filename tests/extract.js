@@ -16,7 +16,7 @@
  */
 
 var path = require('path');
-var extract = require('util/extract');
+var extract = require('util/tarball');
 
 exports['extract tarball'] = function(assert, beforeExit) {
   var n = 0;
