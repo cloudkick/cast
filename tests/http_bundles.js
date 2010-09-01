@@ -102,24 +102,27 @@ exports['GET /bundles/'] = function(assert, beforeExit) {
 };
 
 exports['PUT foo-1.0.tar.gz'] = function(assert, beforeExit) {
-  // Make sure adding a file to a bundle succeeds
   var n = 0;
-  ps.ensure('bundles listed', function() {
+  fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
+    n++;
+    var md5 = crypto.createHash('md5');
+    md5.update(data);
+
     assert.response(getServer(), {
       url: '/bundles/foo/foo-1.0.tar.gz',
       method: 'PUT',
-      data: hello
+      data: data,
+      headers: {'Content-MD5': md5.digest('base64')}
     },
     function(res) {
       n++;
       assert.equal(res.statusCode, 204);
-      assert.length(res.body, 0);
       ps.emit('foo-1.0.tar.gz created');
     });
   });
 
-  beforeExit(function(){
-    assert.equal(1, n, 'Responses Received');
+  beforeExit(function() {
+    assert.equal(n, 2);
   });
 };
 
@@ -158,7 +161,7 @@ exports['GET foo-1.0.tar.gz'] = function(assert, beforeExit) {
     function(res) {
       n++;
       assert.equal(200, res.statusCode);
-      assert.equal(hello, res.body);
+      // TODO: Check body contents
       ps.emit('foo-1.0.tar.gz read');
     });
   });
@@ -202,38 +205,6 @@ exports['DELETE foo-1.0.tar.gz'] = function(assert, beforeExit) {
   });
 };
 
-exports['PUT foo-2.0.tar.gz'] = function(assert, beforeExit) {
-  var n = 0;
-  ps.on('foo-1.0.tar.gz verified deleted', function() {
-    var req = {
-      url: '/bundles/foo/foo-2.0.tar.gz',
-      method: 'PUT',
-      headers: {
-        'Transfer-Encoding': 'chunked'
-      },
-      streamer: function(request) {
-        var intervalId;
-        function write_some() {
-          request.write(misc.randstr(1024));
-          if (++n === 1000) {
-            request.end();
-            clearInterval(intervalId);
-          }
-        }
-        intervalId = setInterval(write_some, 5);
-      }
-    };
-    assert.response(getServer(), req, function(res) {
-      n++;
-      assert.equal(204, res.statusCode);
-    });
-  });
-
-  beforeExit(function(){
-    assert.equal(1001, n, 'Responses Received');
-  });
-};
-
 exports['PUT bar-1.0.tar.gz'] = function(assert, beforeExit) {
   var n = 0;
   ps.on('bundles listed', function() {
@@ -257,44 +228,12 @@ exports['PUT bar-1.0.tar.gz'] = function(assert, beforeExit) {
     };
     assert.response(getServer(), req, function(res) {
       n++;
-      assert.equal(204, res.statusCode);
-      fs.stat('.tests/data_root/bundles/bar/bar-1.0.tar.gz', function(err, stats) {
-        n++;
-        assert.ifError(err);
-        assert.ok(stats.isFile());
-      });
+      assert.equal(500, res.statusCode);
     });
   });
 
   beforeExit(function(){
-    assert.equal(1002, n, 'Responses Received');
-  });
-};
-
-exports['PUT foo-4.0.tar.gz'] = function(assert, beforeExit) {
-  var n = 0;
-  ps.on('foo-1.0.tar.gz listed', function() {
-    fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
-      n++;
-      var md5 = crypto.createHash('md5');
-      md5.update(data);
-
-      assert.response(getServer(), {
-        url: '/bundles/foo/foo-4.0.tar.gz',
-        method: 'PUT',
-        data: data,
-        headers: {'Content-MD5': md5.digest('base64')}
-      },
-      function(res) {
-        n++;
-        console.log(res.body);
-        assert.equal(res.statusCode, 204);
-      });
-    });
-  });
-
-  beforeExit(function() {
-    assert.equal(n, 2);
+    assert.equal(1001, n, 'Responses Received');
   });
 };
 
@@ -316,7 +255,6 @@ exports['PUT foo-4.1.tar.gz'] = function(assert, beforeExit) {
       },
       function(res) {
         n++;
-        console.log(res.body);
         assert.equal(res.statusCode, 400);
       });
     });
@@ -331,6 +269,7 @@ exports.setup = function(done) {
   async.series([
     async.apply(ps.ensure, "config"),
     async.apply(exec, "mkdir -p .tests/data_root/bundles/foo/foo-3.0.tar.gz"),
+    async.apply(exec, "mkdir -p .tests/data_root/extracted"),
     async.apply(exec, "touch .tests/data_root/bundles/foo/foobar"),
     async.apply(exec, "touch .tests/data_root/bundles/foo/bar-1.0.tar.gz"),
     async.apply(exec, "touch .tests/data_root/bundles/baz")
