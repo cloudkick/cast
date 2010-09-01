@@ -26,12 +26,6 @@ jspack 4753fb1a8de (May 22, 2010)
   http://github.com/pgriess/node-jspack
   License: MIT
   Packing and Unpacking of binary data structures
-
-mu 3bd7403e9fb (May 31, 2010)
-  http://github.com/raycmorgan/Mu
-  License: MIT
-  Template Library
-
 node-jscoverage 0d4608a6b4275b (May 25, 2010)
   License: GPL v2
   Generates reports on test coverage of the agent.
@@ -61,3 +55,8 @@ stacktrace fe9d84729c5 (May 29, 2010)
   http://github.com/emwendelin/javascript-stacktrace
   License: BSD
   Utility function to make a stack trace. Slightly modified to use CommonJS style exports.
+  
+strobe-templates 217b31fcb9721c88f749 (August 31, 2010)
+  http://github.com/skid/strobe-templates
+  License: MIT
+  A clone of django templates in node.js
