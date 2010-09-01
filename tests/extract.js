@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
+var path = require('path');
 var extract = require('util/extract');
 
 exports['extract tarball'] = function(assert, beforeExit) {
   var n = 0;
-  extract.extract_tarball('tests/data/fooserv.tar.gz', '.tests/fooserv', 0755, function(err) {
+  var tbpath = path.join(process.cwd(), 'tests/data/fooserv.tar.gz');
+  var expath = path.join(process.cwd(), '.tests/fooserv');
+  extract.extract_tarball(tbpath, expath, 0755, function(err) {
     assert.ifError(err);
     n++;
   });
@@ -30,7 +33,9 @@ exports['extract tarball'] = function(assert, beforeExit) {
 
 exports['extract missing tarball'] = function(assert, beforeExit) {
   var n = 0;
-  extract.extract_tarball('tests/data/fooserve.tar.gz', '.tests/fooserve', 0755, function(err) {
+  var tbpath = path.join(process.cwd(), 'tests/data/fooserv.tar.gz');
+  var expath = path.join(process.cwd(), '.tests/fooserv');
+  extract.extract_tarball(tbpath, expath, 0755, function(err) {
     assert.ok(err);
     n++;
   });
