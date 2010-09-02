@@ -138,6 +138,48 @@ exports['trimming whitespace'] = function(assert, beforeExit)
   assert.equal("foo", misc.trim(" foo\n"));
 };
 
+exports['in array'] = function(assert, beforeExit ) {
+  var haystack = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
+
+  assert.equal(misc.in_array('item 2', haystack), true);
+  assert.equal(misc.in_array('not in array', haystack), false);
+};
+
+exports['arrays contains same elements'] = function(assert, beforeExit) {
+  var array1 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
+  var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
+  var array3 = [ 'item 4', 'item 3', 'item 2', 'item 1' ];
+  var array4 = [ 'item 1', 'item 2' ];
+
+  assert.equal(misc.arrays_contains_same_elements(array1, array2, true), true);
+  assert.equal(misc.arrays_contains_same_elements(array1, array3, true), false);
+  assert.equal(misc.arrays_contains_same_elements(array1, array3, false), true);
+  assert.equal(misc.arrays_contains_same_elements(array1, array4), false);
+};
+
+exports['array is subset of'] = function(assert, beforeExit) {
+  var array1 = [ 'item 1', 'item 2' ];
+  var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
+  var array3 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
+
+  assert.equal(misc.array_is_subset_of(array1, array2, true), true);
+  assert.equal(misc.array_is_subset_of(array2, array1, true), false);
+  assert.equal(misc.array_is_subset_of(array2, array1, false), false);
+
+  assert.equal(misc.array_is_subset_of(array2, array3, true), false);
+  assert.equal(misc.array_is_subset_of(array2, array3, false), true);
+  assert.equal(misc.array_is_subset_of(array3, array2, false), true);
+  assert.equal(misc.array_is_subset_of(array3, array2, true), false);
+};
+
+exports['array difference'] = function(assert, beforeExit) {
+  var array1 = [ 'item 1', 'item 2' ];
+  var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
+
+  assert.deepEqual(misc.array_difference(array1, array2), []);
+  assert.deepEqual(misc.array_difference(array2, array1), [ 'item 3', 'item 4' ]);
+};
+
 exports.setup = function(done) {
   async.series([
     async.apply(require('util/pubsub').ensure, "config"),
