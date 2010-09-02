@@ -21,23 +21,87 @@ var CommandParser = require('util/command_parser').CommandParser;
 
 var COMMANDS_PATH = path.join(__dirname, 'data/commands');
 
-var GLOBAL_COMMANDS = ['hello'];
-var NORMAL_COMMANDS = {
-  'services': ['list', 'restart']
-}
-
 var stdout_data = [];
 global.process.stdout.write = function (string) {
   stdout_data.push(string);
 };
 
-var parser = new CommandParser(COMMANDS_PATH, GLOBAL_COMMANDS, NORMAL_COMMANDS);
-parser.banner = 'moo';
+var parser = new CommandParser(COMMANDS_PATH);
+
+parser.add_commands(['hello', 'services/list', 'services/restart']);
 
 exports['test initialization'] = function(assert, beforeExit) {
-  assert.equal(parser.global_commands, GLOBAL_COMMANDS);
-  assert.equal(parser.normal_commands, NORMAL_COMMANDS);
-  assert.equal(parser.banner, 'moo');
+  var parser = new CommandParser(COMMANDS_PATH);
+  
+  assert.deepEqual(parser._global_commands, []);
+  assert.deepEqual(parser._normal_commands, {});
+  assert.equal(parser.banner, '');
+};
+
+exports['test command addition and removal works properly'] = function(assert, beforeExit) {
+  var parser = new CommandParser(COMMANDS_PATH);
+  
+  assert.deepEqual(parser._global_commands, []);
+  parser.add_command('hello');
+  assert.deepEqual(parser._global_commands, ['hello']);
+  parser.remove_command('hello');
+  
+  assert.deepEqual(parser._normal_commands, {});
+  parser.add_commands(['services/list', 'services/restart']);
+  assert.deepEqual(parser._normal_commands, { 'services': ['list', 'restart'] });
+  parser.remove_commands(['services/list', 'services/restart']);
+  assert.deepEqual(parser._normal_commands, {});
+};
+
+exports['test exception is thrown upon invalid command name'] = function(assert, beforeExit) {
+  var n = 0;
+  
+  try {
+    parser.add_command('invalid name');
+  }
+  catch (e) {
+    n++;
+  }
+  try {
+    parser.add_commands(['invalid name']);
+  }
+  catch (e2) {
+    n++;
+  }
+  
+  try {
+    parser.remove_command(['invalid name']);
+  }
+  catch (e3) {
+    n++;
+  }
+  
+  beforeExit(function() {
+    assert.equal(3, n, 'Exceptions thrown');
+  });
+};
+
+exports['test exception is thrown upon invalid or argument type'] = function(assert, beforeExit) {
+  var n = 0;
+  
+  try {
+    parser.add_commands('hello');
+  }
+  catch (e) {
+    n++;
+    assert.match(e.message, /must be an array/i);
+  }
+  try {
+    parser.remove_commands('hello');
+  }
+  catch (e2) {
+    n++;
+    assert.match(e2.message, /must be an array/i);
+  }
+  
+  beforeExit(function() {
+    assert.equal(2, n, 'Exceptions thrown');
+  });
 };
 
 exports['test exception is thrown on invalid command'] = function(assert, beforeExit) {
@@ -48,7 +112,7 @@ exports['test exception is thrown on invalid command'] = function(assert, before
   }
   catch (error) {
     n++;
-    assert.match(error.message, /invalid command/i)
+    assert.match(error.message, /invalid command/i);
   }
   
   beforeExit(function() {
@@ -77,7 +141,7 @@ exports['test global help'] = function(assert, beforeExit) {
   
   assert.equal(stdout_data.length, 0);
   parser.parse(['bin', 'file', 'help']);
-  assert.match(stdout_data.join(''), /.*available commands.*/i)
+  assert.match(stdout_data.join(''), /.*available commands.*/i);
 };
 
 exports['test command help'] = function(assert, beforeExit) {
@@ -85,7 +149,7 @@ exports['test command help'] = function(assert, beforeExit) {
   
   assert.equal(stdout_data.length, 0);
   parser.parse(['bin', 'file', 'help', 'services']);
-  assert.match(stdout_data.join(''), /.*available sub-commands for command.*/i)
+  assert.match(stdout_data.join(''), /.*available sub-commands for command.*/i);
   
   beforeExit(function() {
     stdout_data = [];
@@ -97,7 +161,7 @@ exports['test sub-command help'] = function(assert, beforeExit) {
   
   assert.equal(stdout_data.length, 0);
   parser.parse(['bin', 'file', 'help', 'services', 'list']);
-  assert.match(stdout_data.join(''), /.*help for services list.*/i)
+  assert.match(stdout_data.join(''), /.*help for services list.*/i);
   
   beforeExit(function() {
     stdout_data = [];
@@ -114,5 +178,5 @@ exports['test command services list'] = function(assert, beforeExit) {
   var value2 = parser.parse(['bin', 'file', 'services', 'list', 'server1']);
   
   assert.match(value1, /listing services for all servers/i);
-  assert.match(value2, /listing services for server server1/i)
+  assert.match(value2, /listing services for server server1/i);
 };
