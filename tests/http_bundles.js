@@ -105,14 +105,14 @@ exports['PUT foo-1.0.tar.gz'] = function(assert, beforeExit) {
   var n = 0;
   fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
     n++;
-    var md5 = crypto.createHash('md5');
-    md5.update(data);
+    var sha1 = crypto.createHash('sha1');
+    sha1.update(data);
 
     assert.response(getServer(), {
       url: '/bundles/foo/foo-1.0.tar.gz',
       method: 'PUT',
       data: data,
-      headers: {'Content-MD5': md5.digest('base64')}
+      headers: {'X-Content-SHA1': sha1.digest('base64')}
     },
     function(res) {
       n++;
@@ -242,8 +242,8 @@ exports['PUT foo-4.1.tar.gz'] = function(assert, beforeExit) {
   ps.on('foo-1.0.tar.gz listed', function() {
     fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
       n++;
-      var md5 = crypto.createHash('md5');
-      md5.update(data);
+      var sha1 = crypto.createHash('sha1');
+      sha1.update(data);
       // Flip one bit
       data[9] = data[9] ^ 010;
 
@@ -251,7 +251,7 @@ exports['PUT foo-4.1.tar.gz'] = function(assert, beforeExit) {
         url: '/bundles/foo/foo-4.1.tar.gz',
         method: 'PUT',
         data: data,
-        headers: {'Content-MD5': md5.digest('base64')}
+        headers: {'X-Content-SHA1': sha1.digest('base64')}
       },
       function(res) {
         n++;
