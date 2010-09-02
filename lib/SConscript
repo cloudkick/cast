@@ -34,7 +34,8 @@ src = {
             [ 'entry.js'],
         'cast-client':
             [ 'entry.js',
-              'commands/version.js'],
+              'commands/version.js',
+              'commands/bundles/create.js'],
         'health':
             ['index.js',
              'checks/http.js',
