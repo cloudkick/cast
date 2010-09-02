@@ -72,7 +72,7 @@ exports["service management"] = function(assert, beforeExit) {
 
   tasks.push(function(callback) {
     var fakerun_path = path.join(__dirname, 'fake_service', 'run');
-    exec('cp ' + fakerun_path + ' .tests/services/available/foo/run', function(err) {
+    exec('cp "' + fakerun_path + '" .tests/services/available/foo/run', function(err) {
       n++;
       if (err) {
         return callback(err);
