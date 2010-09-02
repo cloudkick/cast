@@ -48,7 +48,7 @@ exports['test invalid target path'] = function(assert, beforeExit) {
   extract.create_tarball(bundle_path, '/invalid/path', tarball_name, function(error) {
     n++;
     assert.notEqual(error, undefined);
-    assert.match(error.message, /target path does not exist/i)
+    assert.match(error.message, /target path does not exist/i);
   });
   
   beforeExit(function() {
