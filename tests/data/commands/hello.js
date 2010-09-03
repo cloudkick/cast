@@ -4,10 +4,11 @@ var config = {
   'short_description': 'Return hello world',
   'long_description': 'Return hello world long',
   'required_arguments' : [],
-  'optional_arguments': []
+  'optional_arguments': [],
+  'switches': []
 }
 
-function handle_command(arguments) {
+function handle_command(arg) {
   return 'Hello world';
 }
 
