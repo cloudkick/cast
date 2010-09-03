@@ -180,6 +180,12 @@ exports['array difference'] = function(assert, beforeExit) {
   assert.deepEqual(misc.array_difference(array2, array1), [ 'item 3', 'item 4' ]);
 };
 
+exports['get valid bundle name'] = function(assert, beforeExit) {
+  assert.equal(misc.get_valid_bundle_name('ABC DEFG HIJ'), 'abc_defg_hij');
+  assert.equal(misc.get_valid_bundle_name('test-app-name 1.0'), 'test-app-name_10');
+  assert.equal(misc.get_valid_bundle_name('NodeJS Test app'), 'nodejs_test_app');
+};
+
 exports.setup = function(done) {
   async.series([
     async.apply(require('util/pubsub').ensure, "config"),
