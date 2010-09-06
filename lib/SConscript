@@ -29,6 +29,7 @@ src = {
               'pubsub.js',
               'ringbuf.js',
               'version.js',
+              'tail.js',
               'tarball.js'],
         'cast-agent':
             [ 'entry.js'],
