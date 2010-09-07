@@ -30,7 +30,8 @@ src = {
               'ringbuf.js',
               'version.js',
               'tail.js',
-              'tarball.js'],
+              'tarball.js',
+              'terminal.js'],
         'cast-agent':
             [ 'entry.js'],
         'cast-client':
