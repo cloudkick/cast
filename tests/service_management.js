@@ -22,7 +22,8 @@ var exec = require('child_process').exec;
 var ps = require('util/pubsub');
 var misc = require('util/misc');
 var async = require('extern/async');
-var runit = require('runit/services');
+
+var runit;
 
 function getServer()
 {
@@ -369,6 +370,7 @@ exports.setup = function(done) {
     async.apply(exec, "mkdir .tests/services/available"),
     async.apply(exec, "mkdir .tests/services/enabled"),
     function(callback) {
+      runit = require('runit/services');
       require('services/runit').load();
       ps.emit(ps.AGENT_STATE_START);
       callback();
