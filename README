@@ -28,3 +28,8 @@ Javascript coding and style conventions:
 In addition, all code should pass jslint, which you can run like this:
   $ scons jslint
 
+Cast also uses extensive unit tests, which you can also run via scons:
+  $ scons test
+
+If you are adding new features, please make sure they conform to the 
+styleguide, pass jslint, and have good test case coverage.
