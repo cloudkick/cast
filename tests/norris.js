@@ -41,6 +41,18 @@ exports['working marchine arch'] = function(assert, beforeExit) {
   });
 };
 
+exports['working gnutar'] = function(assert, beforeExit) {
+  var n = 0;
+  norris.get(function(facts)  {
+    n++;
+    assert.notEqual(facts.hostname, "");
+    assert.ifError(facts.hostname.length < 4);
+  });
+  beforeExit(function() {
+    assert.equal(n, 1);
+  });
+};
+
 exports.setup = function(done) {
   require('util/pubsub').ensure("config", done);
 };
