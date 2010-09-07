@@ -1,0 +1,30 @@
+cast: be a wizard
+====================
+
+Cast is a framework for deploying applications, written in Node.js.
+
+Cast provides tools for system administrators and developers to create, 
+deploy, maintain, and monitor distributed services, written in any language.
+
+Cast's internals are structured around building RESTful APIs for all 
+operations, so that all tasks can be scripted and more powerful tools
+can be built on top.
+
+Contributing to cast
+====================
+
+Cast is open source under the Apache 2.0 License.
+
+Source code is on github:
+  <http://github.com/cloudkick/cast>
+
+The mailing list is on google groups:
+  <http://groups.google.com/group/cast-dev>
+
+Cast is written mostly in Javascript, and we attempt to follow the Google
+Javascript coding and style conventions:
+  <http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml>
+
+In addition, all code should pass jslint, which you can run like this:
+  $ scons jslint
+
