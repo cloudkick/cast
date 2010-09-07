@@ -63,10 +63,6 @@ exports['test invalid target path'] = function(assert, beforeExit) {
   });
 };
 
-exports.setup = function(done) {
-  require('util/pubsub').ensure("config", done);
-};
-
 exports['test create tarball'] = function(assert, beforeExit) {
   var n = 0;
 
