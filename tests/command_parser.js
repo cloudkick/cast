@@ -21,15 +21,6 @@ var CommandParser = require('util/command_parser').CommandParser;
 
 var COMMANDS_PATH = path.join(__dirname, 'data/commands');
 
-var stdout_data = [];
-global.process.stdout.write = function (string) {
-  stdout_data.push(string);
-};
-
-var parser = new CommandParser(COMMANDS_PATH);
-
-parser.add_commands(['hello', 'services/list', 'services/restart']);
-
 exports['test initialization'] = function(assert, beforeExit) {
   var parser = new CommandParser(COMMANDS_PATH);
 
@@ -54,6 +45,14 @@ exports['test command addition and removal works properly'] = function(assert, b
 };
 
 exports['test exception is thrown upon invalid switch'] = function(assert, beforeExit) {
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
+
   var n = 0;
 
   try {
@@ -72,6 +71,14 @@ exports['test exception is thrown upon invalid switch'] = function(assert, befor
 };
 
 exports['test exception is thrown upon invalid command name'] = function(assert, beforeExit) {
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
+
   var n = 0;
 
   try {
@@ -100,6 +107,14 @@ exports['test exception is thrown upon invalid command name'] = function(assert,
 };
 
 exports['test exception is thrown upon invalid argument or argument type'] = function(assert, beforeExit) {
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
+
   var n = 0;
 
   try {
@@ -123,6 +138,14 @@ exports['test exception is thrown upon invalid argument or argument type'] = fun
 };
 
 exports['test exception is thrown on invalid command'] = function(assert, beforeExit) {
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
+
   var n = 0;
 
   try {
@@ -139,6 +162,14 @@ exports['test exception is thrown on invalid command'] = function(assert, before
 };
 
 exports['test exception is thrown on invalid argument passed in the key=value format'] = function(assert, beforeExit) {
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
+
   var n = 0;
 
   try {
@@ -155,6 +186,14 @@ exports['test exception is thrown on invalid argument passed in the key=value fo
 };
 
 exports['test exception is thrown on missing required argument'] = function(assert, beforeExit) {
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
+
   var n = 0;
 
   try {
@@ -171,7 +210,13 @@ exports['test exception is thrown on missing required argument'] = function(asse
 };
 
 exports['test global help'] = function(assert, beforeExit) {
-  stdout_data = [];
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
 
   assert.equal(stdout_data.length, 0);
   parser.parse(['bin', 'file', 'help']);
@@ -179,7 +224,13 @@ exports['test global help'] = function(assert, beforeExit) {
 };
 
 exports['test command help'] = function(assert, beforeExit) {
-  stdout_data = [];
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
 
   assert.equal(stdout_data.length, 0);
   parser.parse(['bin', 'file', 'help', 'services']);
@@ -191,7 +242,13 @@ exports['test command help'] = function(assert, beforeExit) {
 };
 
 exports['test sub-command help'] = function(assert, beforeExit) {
-  stdout_data = [];
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
 
   assert.equal(stdout_data.length, 0);
   parser.parse(['bin', 'file', 'help', 'services', 'list']);
@@ -202,12 +259,28 @@ exports['test sub-command help'] = function(assert, beforeExit) {
   });
 };
 exports['test global command'] = function(assert, beforeExit) {
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
+
   var value = parser.parse(['bin', 'file', 'hello']);
 
   assert.match(value, /hello world/i);
 };
 
 exports['test command services list'] = function(assert, beforeExit) {
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
+
   var value1 = parser.parse(['bin', 'file', 'services', 'list']);
   var value2 = parser.parse(['bin', 'file', 'services', 'list', 'server1']);
 
