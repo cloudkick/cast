@@ -31,11 +31,12 @@ exports['test invalid hostname'] = function(assert, beforeExit) {
 };
 
 exports['test secure on non ssl'] = function(assert, beforeExit) {
+  var port = test.get_port();
   var n = 0;
   
-  test.run_test_http_server('127.0.0.1', 7777, routes, function() {
+  test.run_test_http_server('127.0.0.1', port, routes, function() {
     var self = this;
-    var check = new http_check.HTTPCheck({'url': 'https://127.0.0.1:7777', 'type': http_check.config.types.STATUS_CODE_MATCH,
+    var check = new http_check.HTTPCheck({'url': 'https://127.0.0.1:'+port, 'type': http_check.config.types.STATUS_CODE_MATCH,
                                           'match_value': 200});
 
     check.run(function(result) {
@@ -53,14 +54,15 @@ exports['test secure on non ssl'] = function(assert, beforeExit) {
 };
 
 exports['test check status codes match'] = function(assert, beforeExit) {
+  var port = test.get_port();
   var n = 0;
   
-  test.run_test_http_server('127.0.0.1', 8888, routes, function() {
+  test.run_test_http_server('127.0.0.1', port, routes, function() {
     var self = this;
     
-    var check1 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:8888/test1', 'type': http_check.config.types.STATUS_CODE_MATCH,
+    var check1 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:'+port+'/test1', 'type': http_check.config.types.STATUS_CODE_MATCH,
                                           'match_value': 200});
-    var check2 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:8888/test1', 'type': http_check.config.types.STATUS_CODE_MATCH,
+    var check2 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:'+port+'/test1', 'type': http_check.config.types.STATUS_CODE_MATCH,
                                           'match_value': 404});
                                           
     async.parallel([
@@ -93,14 +95,15 @@ exports['test check status codes match'] = function(assert, beforeExit) {
 };
 
 exports['test check response body match'] = function(assert, beforeExit) {
+  var port = test.get_port();
   var n = 0;
   
-  test.run_test_http_server('127.0.0.1', 9999, routes, function() {
+  test.run_test_http_server('127.0.0.1', port, routes, function() {
     var self = this;
     
-    var check1 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:9999/test3', 'type': http_check.config.types.BODY_REGEX_MATCH,
+    var check1 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:'+port+'/test3', 'type': http_check.config.types.BODY_REGEX_MATCH,
                                           'match_value': 'some text which wont match'});
-    var check2 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:9999/test3', 'type': http_check.config.types.BODY_REGEX_MATCH,
+    var check2 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:'+port+'/test3', 'type': http_check.config.types.BODY_REGEX_MATCH,
                                           'match_value': /.*test \d+ CONTENT.*/i});
                                           
     async.parallel([
