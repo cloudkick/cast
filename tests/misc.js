@@ -145,6 +145,23 @@ exports['in array'] = function(assert, beforeExit ) {
   assert.equal(misc.in_array('not in array', haystack), false);
 };
 
+exports['in array compare function'] = function(assert, beforeExit ) {
+  var haystack = [ ['item 1', 'a'], ['item 2', 'b'], ['item 3', 'c'], ['item 4', 'd'] ];
+  var compare_function = function(item, needle) {
+    return item[1] === needle;
+  }
+
+  assert.equal(misc.in_array('a', haystack, null, compare_function), true);
+  assert.equal(misc.in_array('not in array', haystack, null, compare_function), false);
+};
+
+exports['array find'] = function(assert, beforeExit ) {
+  var haystack = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
+
+  assert.equal(misc.array_find('item 2', haystack), 1);
+  assert.equal(misc.array_find('not in array', haystack), false);
+};
+
 exports['arrays contains same elements'] = function(assert, beforeExit) {
   var array1 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
   var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
