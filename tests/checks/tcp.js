@@ -30,8 +30,9 @@ var response_dictionary = {
 };
 
 exports['test invalid ip address'] = function(assert, beforeExit) {
+  var port = test.get_port();
   var n = 0;
-  var check = new tcp_check.TCPCheck({'ip_address': '999.99.99.99', 'port': 1234, 'type': tcp_check.config.types.CONNECTION_CHECK,
+  var check = new tcp_check.TCPCheck({'ip_address': '999.99.99.99', 'port': port, 'type': tcp_check.config.types.CONNECTION_CHECK,
                                      'timeout': 2000});
 
   check.run(function(result) {
@@ -46,8 +47,9 @@ exports['test invalid ip address'] = function(assert, beforeExit) {
 };
 
 exports['test check connection failure'] = function(assert, beforeExit) {
+  var port = test.get_port();
   var n = 0;
-  var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': 12314, 'type': tcp_check.config.types.CONNECTION_CHECK});
+  var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcp_check.config.types.CONNECTION_CHECK});
 
   check.run(function(result) {
     n++;
@@ -61,11 +63,12 @@ exports['test check connection failure'] = function(assert, beforeExit) {
 };
 
 exports['test check connection success'] = function(assert, beforeExit) {
+  var port = test.get_port();
   var n = 0;
 
-  test.run_test_tcp_server('127.0.0.1', 1212, response_dictionary, function() {
+  test.run_test_tcp_server('127.0.0.1', port, response_dictionary, function() {
     var self = this;
-    var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': 1212, 'type': tcp_check.config.types.CONNECTION_CHECK});
+    var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcp_check.config.types.CONNECTION_CHECK});
 
     check.run(function(result) {
       n++;
@@ -82,11 +85,12 @@ exports['test check connection success'] = function(assert, beforeExit) {
 };
 
 exports['test check response regex match error'] = function(assert, beforeExit) {
+  var port = test.get_port();
   var n = 0;
 
-  var tcp_server = test.run_test_tcp_server('127.0.0.1', 1213, response_dictionary, function() {
+  var tcp_server = test.run_test_tcp_server('127.0.0.1', port, response_dictionary, function() {
     var self = this;
-    var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': 1213, 'type': tcp_check.config.types.RESPONSE_REGEX_MATCH,
+    var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcp_check.config.types.RESPONSE_REGEX_MATCH,
                                         'match_value': /blah/i});
 
     check.run(function(result) {
