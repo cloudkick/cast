@@ -149,7 +149,7 @@ exports['in array compare function'] = function(assert, beforeExit ) {
   var haystack = [ ['item 1', 'a'], ['item 2', 'b'], ['item 3', 'c'], ['item 4', 'd'] ];
   var compare_function = function(item, needle) {
     return item[1] === needle;
-  }
+  };
 
   assert.equal(misc.in_array('a', haystack, null, compare_function), true);
   assert.equal(misc.in_array('not in array', haystack, null, compare_function), false);
