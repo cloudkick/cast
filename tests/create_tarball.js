@@ -22,6 +22,8 @@ var fs = require('fs');
 var test = require('util/test');
 var extract = require('util/tarball');
 
+var sprintf = require('extern/sprintf').sprintf;
+
 var cwd = process.cwd();
 var data_path = path.join(cwd, 'tests/data');
 var bundle_path = path.join(data_path, 'test foo bar');
@@ -34,6 +36,9 @@ var tarball_path2 = path.join(data_path, tarball_name2);
 
 var tarball_name3 = 'foo-bar-1.0.3.tar.gz';
 var tarball_path3 = path.join(data_path, tarball_name3);
+
+var tarball_name4 = 'foo-bar-1.0.4.tar.gz';
+var tarball_path4 = path.join(data_path, tarball_name4);
 
 exports['test invalid source path'] = function(assert, beforeExit) {
   var n = 0;
@@ -65,7 +70,7 @@ exports['test invalid target path'] = function(assert, beforeExit) {
 
 exports['test create tarball'] = function(assert, beforeExit) {
   var n = 0;
-
+  
   test.file_delete(tarball_path1);
   assert.equal(test.file_exists(tarball_path1), false);
   extract.create_tarball(bundle_path, data_path, tarball_name1, false, function(error) {
@@ -126,6 +131,38 @@ exports['test create tarball delete_if_exists works'] = function(assert, beforeE
     assert.equal(n, 2, 'Callbacks called');
 
     test.file_delete(tarball_path3);
+  });
+};
+
+exports['test all the files in archive are stored in a top-level directory with the same name as tarball'] = function(assert, beforeExit) {
+   var n = 0;
+   var root_directory_name = tarball_name4.replace('.tar.gz', '');
+
+  test.file_delete(tarball_path4);
+  assert.equal(test.file_exists(tarball_path4), false);
+  extract.create_tarball(bundle_path, data_path, tarball_name4, false, function(error) {
+    n++;
+    assert.equal(error, undefined);
+    assert.equal(test.file_exists(tarball_path4), true);
+    
+    extract.get_tarball_file_list(tarball_path4, function(error, file_list) {
+      n++;
+      
+      var regexp = new RegExp(sprintf('%s/', root_directory_name));
+
+      assert.equal(error, undefined);
+      assert.length(file_list, 15); 
+      
+      for (var i = 0; i < file_list.length; i++) {
+        assert.match(file_list[i], regexp);
+      }
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(n, 2, 'Callbacks called');
+
+    test.file_delete(tarball_path4);
   });
 };
 
