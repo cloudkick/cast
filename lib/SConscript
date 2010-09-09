@@ -31,6 +31,7 @@ src = {
               'version.js',
               'tail.js',
               'tarball.js',
+              'templates.js',
               'terminal.js'],
         'cast-agent':
             [ 'entry.js'],
