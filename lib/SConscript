@@ -39,7 +39,9 @@ src = {
             [ 'entry.js',
               'commands/version.js',
               'commands/bundles/create.js',
-              'commands/services/tail.js'],
+              'commands/bundles/upload.js',
+              'commands/services/tail.js',
+              'commands/remotes/add.js'],
         'health':
             ['index.js',
              'checks/http.js',
