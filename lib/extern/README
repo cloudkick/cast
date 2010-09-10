@@ -16,7 +16,7 @@ expresso 8805504fbb05c292 (August 11, 2010)
   http://github.com/visionmedia/expresso
   License: MIT
   Testing Framework for test cases
-  
+
 uuid d0cad69cbf3e1bc31f3f (August 29, 2010)
   http://github.com/tlrobinson/narwhal/tree/master/lib/
   License: BSD
@@ -29,7 +29,7 @@ jspack 4753fb1a8de (May 22, 2010)
 node-jscoverage 0d4608a6b4275b (May 25, 2010)
   License: GPL v2
   Generates reports on test coverage of the agent.
-  Note: Due to GPL v2 license, we should remove this from release tarballs, 
+  Note: Due to GPL v2 license, we should remove this from release tarballs,
   it is a utility for developers, not something we are 'based on'.
 
 node-jslint 9ee0f74b8a8 (July 20, 2010)
@@ -55,8 +55,8 @@ stacktrace fe9d84729c5 (May 29, 2010)
   http://github.com/emwendelin/javascript-stacktrace
   License: BSD
   Utility function to make a stack trace. Slightly modified to use CommonJS style exports.
-  
-strobe-templates 217b31fcb9721c88f749 (August 31, 2010)
-  http://github.com/skid/strobe-templates
+
+strobe-templates ba66628009c0ed4145ba (September 10, 2010)
+  http://github.com/Kami/strobe-templates (forked from http://github.com/Kami/strobe-templates)
   License: MIT
   A clone of django templates in node.js
