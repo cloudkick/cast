@@ -19,6 +19,7 @@ var misc = require('util/misc');
 var exec = require('child_process').exec;
 var async = require('extern/async');
 var fs =  require('fs');
+var test = require('util/test');
 
 exports['object merge'] = function(assert, beforeExit) {
   var a = {foo: 1};
@@ -109,7 +110,9 @@ exports['templating to a tree'] = function(assert, beforeExit)
     }
   };
 
-  misc.template_to_tree(".tests/misc/template", tmpl, function() {
+  misc.template_to_tree(".tests/misc/template", tmpl, false, function(error) {
+    assert.equal(error, undefined);
+
     fs.stat('.tests/misc/template', function(err, stats) {
       assert.ifError(err);
       assert.ok(stats.isDirectory());
@@ -124,7 +127,39 @@ exports['templating to a tree'] = function(assert, beforeExit)
   });
 
   beforeExit(function() {
-    //assert.equal(2, n, 'Checks ran');
+    assert.equal(2, n, 'Checks ran');
+  });
+};
+
+exports['templating to a tree throws exception on existing directory'] = function(assert, beforeExit)
+{
+  var n = 0;
+
+  var tmpl = {
+    afile: "simple file",
+    subdir: {
+      "subfile": "subfile contents"
+    }
+  };
+
+  misc.template_to_tree(".tests/misc/template1", tmpl, false, function(error) {
+    n++;
+    assert.equal(error, undefined);
+
+    misc.template_to_tree(".tests/misc/template1", tmpl, false, function(error) {
+      n++;
+      assert.equal(error.errno, 17);
+      assert.match(error.message, /eexist/i);
+
+      misc.template_to_tree(".tests/misc/template1", tmpl, true, function(error) {
+        n++;
+        assert.equal(error, undefined);
+      });
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(3, n, 'Callbacks called');
   });
 };
 
