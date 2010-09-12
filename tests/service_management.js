@@ -23,6 +23,8 @@ var ps = require('util/pubsub');
 var misc = require('util/misc');
 var async = require('extern/async');
 
+var BASE_TEMPLATE;
+
 var runit;
 
 function getServer()
@@ -62,7 +64,7 @@ exports["service management"] = function(assert, beforeExit) {
 
   // Create a basic services layout
   tasks.push(function(callback) {
-    svcdir.create_service_layout('foo', function(err) {
+    svcdir.create_service_layout('foo', BASE_TEMPLATE, function(err) {
       n++;
       if (err) {
         return callback(err);
@@ -370,6 +372,7 @@ exports.setup = function(done) {
     async.apply(exec, "mkdir .tests/services/available"),
     async.apply(exec, "mkdir .tests/services/enabled"),
     function(callback) {
+      BASE_TEMPLATE = require('runit/templates/base').BASE_TEMPLATE;
       runit = require('runit/services');
       require('services/runit').load();
       ps.emit(ps.AGENT_STATE_START);
