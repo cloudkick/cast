@@ -74,7 +74,6 @@ exports['expanduser with HOME unset hack'] = function(assert, beforeExit) {
   });
 };
 
-
 exports['missing getpwnam for expanduser'] = function(assert, beforeExit) {
   var n = 0;
   var out;
@@ -236,6 +235,14 @@ exports['get valid bundle name'] = function(assert, beforeExit) {
   assert.equal(misc.get_valid_bundle_name('ABC DEFG HIJ'), 'abc_defg_hij');
   assert.equal(misc.get_valid_bundle_name('test-app-name 1.0'), 'test-app-name_10');
   assert.equal(misc.get_valid_bundle_name('NodeJS Test app'), 'nodejs_test_app');
+};
+
+exports['is valid bundle version'] = function(assert, beforeExit) {
+  assert.equal(misc.is_valid_bundle_version('1.0.1'), true);
+  assert.equal(misc.is_valid_bundle_version('20100810'), true);
+  assert.equal(misc.is_valid_bundle_version('20100912.d261151fad5b2ce95a2281a70fed2c6dab221731'), true);
+  assert.equal(misc.is_valid_bundle_version('1.0'), false);
+  assert.equal(misc.is_valid_bundle_version('a.b.c'), false);
 };
 
 exports.setup = function(done) {
