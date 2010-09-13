@@ -7,6 +7,11 @@ async b57390563ddb3786e (August 16, 2010)
   License: MIT
   Common patterns for asynchronous code in node
 
+closure-linter r4 (September 2, 2010)
+  http://code.google.com/p/closure-linter/
+  License: Apache 2.0
+  Checks code style
+
 clutch 42373a7a518739 (July 4, 2010)
   http://github.com/clement/clutch
   License: MIT
@@ -26,6 +31,7 @@ jspack 4753fb1a8de (May 22, 2010)
   http://github.com/pgriess/node-jspack
   License: MIT
   Packing and Unpacking of binary data structures
+
 node-jscoverage 0d4608a6b4275b (May 25, 2010)
   License: GPL v2
   Generates reports on test coverage of the agent.
