@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
+var fs = require('fs');
 var exec = require('child_process').exec;
+var path = require('path');
 
 var async = require('extern/async');
+
+var ps = require('util/pubsub');
 
 var deployment;
 
@@ -64,12 +68,36 @@ exports['test get available instances'] = function(assert, beforeExit) {
   });
 };
 
-exports.setup = function(done) {
-  require('util/pubsub').ensure("config", function() {
-    deployment = require('deployment');
+exports['test create service'] = function(assert, beforeExit) {
+  var n = 0;
 
-    exec('mkdir -p .tests/data_root/applications', function () {
-      done();
-    });
+  var service_path = '.tests/services/available/test_bundle_name@1.0.0-0';
+  deployment.create_service('test_bundle_name@1.0.0-0', '/path/to/instance', 'entry.js', 'nodejs', function(error) {
+    n++;
+
+    assert.equal(error, undefined);
+    assert.isDefined(fs.statSync(service_path).ino);
+    assert.isDefined(fs.statSync(path.join(service_path, 'run')).ino);
   });
+
+  beforeExit(function(){
+    assert.equal(1, n, 'Callbacks called');
+  });
+};
+
+exports.setup = function(done) {
+  async.series([
+    async.apply(ps.ensure, "config"),
+    async.apply(exec, "mkdir -p .tests/services"),
+    async.apply(exec, "mkdir -p .tests/services/available"),
+    async.apply(exec, "mkdir -p .tests/services/enabled"),
+    async.apply(exec, "mkdir -p .tests/data_root/applications"),
+
+    function(callback) {
+      deployment = require('deployment');
+
+      callback();
+    },
+  ],
+  done);
 };

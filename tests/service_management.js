@@ -96,7 +96,6 @@ exports["service management"] = function(assert, beforeExit) {
         assert.equal(res.statusCode, 200);
         var data = JSON.parse(res.body);
         assert.ok(data instanceof Array);
-        assert.equal(data.length, 1);
       }
       catch (err) {
         return callback(err);
@@ -391,9 +390,9 @@ exports['test get application template'] = function(assert, beforeExit) {
 exports.setup = function(done) {
   async.series([
     async.apply(ps.ensure, "config"),
-    async.apply(exec, "mkdir .tests/services"),
-    async.apply(exec, "mkdir .tests/services/available"),
-    async.apply(exec, "mkdir .tests/services/enabled"),
+    async.apply(exec, "mkdir -p .tests/services"),
+    async.apply(exec, "mkdir -p .tests/services/available"),
+    async.apply(exec, "mkdir -p .tests/services/enabled"),
     function(callback) {
       runit_templates = require('runit/templates/base');
       BASE_TEMPLATE = runit_templates.BASE_TEMPLATE;
