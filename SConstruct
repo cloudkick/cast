@@ -65,11 +65,13 @@ lenv = env.Clone()
 lenv["ENV"]["PYTHONPATH"] = lenv.Dir('lib/extern/closure-linter').get_abspath() + ":" + lenv["ENV"].get("PYTHONPATH", "")
 lenv["GJSLINT"] = "python -m closure_linter.gjslint"
 lenv["GJSFIXSTYLE"] = "python -m closure_linter.fixjsstyle"
-gjslint = [lenv.Command(pjoin('.gjslint/', str(x))+".gjslint", x, ["$GJSLINT $SOURCE || exit 0"]) for x in source]
-gfixjsstyle = [lenv.Command(pjoin('.gfixjsstyle/', str(x))+".gfixjsstyle", x, ["$GJSFIXSTYLE $SOURCE"]) for x in source]
-lenv.AlwaysBuild(jslint)
+gjslint = lenv.Command(".gjslint", source, ["$GJSLINT "+ " ".join([str(x) for x in source])])
+gfixjsstyle = lenv.Command(".gfixjsstyle", source, ["$GJSFIXSTYLE "+ " ".join([str(x) for x in source])])
+
+lenv.AlwaysBuild(gjslint)
+lenv.AlwaysBuild(gfixjsstyle)
 lenv.Alias('gjslint', gjslint)
-lenv.Alias('gfixjsstyle', gjslint)
+lenv.Alias('gfixjsstyle', gfixjsstyle)
 
 # dox just didn't work well when I last tried it, the JSdoc -> Markdown code was recursive and buggy.
 #env['JSDOX'] = "$NODE lib/extern/dox/bin/dox"
