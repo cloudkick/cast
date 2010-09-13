@@ -23,6 +23,7 @@ var ps = require('util/pubsub');
 var misc = require('util/misc');
 var async = require('extern/async');
 
+var runit_templates;
 var BASE_TEMPLATE;
 
 var runit;
@@ -365,6 +366,28 @@ exports["service management"] = function(assert, beforeExit) {
   });
 };
 
+exports['test get application template'] = function(assert, beforeExit) {
+  var n = 0;
+  runit_templates.get_application_template('test instance', '/path/to/instance', 'entry.js', 'unknownapplicationtype', function(error, template) {
+    n++;
+
+    assert.notEqual(error, undefined);
+    assert.match(error.message, /invalid application type/i);
+  });
+
+  runit_templates.get_application_template('test instance', '/path/to/instance', 'entry.js', 'nodejs', function(error, template) {
+    n++;
+
+    assert.equal(error, undefined);
+    assert.isDefined(template.run);
+    assert.isDefined(template.finish);
+    assert.isDefined(template.down);
+    assert.isDefined(template.log.run);
+    assert.isDefined(template.log.config);
+    assert.isDefined(template.log.main);
+  });
+};
+
 exports.setup = function(done) {
   async.series([
     async.apply(ps.ensure, "config"),
@@ -372,7 +395,8 @@ exports.setup = function(done) {
     async.apply(exec, "mkdir .tests/services/available"),
     async.apply(exec, "mkdir .tests/services/enabled"),
     function(callback) {
-      BASE_TEMPLATE = require('runit/templates/base').BASE_TEMPLATE;
+      runit_templates = require('runit/templates/base');
+      BASE_TEMPLATE = runit_templates.BASE_TEMPLATE;
       runit = require('runit/services');
       require('services/runit').load();
       ps.emit(ps.AGENT_STATE_START);
