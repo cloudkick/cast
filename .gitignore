@@ -7,3 +7,4 @@ lib-cov
 *-h1
 lib/extern/node-jscoverage/*
 .tests
+*.pyc

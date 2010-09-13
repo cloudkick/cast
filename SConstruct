@@ -60,6 +60,17 @@ env.AlwaysBuild(jslint)
 
 env.Alias('jslint', jslint)
 
+lenv = env.Clone()
+
+lenv["ENV"]["PYTHONPATH"] = lenv.Dir('lib/extern/closure-linter').get_abspath() + ":" + lenv["ENV"].get("PYTHONPATH", "")
+lenv["GJSLINT"] = "python -m closure_linter.gjslint"
+lenv["GJSFIXSTYLE"] = "python -m closure_linter.fixjsstyle"
+gjslint = [lenv.Command(pjoin('.gjslint/', str(x))+".gjslint", x, ["$GJSLINT $SOURCE || exit 0"]) for x in source]
+gfixjsstyle = [lenv.Command(pjoin('.gfixjsstyle/', str(x))+".gfixjsstyle", x, ["$GJSFIXSTYLE $SOURCE"]) for x in source]
+lenv.AlwaysBuild(jslint)
+lenv.Alias('gjslint', gjslint)
+lenv.Alias('gfixjsstyle', gjslint)
+
 # dox just didn't work well when I last tried it, the JSdoc -> Markdown code was recursive and buggy.
 #env['JSDOX'] = "$NODE lib/extern/dox/bin/dox"
 #docscmd = env.Command('cast-api-docs.html', allsource, "$JSDOX -p -t 'Cloudkick Cast' "+ " ".join([x.get_path() for x in source]) + ">$TARGET")
