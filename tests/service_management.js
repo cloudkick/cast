@@ -37,7 +37,7 @@ function getServer()
 exports["service management"] = function(assert, beforeExit) {
   var n = 0;
   var tasks = [];
-  var svcdir = new runit.RunitServiceDirectory('.tests/services');
+  var svcdir = new runit.RunitServiceDirectory('.tests/data_root/services');
 
   // Add a bunch of tasks
   // These all happen serially in the order they are added
@@ -76,7 +76,7 @@ exports["service management"] = function(assert, beforeExit) {
 
   tasks.push(function(callback) {
     var fakerun_path = path.join(__dirname, 'fake_service', 'run');
-    exec('cp "' + fakerun_path + '" .tests/services/available/foo/run', function(err) {
+    exec('cp "' + fakerun_path + '" .tests/data_root/services/available/foo/run', function(err) {
       n++;
       if (err) {
         return callback(err);
@@ -342,7 +342,7 @@ exports["service management"] = function(assert, beforeExit) {
   });
 
   tasks.push(function(callback) {
-    path.exists('.tests/services/enabled/foo', function(exists) {
+    path.exists('.tests/data_root/services/enabled/foo', function(exists) {
       n++;
       try {
         assert.ok(!exists);
@@ -390,9 +390,9 @@ exports['test get application template'] = function(assert, beforeExit) {
 exports.setup = function(done) {
   async.series([
     async.apply(ps.ensure, "config"),
-    async.apply(exec, "mkdir -p .tests/services"),
-    async.apply(exec, "mkdir -p .tests/services/available"),
-    async.apply(exec, "mkdir -p .tests/services/enabled"),
+    async.apply(exec, "mkdir -p .tests/data_root/services"),
+    async.apply(exec, "mkdir -p .tests/data_root/services/available"),
+    async.apply(exec, "mkdir -p .tests/data_root/services/enabled"),
     function(callback) {
       runit_templates = require('runit/templates/base');
       BASE_TEMPLATE = runit_templates.BASE_TEMPLATE;

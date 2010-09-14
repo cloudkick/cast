@@ -71,7 +71,7 @@ exports['test get available instances'] = function(assert, beforeExit) {
 exports['test create service'] = function(assert, beforeExit) {
   var n = 0;
 
-  var service_path = '.tests/services/available/test_bundle_name@1.0.0-0';
+  var service_path = '.tests/data_root/services/available/test_bundle_name@1.0.0-0';
   deployment.create_service('test_bundle_name@1.0.0-0', '/path/to/instance', 'entry.js', 'nodejs', function(error) {
     n++;
 
@@ -88,9 +88,9 @@ exports['test create service'] = function(assert, beforeExit) {
 exports.setup = function(done) {
   async.series([
     async.apply(ps.ensure, "config"),
-    async.apply(exec, "mkdir -p .tests/services"),
-    async.apply(exec, "mkdir -p .tests/services/available"),
-    async.apply(exec, "mkdir -p .tests/services/enabled"),
+    async.apply(exec, "mkdir -p .tests/data_root/services"),
+    async.apply(exec, "mkdir -p .tests/data_root/services/available"),
+    async.apply(exec, "mkdir -p .tests/data_root/services/enabled"),
     async.apply(exec, "mkdir -p .tests/data_root/applications"),
 
     function(callback) {
