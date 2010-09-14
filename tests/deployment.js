@@ -28,43 +28,60 @@ var deployment;
 exports['test get available instances'] = function(assert, beforeExit) {
   var n = 0;
 
-  deployment.get_available_instances('test_bundle_name', function(error, instances) {
-    n++;
-
-    assert.equal(error, undefined);
-    assert.length(instances, 0);
-  });
-
   async.series([
-    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle@1.0.0-0'),
-    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle@1.0.0-1'),
-    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle@1.0.0-2'),
-    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle@1.0.1-0'),
-    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle@1.0.1-1')
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.0-0'),
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.0-1'),
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.0-2'),
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.1-0'),
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.1-1'),
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/bar_foo_bundle/bar_foo_bundle@1.0.0-0')
   ],
 
   function(error) {
     assert.equal(error, undefined);
 
-    deployment.get_available_instances('test_bundle_name', function(error, instances) {
+    deployment.get_available_instances('test_bundle_name', 'all', function(error, instances) {
+      n++;
+
+      assert.notEqual(error, undefined);
+      assert.match(error.message, /ENOENT/i);
+    });
+
+    deployment.get_available_instances('foo_bar_bundle', 'all', function(error, instances) {
+      n++;
+
+      assert.equal(error, undefined);
+      assert.length(instances, 5);
+      assert.deepEqual(instances[0], [ 'foo_bar_bundle@1.0.0', 0 ]);
+      assert.deepEqual(instances[1], [ 'foo_bar_bundle@1.0.1', 0 ]);
+    });
+
+    deployment.get_available_instances('foo_bar_bundle', '1.0.1', function(error, instances) {
+      n++;
+
+      assert.equal(error, undefined);
+      assert.length(instances, 2);
+      assert.deepEqual(instances[0], [ 'foo_bar_bundle@1.0.1', 0 ]);
+      assert.deepEqual(instances[1], [ 'foo_bar_bundle@1.0.1', 1 ]);
+    });
+
+    deployment.get_available_instances('foo_bar_bundle', 'unknownversion', function(error, instances) {
       n++;
 
       assert.equal(error, undefined);
       assert.length(instances, 0);
     });
 
-    deployment.get_available_instances('foo_bar_bundle@1.0.0', function(error, instances) {
+    deployment.get_available_instances('bar_foo_bundle', 'all', function(error, instances) {
       n++;
-
       assert.equal(error, undefined);
-      assert.length(instances, 3);
-      assert.deepEqual(instances[0], [ 'foo_bar_bundle@1.0.0', 0 ]);
-      assert.deepEqual(instances[1], [ 'foo_bar_bundle@1.0.0', 1 ]);
+      assert.length(instances, 1);
+      assert.deepEqual(instances[0], [ 'bar_foo_bundle@1.0.0', 0 ]);
     });
   });
 
   beforeExit(function(){
-    assert.equal(3, n, 'Callbacks called');
+    assert.equal(5, n, 'Callbacks called');
   });
 };
 
