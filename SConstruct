@@ -52,6 +52,8 @@ Export("env")
 source = SConscript("lib/SConscript")
 
 testsource = env.Glob("tests/*.js") + env.Glob("tests/checks/*.js")
+skiptest = ["tests/service_management.js"]
+testsource = filter(lambda x: str(x) not in skiptest, testsource)
 
 allsource = testsource + source
 env["JSLINT"] = "$NODE lib/extern/node-jslint/bin/jslint.js"
