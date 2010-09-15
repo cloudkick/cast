@@ -46,4 +46,7 @@ Hacking & Code Style notes
  * Use 'err' and 'callback' for the names of error variables and 
    callback functions respectively.
 
+ * When exporting symbols, attach them directly to the exports object,
+   and attempt to place all of the local functions in a file at the top
+   of a file.
 
