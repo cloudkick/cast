@@ -19,18 +19,29 @@ var async = require('extern/async');
 var fs =  require('fs');
 var test = require('util/test');
 var certgen = require('security/certgen');
+var exec = require('child_process').exec;
+var misc = require('util/misc');
 
-exports['create selfsigned cert'] = function(assert, beforeExit) {
+exports['create selfsigned cert'] = function(assert, beforeExit)
+{
   var n = 0;
-
-  certgen.selfsigned('testhostnamerare', '.tests/certs/t.key', '.tests/certs/t.crt', function(err) {
-    assert.equal(null, err, 'no errors from cert generation');
-    console.log('ssl shit worked');
+  var hostname = 'testhostnamerare'
+  certgen.selfsigned(hostname,
+                    '.tests/certs/t.key',
+                    '.tests/certs/t.crt',
+                    function(err)
+  {
     n++;
-  })
+    assert.equal(null, err, 'no errors from cert generation');
+    exec("openssl x509 -noout -subject -in .tests/certs/t.crt", function(err, stdout, stderr) {
+      n++;
+      assert.equal(null, err, 'no errors from cert verification');
+      assert.equal("subject= /CN="+hostname, misc.trim(stdout));
+    });
+  });
 
   beforeExit(function() {
-    assert.equal(1, n, 'callbacks run');
+    assert.equal(2, n, 'callbacks run');
   });
 };
 
