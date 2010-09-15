@@ -56,10 +56,11 @@ skiptest = ["tests/service_management.js"]
 testsource = filter(lambda x: str(x) not in skiptest, testsource)
 
 allsource = testsource + source
-env["JSLINT"] = "$NODE lib/extern/node-jslint/bin/jslint.js"
-jslint = [env.Command(pjoin('.jslint/', str(x))+".jslint", x, ["$JSLINT $SOURCE || exit 0"]) for x in source]
-env.AlwaysBuild(jslint)
 
+env["JSLINT"] = "$NODE lib/extern/node-jslint/bin/jslint.js"
+jslint = env.Command(".xjslint", source, ["$JSLINT "+ " ".join([str(x) for x in source])])
+
+env.AlwaysBuild(jslint)
 env.Alias('jslint', jslint)
 
 lenv = env.Clone()
