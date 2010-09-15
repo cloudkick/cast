@@ -25,7 +25,7 @@ var misc = require('util/misc');
 exports['create selfsigned cert'] = function(assert, beforeExit)
 {
   var n = 0;
-  var hostname = 'testhostnamerare'
+  var hostname = 'testhostnamerare' + misc.randstr(5);
   certgen.selfsigned(hostname,
                     '.tests/certs/t.key',
                     '.tests/certs/t.crt',
