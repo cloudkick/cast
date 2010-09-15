@@ -10,6 +10,7 @@ Cast's internals are structured around building RESTful APIs for all
 operations, so that all tasks can be scripted and more powerful tools
 can be built on top.
 
+
 Contributing to cast
 ====================
 
@@ -25,11 +26,24 @@ Cast is written mostly in Javascript, and we attempt to follow the Google
 Javascript coding and style conventions:
   <http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml>
 
-In addition, all code should pass jslint, which you can run like this:
+In addition, all code should pass jslint and Google Closure's Javascript 
+Lint, which you can run like this:
   $ scons jslint
+  $ scons gjslint
 
 Cast also uses extensive unit tests, which you can also run via scons:
   $ scons test
 
 If you are adding new features, please make sure they conform to the 
 styleguide, pass jslint, and have good test case coverage.
+
+
+Hacking & Code Style notes
+====================
+
+ * Be consistent!
+
+ * Use 'err' and 'callback' for the names of error variables and 
+   callback functions respectively.
+
+
