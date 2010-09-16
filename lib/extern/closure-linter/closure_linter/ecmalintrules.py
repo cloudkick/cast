@@ -68,7 +68,7 @@ class EcmaScriptLintRules(checkerbase.LintRulesBase):
   """
 
   # Static constants.
-  MAX_LINE_LENGTH = 80
+  MAX_LINE_LENGTH = 120
 
   MISSING_PARAMETER_SPACE = re.compile(r',\S')
 
