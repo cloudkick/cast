@@ -231,6 +231,16 @@ exports['array difference'] = function(assert, beforeExit) {
   assert.deepEqual(misc.array_difference(array2, array1), [ 'item 3', 'item 4' ]);
 };
 
+exports['filter paths'] = function(assert, beforeExit) {
+  var paths1 = [ 'foo/', 'bar/', 'foo.txt', 'bar/file.tar.gz', 'bar', 'foo/bar', 'foo/test.ini', 'dir/file.tar.gz' ];
+  var paths2 = [ 'foo/1.txt', 'foo/', 'foo.txt', 'bar/file.tar.gz', 'bar', 'bar', 'bar/', 'foo/bar', 'foo/test.ini',
+                'dir/file.tar.gz', 'dir/file.tar.gz', 'foo/', 'foo/bar/1' ];
+  var paths_filtered = [ 'bar', 'bar/', 'dir/file.tar.gz', 'foo.txt', 'foo/' ];
+
+  assert.deepEqual(misc.filter_repeated_paths(paths1), paths_filtered);
+  assert.deepEqual(misc.filter_repeated_paths(paths2), paths_filtered);
+};
+
 exports['get valid bundle name'] = function(assert, beforeExit) {
   assert.equal(misc.get_valid_bundle_name('ABC DEFG HIJ'), 'abc_defg_hij');
   assert.equal(misc.get_valid_bundle_name('test-app-name 1.0'), 'test-app-name_10');
