@@ -33,7 +33,11 @@ exports['test get available instances'] = function(assert, beforeExit) {
     async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.0-1'),
     async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.0-2'),
     async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.1-0'),
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.2-1'),
     async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.1-1'),
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.2-0'),
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.3-0'),
+    async.apply(exec, 'mkdir -p .tests/data_root/applications/foo_bar_bundle/foo_bar_bundle@1.0.3-2'),
     async.apply(exec, 'mkdir -p .tests/data_root/applications/bar_foo_bundle/bar_foo_bundle@1.0.0-0')
   ],
 
@@ -49,11 +53,18 @@ exports['test get available instances'] = function(assert, beforeExit) {
 
     deployment.get_available_instances('foo_bar_bundle', 'all', function(error, instances) {
       n++;
-
+      
       assert.equal(error, undefined);
-      assert.length(instances, 5);
+      assert.length(instances, 9);
       assert.deepEqual(instances[0], [ 'foo_bar_bundle@1.0.0', 0 ]);
       assert.deepEqual(instances[1], [ 'foo_bar_bundle@1.0.1', 0 ]);
+      assert.deepEqual(instances[2], [ 'foo_bar_bundle@1.0.2', 0 ]);
+      assert.deepEqual(instances[3], [ 'foo_bar_bundle@1.0.3', 0 ]);
+      assert.deepEqual(instances[4], [ 'foo_bar_bundle@1.0.0', 1 ]);
+      assert.deepEqual(instances[5], [ 'foo_bar_bundle@1.0.1', 1 ]);
+      assert.deepEqual(instances[6], [ 'foo_bar_bundle@1.0.2', 1 ]);
+      assert.deepEqual(instances[7], [ 'foo_bar_bundle@1.0.0', 2 ]);
+      assert.deepEqual(instances[8], [ 'foo_bar_bundle@1.0.3', 2 ]);
     });
 
     deployment.get_available_instances('foo_bar_bundle', '1.0.1', function(error, instances) {
