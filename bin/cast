@@ -20,13 +20,32 @@
  * Wrapper around agent entry point.
  */
 var path = require('path');
-var root = path.dirname(__filename);
+var fs = require('fs');
 
-// in-place path
-require.paths.unshift(path.join(root, '../lib'));
-// installed path
-require.paths.unshift(path.join(root, '../lib/cast'));
+/**
+ * This detects if the entry file is a symlinked path, and tries to 
+ * insert the correct lib into the require.paths for eveyrthing to work correctly.
+ */
+function path_setup()
+{
+  var p =  __filename;
+  stat = fs.lstatSync(p);
+  if (stat.isSymbolicLink()) {
+    p = fs.readlinkSync(p);
+  }
+  var root = path.dirname(p);
 
-var client = require('cast-client/entry');
+  // in-place path
+  require.paths.unshift(path.join(root, '../lib'));
+  // installed path
+  require.paths.unshift(path.join(root, '../lib/cast'));
+}
 
-client.run();
+function main()
+{
+  path_setup();
+  var client = require('cast-client/entry');
+  client.run();
+}
+
+main();
