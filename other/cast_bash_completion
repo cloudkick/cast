@@ -1,0 +1,118 @@
+#
+# Licensed to Cloudkick, Inc ('Cloudkick') under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# Cloudkick licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Bash completion script for the cast client.
+
+_cast()
+{
+  local cur prev
+
+  CAST_PATH_NORMALIZED=$(echo "$CAST_PATH" | sed -e 's@/$@@g')
+  COMMANDS_PATH="$CAST_PATH_NORMALIZED/cast-client/commands"
+
+  if [ "$CAST_PATH" == "" ] || [ ! -d "$COMMANDS_PATH" ]; then
+    return 0
+  fi
+
+  cur=${COMP_WORDS[COMP_CWORD]}
+  prev=${COMP_WORDS[COMP_CWORD - 1]}
+
+  GLOBAL_COMMANDS=$(_get_global_commands)
+  NORMAL_COMMANDS=$(_get_normal_commands)
+
+  COMREPLY=()
+
+  case "$prev" in
+    *cast)
+      local commands
+
+      commands="${GLOBAL_COMMANDS} ${NORMAL_COMMANDS} help"
+      COMPREPLY=($( compgen -W "${commands}" -- $cur ))
+
+      return 0
+    ;;
+
+    help)
+      COMPREPLY=($( compgen -W "${GLOBAL_COMMANDS} ${NORMAL_COMMANDS}" -- $cur ))
+
+      return 0
+    ;;
+
+    *)
+      local sub_commands normal_commands
+
+      normal_commands=$(echo $NORMAL_COMMANDS | sed -e 's@\s$@@g' | tr ' ' ',')
+      _in_array $prev $normal_commands
+
+      if [ "$?" == 1 ]; then
+        return 0
+      fi
+
+      sub_commands=$(_get_sub_commands ${prev})
+      COMPREPLY=($( compgen -W "${sub_commands}" -- $cur ))
+
+      return 0
+    ;;
+  esac
+
+  return 0
+}
+
+function _in_array() {
+  local NEEDLE=$1
+  local HAYSTACK=$2
+
+  HAYSTACK=$(echo $HAYSTACK | tr ',' '\n')
+
+  for i in ${HAYSTACK[@]}
+  do
+    if [[ $i == $NEEDLE ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+_get_global_commands() {
+  find "$COMMANDS_PATH" -regex "${COMMANDS_PATH}\/[^\/]*\.js" | sed -e "s@${COMMANDS_PATH}/@@g" \
+                                                              | sed -e "s@.js@@g" | tr '\n' ' '
+}
+
+_get_normal_commands() {
+  find "$COMMANDS_PATH" -type d -regex "${COMMANDS_PATH}\/.*?" | sed -e "s@${COMMANDS_PATH}/@@g" \
+                                                               | tr '\n' ' '
+}
+
+_get_sub_commands() {
+  local command
+  command=$1
+
+  if [ -z "$command" ]; then
+    return
+  fi
+
+  SUB_COMMANDS=$(find "${COMMANDS_PATH}/${command}" -regex ".*\.js")
+  if [ "$?" != 0 ]; then
+    return
+  fi
+
+  echo "${SUB_COMMANDS}" | sed -e "s@${COMMANDS_PATH}/${command}/@@g" | sed -e "s@.js@@g" | tr '\n' ' '
+  return 0
+}
+
+complete -F _cast cast
