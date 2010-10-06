@@ -43,7 +43,7 @@ env['version_major'], env['version_minor'], env['version_patch'] = read_version(
 env['version_string'] = "%d.%d.%d"  % (env['version_major'], env['version_minor'], env['version_patch'])
 
 conf = Configure(env, custom_tests = {})
-conf.env['NODE'] = conf.env.WhereIs('node')
+conf.env['NODE'] = os.environ['NODE_BIN_PATH'] if (os.environ.get('NODE_BIN_PATH', None)) else conf.env.WhereIs('node')
 conf.env.AppendUnique(RPATH = conf.env.get('LIBPATH'))
 env = conf.Finish()
 
