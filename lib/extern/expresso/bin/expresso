@@ -343,7 +343,9 @@ assert.response = function(server, req, res, msg){
     // Create client
     if (!server.fd) {
         server.listen(server.__port = port++, '127.0.0.1');
-        server.client = http.createClient(server.__port);
+        var util_http = require('util/http');
+        server.client = util_http._base_client(server.__port)
+        //server.client = http.createClient(server.__port);
     }
 
     // Issue request
