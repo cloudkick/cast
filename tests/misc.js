@@ -251,8 +251,9 @@ exports['is valid bundle version'] = function(assert, beforeExit) {
   assert.equal(misc.is_valid_bundle_version('1.0.1'), true);
   assert.equal(misc.is_valid_bundle_version('20100810'), true);
   assert.equal(misc.is_valid_bundle_version('20100912.d261151fad5b2ce95a2281a70fed2c6dab221731'), true);
-  assert.equal(misc.is_valid_bundle_version('1.0'), false);
-  assert.equal(misc.is_valid_bundle_version('a.b.c'), false);
+  assert.equal(misc.is_valid_bundle_version('1.0'), true);
+  assert.equal(misc.is_valid_bundle_version('a.b.c'), true);
+  assert.equal(misc.is_valid_bundle_version('a.b@c'), false);
 };
 
 exports.setup = function(done) {
