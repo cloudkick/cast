@@ -252,7 +252,7 @@ exports['test sub-command help'] = function(assert, beforeExit) {
 
   assert.equal(stdout_data.length, 0);
   parser.parse(['bin', 'file', 'help', 'services', 'list']);
-  assert.match(stdout_data.join(''), /.*help for services list.*/i);
+  assert.match(stdout_data.join(''), /.*services list.*/i);
 
   beforeExit(function() {
     stdout_data = [];
