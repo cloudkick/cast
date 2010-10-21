@@ -60,7 +60,7 @@ var growl = false;
  * Server port.
  */
 
-var port = 5555;
+var port = get_random_number(2000, 65500);
 
 /**
  * Watch mode.
@@ -793,6 +793,10 @@ function notify(msg) {
     if (growl) {
         childProcess.exec('growlnotify -name Expresso -m "' + msg + '"');
     }
+}
+
+function get_random_number(lower_bound, upper_bound) {
+  return parseInt((Math.random() * (upper_bound - lower_bound) + lower_bound), 10);
 }
 
 // Report uncaught exceptions
