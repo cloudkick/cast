@@ -33,7 +33,7 @@ exports['test invalid ip address'] = function(assert, beforeExit) {
   var port = test.get_port();
   var n = 0;
   var check = new tcp_check.TCPCheck({'ip_address': '999.99.99.99', 'port': port, 'type': tcp_check.config.types.CONNECTION_CHECK,
-                                     'timeout': 2000});
+                                     'idle_timeout': 2000});
 
   check.run(function(result) {
     n++;
@@ -54,7 +54,24 @@ exports['test check connection failure'] = function(assert, beforeExit) {
   check.run(function(result) {
     n++;
     assert.equal(result.status, CheckStatus.ERROR);
-    assert.match(result.details, /connection refused/i);
+    assert.match(result.details, /(connection refused|connection timed out|ETIMEDOUT)/i);
+  });
+
+  beforeExit(function() {
+    assert.equal(1, n, 'Check run callback called');
+  });
+};
+
+exports['test check connection timeout'] = function(assert, beforeExit) {
+  var port = test.get_port();
+  var n = 0;
+  var check = new tcp_check.TCPCheck({'ip_address': '74.125.39.104', 'port': port, 'type': tcp_check.config.types.CONNECTION_CHECK,
+                                      'connect_timeout': 2000});
+
+  check.run(function(result) {
+    n++;
+    assert.equal(result.status, CheckStatus.ERROR);
+    assert.match(result.details, /connection timed out/i);
   });
 
   beforeExit(function() {
@@ -73,7 +90,7 @@ exports['test check connection success'] = function(assert, beforeExit) {
     check.run(function(result) {
       n++;
       assert.equal(result.status, CheckStatus.SUCCESS);
-      assert.match(result.details, /successfully established/i);
+      assert.match(result.details, /established connection to /i);
 
       self.close();
     });
@@ -107,14 +124,15 @@ exports['test check response regex match error'] = function(assert, beforeExit) 
   });
 };
 
-/*exports['test check response regex match success'] = function(assert, beforeExit) {
+exports['test check response regex match success'] = function(assert, beforeExit) {
+  var port = test.get_port();
   var n = 0;
 
-  test.run_test_tcp_server('127.0.0.1', 1214, response_dictionary, function() {
-    var self = this;*/
-    //var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': 1214, 'type': tcp_check.config.types.RESPONSE_REGEX_MATCH,
-    //                                   'command': 'hello', 'match_value': /.*hello world.*/i});
-/*
+  test.run_test_tcp_server('127.0.0.1', port, response_dictionary, function() {
+    var self = this;
+    var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcp_check.config.types.RESPONSE_REGEX_MATCH,
+                                       'command': 'hello', 'match_value': /.*hello world.*/i});
+
     check.run(function(result) {
       n++;
       assert.equal(result.status, CheckStatus.SUCCESS);
@@ -127,4 +145,4 @@ exports['test check response regex match error'] = function(assert, beforeExit) 
   beforeExit(function() {
     assert.equal(1, n, 'Check run callback called');
   });
-};*/
+};
