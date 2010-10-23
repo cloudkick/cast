@@ -83,7 +83,7 @@ lenv.Alias('gfixjsstyle', gfixjsstyle)
 
 
 tests = sorted(testsource)
-testcmd = env.Command('.tests_run', tests, "$NODE lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
+testcmd = env.Command('.tests_run', tests, "rm -rf .tests/ ; $NODE lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
