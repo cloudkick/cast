@@ -15,6 +15,12 @@
  * limitations under the License.
  */
 
+/*
+ * @NOTICE: This test is currently broken in Node 0.2.4.
+ * It looks like buffering writes before connection (http://github.com/ry/node/commit/1d3142a882d08a5cd1bf221cf37e76692bd71205)
+ * broke it, but I didn't have much time to investigate deeper.
+ * When the issue is fixed, remove this comment.
+ */
 var sys = require('sys');
 var fs = require('fs');
 var crypto = require('crypto');
