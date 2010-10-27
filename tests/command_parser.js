@@ -44,7 +44,7 @@ exports['test command addition and removal works properly'] = function(assert, b
   assert.deepEqual(parser._normal_commands, {});
 };
 
-exports['test exception is thrown upon invalid switch'] = function(assert, beforeExit) {
+exports['test exception is thrown on "append" option with no value'] = function(assert, beforeExit) {
   var stdout_data = [];
   capture_write = function (string) {
     stdout_data.push(string);
@@ -56,11 +56,11 @@ exports['test exception is thrown upon invalid switch'] = function(assert, befor
   var n = 0;
 
   try {
-    parser.parse(['bin', 'file', 'services', 'list', '--foobar']);
+    parser.parse(['bin', 'file', 'services', 'list', '--filter']);
   }
   catch (error) {
     n++;
-    assert.match(error.message, /unrecognized switch/i);
+    assert.match(error.message, /requires an argument/i);
   }
 
   parser.parse(['bin', 'file', 'services', 'list', '--display-disabled']);
@@ -69,6 +69,30 @@ exports['test exception is thrown upon invalid switch'] = function(assert, befor
     assert.equal(1, n, 'Exceptions thrown');
   });
 };
+
+exports['test exception is thrown when "store_true" action is given key=value'] = function(assert, beforeExit) {
+  var stdout_data = [];
+  capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['hello', 'services/list', 'services/restart']);
+
+  var n = 0;
+
+  try {
+    parser.parse(['bin', 'file', 'services', 'list', '--display-disabled=foo']);
+  }
+  catch (error) {
+    n++;
+    assert.match(error.message, /does not take an argument/i);
+  }
+
+  beforeExit(function() {
+    assert.equal(1, n, 'Exceptions thrown');
+  });
+}
 
 exports['test exception is thrown upon invalid command name'] = function(assert, beforeExit) {
   var stdout_data = [];
@@ -161,7 +185,7 @@ exports['test exception is thrown on invalid command'] = function(assert, before
   });
 };
 
-exports['test exception is thrown on invalid argument passed in the key=value format'] = function(assert, beforeExit) {
+exports['test exception is thrown on too many arguments'] = function(assert, beforeExit) {
   var stdout_data = [];
   capture_write = function (string) {
     stdout_data.push(string);
@@ -173,11 +197,11 @@ exports['test exception is thrown on invalid argument passed in the key=value fo
   var n = 0;
 
   try {
-    parser.parse(['bin', 'file', 'services', 'list', '--foo=bar']);
+    parser.parse(['bin', 'file', 'services', 'list', 'localhost', '--foo=bar']);
   }
   catch (error) {
     n++;
-    assert.match(error.message, /invalid argument foo/i);
+    assert.match(error.message, /too many/i);
   }
 
   beforeExit(function() {

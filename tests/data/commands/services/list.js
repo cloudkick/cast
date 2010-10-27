@@ -3,7 +3,20 @@ var config = {
   'long_description': 'List services long',
   'required_arguments' : [],
   'optional_arguments': [['server', 'only list services on this server']],
-  'switches': [['display-disabled', 'also display the disabled services']]
+  'options': [
+    {
+      names: ['--display-disabled'],
+      dest: 'display-disabled',
+      action: 'store_true',
+      desc: 'Display disabled services'
+    },
+    {
+      names: ['--filter'],
+      dest: 'filter',
+      action: 'append',
+      desc: 'Apply a filter to the list of displayed services'
+    }
+  ]
 }
 
 function handle_command(args) {
