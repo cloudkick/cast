@@ -348,83 +348,95 @@ assert.response = function(server, req, res, msg){
         //server.client = http.createClient(server.__port);
     }
 
-    // Issue request
-    var timer,
-        client = server.client,
-        method = req.method || 'GET',
-        status = res.status || res.statusCode,
-        data = req.data || req.body,
-        streamer = req.streamer,
-        timeout = req.timeout || 0;
+    function do_request() {
+      // Issue request
+      var timer,
+          client = server.client,
+          method = req.method || 'GET',
+          status = res.status || res.statusCode,
+          data = req.data || req.body,
+          streamer = req.streamer,
+          timeout = req.timeout || 0;
 
-    var request = client.request(method, req.url, req.headers);
+      var request = client.request(method, req.url, req.headers);
 
-    // Timeout
-    if (timeout) {
-        timer = setTimeout(function(){
-            --server.__pending || server.close();
-            delete req.timeout;
-            assert.fail(msg + 'Request timed out after ' + timeout + 'ms.');
-        }, timeout);
+      // Timeout
+      if (timeout) {
+          timer = setTimeout(function(){
+              --server.__pending || server.close();
+              delete req.timeout;
+              assert.fail(msg + 'Request timed out after ' + timeout + 'ms.');
+          }, timeout);
+      }
+
+      if (data) request.write(data);
+      request.addListener('response', function(response){
+          response.body = '';
+          response.setEncoding('utf8');
+          response.addListener('data', function(chunk){ response.body += chunk; });
+          response.addListener('end', function(){
+              --server.__pending || server.close();
+              if (timer) clearTimeout(timer);
+
+              // Assert response body
+              if (res.body !== undefined) {
+                  assert.equal(
+                      response.body,
+                      res.body,
+                      msg + 'Invalid response body.\n'
+                          + '    Expected: ' + sys.inspect(res.body) + '\n'
+                          + '    Got: ' + sys.inspect(response.body)
+                  );
+              }
+
+              // Assert response status
+              if (typeof status === 'number') {
+                  assert.equal(
+                      response.statusCode,
+                      status,
+                      msg + colorize('Invalid response status code.\n'
+                          + '    Expected: [green]{' + status + '}\n'
+                          + '    Got: [red]{' + response.statusCode + '}')
+                  );
+              }
+
+              // Assert response headers
+              if (res.headers) {
+                  var keys = Object.keys(res.headers);
+                  for (var i = 0, len = keys.length; i < len; ++i) {
+                      var name = keys[i],
+                          actual = response.headers[name.toLowerCase()],
+                          expected = res.headers[name];
+                      assert.equal(
+                          actual,
+                          expected,
+                          msg + colorize('Invalid response header [bold]{' + name + '}.\n'
+                              + '    Expected: [green]{' + expected + '}\n'
+                              + '    Got: [red]{' + actual + '}')
+                      );
+                  }
+              }
+
+              // Callback
+              callback(response);
+          });
+      });
+      if (streamer) {
+        streamer(request);
+      } else {
+        request.end();
+      }
     }
 
-    if (data) request.write(data);
-    request.addListener('response', function(response){
-        response.body = '';
-        response.setEncoding('utf8');
-        response.addListener('data', function(chunk){ response.body += chunk; });
-        response.addListener('end', function(){
-            --server.__pending || server.close();
-            if (timer) clearTimeout(timer);
-
-            // Assert response body
-            if (res.body !== undefined) {
-                assert.equal(
-                    response.body,
-                    res.body,
-                    msg + 'Invalid response body.\n'
-                        + '    Expected: ' + sys.inspect(res.body) + '\n'
-                        + '    Got: ' + sys.inspect(response.body)
-                );
-            }
-
-            // Assert response status
-            if (typeof status === 'number') {
-                assert.equal(
-                    response.statusCode,
-                    status,
-                    msg + colorize('Invalid response status code.\n'
-                        + '    Expected: [green]{' + status + '}\n'
-                        + '    Got: [red]{' + response.statusCode + '}')
-                );
-            }
-
-            // Assert response headers
-            if (res.headers) {
-                var keys = Object.keys(res.headers);
-                for (var i = 0, len = keys.length; i < len; ++i) {
-                    var name = keys[i],
-                        actual = response.headers[name.toLowerCase()],
-                        expected = res.headers[name];
-                    assert.equal(
-                        actual,
-                        expected,
-                        msg + colorize('Invalid response header [bold]{' + name + '}.\n'
-                            + '    Expected: [green]{' + expected + '}\n'
-                            + '    Got: [red]{' + actual + '}')
-                    );
-                }
-            }
-
-            // Callback
-            callback(response);
-        });
-    });
-    if (streamer) {
-      streamer(request);
-    } else {
-      request.end();
+    if (!server.client.fd) {
+      process.nextTick(function() {
+        do_request();
+      });
     }
+    else {
+      do_request();
+    }
+
 };
 
 /**
