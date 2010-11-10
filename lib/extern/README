@@ -63,7 +63,7 @@ strobe-templates ba66628009c0ed4145ba (September 10, 2010)
   License: MIT
   A clone of django templates in node.js
 
-Nodelint 2fee61cd0eda9d613672 (November 10, 2010)
+Nodelint 789a23a1a83af4c81c0d (November 11, 2010)
   https://github.com/codenothing/Nodelint
   License: MIT
   Nodelint is a tool that uses the power of JSLINT to parse your js files for errors.

@@ -53,18 +53,6 @@ sample:
 use the full path to Nodelint binfile to use it in svn pre-commit hooks.
 
 
-Buffers
--------
-
-If you run Nodelint on a large project that produces many errors, you may run into a half finished report problem. This 
-happens because node exits before it's buffers finish writing, and can cause color confusion in the terminal. If you 
-experience this, just increase the buffer wait time, which is currently defaulted to 400 milliseconds.
-
-	Nodelint --Nodelint-pre-commit=git -b 1500
-
-The above will increase wait time to 1.5 seconds, a bit extreme, but will cover the time it takes for buffers to finish.
-
-
 Recommendation
 --------------
 

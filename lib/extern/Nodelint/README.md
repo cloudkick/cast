@@ -62,11 +62,6 @@ Just add the following line to your pre-commit bash script
 
 	Nodelint --Nodelint-pre-commit=git
 
-On large projects, if there are many errors, node might not have enough time to flush it's buffers which
-will result in partial output. To fix this, you will need to increase the buffer wait time(in milliseconds)
-before Nodelint exits
-
-	Nodelint --Nodelint-pre-commit=git --buffer-wait=1500 .
 
 Here's a quick sample
 
@@ -118,7 +113,7 @@ You can also configure into your binfiles a path to the jslint file you want to 
 
 	$ ./configure --jslint=/path/to/jslint.js
 	$ make
-	$ make intall
+	$ make install
 
 
 

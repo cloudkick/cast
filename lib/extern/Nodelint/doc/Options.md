@@ -9,7 +9,7 @@ Options.js contains the options object of default settings for Nodelint and JSLi
 
  - **-j FILE, --jslint=FILE:** Define a custom jslint file to use.
 
- - **-b TIME, --buffer-wait=TIME:** Define the number of milliseconds(TIME) to wait for buffer output to finish before killing the process. Useful for pre-commit hooks.
+ - **-e ENCODINGS, --encodings=ENCODINGS:** Define a comma-sparated list of encodings to check for.
 
  - **-c, --no-color:** Disable coloring of output.
 
@@ -48,9 +48,9 @@ _special
 --------
 
 The "_special" option is an object of options with special argument value handling.
-An example would be the buffer-wait handler that forces integer values:
+An example would be the following handler that forces integer values:
 
-	'buffer-wait': function( value ) {
+	'option-that-needs-integer': function( value ) {
 		return parseInt( value || 0, 10 );
 	}
 

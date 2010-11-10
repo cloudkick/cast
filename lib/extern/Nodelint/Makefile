@@ -14,4 +14,4 @@ install:
 	@node build/install.js
 
 test:
-	@node index.js --Nodelint-cli -l lint.out -vmipw .
+	@node build/test.js
