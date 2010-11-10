@@ -38,10 +38,6 @@ node-jscoverage 0d4608a6b4275b (May 25, 2010)
   Note: Due to GPL v2 license, we should remove this from release tarballs,
   it is a utility for developers, not something we are 'based on'.
 
-node-jslint 9ee0f74b8a8 (July 20, 2010)
-  License: WTFPL
-  Build tool to check code. Utility for developers.
-
 optparse cae3b09d324223 (June 28, 2010)
   http://github.com/jfd/optparse-js
   License: "MIT-style license"
@@ -66,3 +62,8 @@ strobe-templates ba66628009c0ed4145ba (September 10, 2010)
   http://github.com/Kami/strobe-templates (forked from http://github.com/Kami/strobe-templates)
   License: MIT
   A clone of django templates in node.js
+
+Nodelint 2fee61cd0eda9d613672 (November 10, 2010)
+  https://github.com/codenothing/Nodelint
+  License: MIT
+  Nodelint is a tool that uses the power of JSLINT to parse your js files for errors.

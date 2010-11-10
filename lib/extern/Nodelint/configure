@@ -1,0 +1,73 @@
+#! /usr/bin/env node
+/* vim:set ft=javascript : */
+/*
+ * Nodelint [VERSION]
+ * [DATE]
+ * A fork of tav's nodelint (http://github.com/tav/nodelint)
+ * Corey Hart @ http://www.codenothing.com
+ */
+var Nodelint = require('./lib/nodelint/Nodelint'),
+	Color = Nodelint.Color,
+	bold = Color.bold,
+	sys = require('sys'),
+	fs = require('fs'),
+	path = require('path'),
+	dist = __dirname + '/dist/',
+	rhome = /^\~\//,
+	rabs = /^\//,
+	cwd = process.cwd() + '/',
+	normalize = { jslint: true, prefix: true },
+	argv;
+
+
+// Creates the directory if it doesn't exist
+function mkdir( dir, callback ) {
+	path.exists( dir, function( exists ) {
+		if ( exists ) {
+			callback();
+		}
+		else {
+			fs.mkdir( dir, 0755, function( e ) {
+				if ( e ) {
+					sys.error( bold.red( e ) );
+					process.exit( 1 );
+				}
+
+				callback();
+			});
+		}
+	});
+}
+
+
+// Add configurables not in options
+Nodelint.extend( true, Nodelint.Options, {
+	jslint: null,
+	prefix: process.installPrefix,
+	libpath: null,
+	'no-Nodelint': false,
+	'no-jslint': false,
+	'no-libfile': false,
+
+	// For path normalization
+	_paths: {
+		jslint: true,
+		prefix: true,
+		libpath: true
+	}
+});
+
+
+// Store configuration
+mkdir( dist, function(){
+	// Borrow the main argument handler
+	argv = Nodelint.ARGV( Nodelint.Options, process.argv.slice( 1 ) );
+
+	// Stash configuration
+	fs.writeFile( dist + '.config', JSON.stringify( argv.options ), 'utf8', function( e ) {
+		if ( e ) {
+			sys.error( bold.red( e ) );
+			process.exit( 1 );
+		}
+	});
+});

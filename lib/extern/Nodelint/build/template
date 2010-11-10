@@ -1,0 +1,24 @@
+#!#{exec}
+/* vim:set ft=javascript : */
+/*
+ * Nodelint [VERSION]
+ * [DATE]
+ * A fork of tav's nodelint (http://github.com/tav/nodelint)
+ * Corey Hart @ http://www.codenothing.com
+ */
+var config = #{config}, options = global._NodelintOptions, i, k;
+if ( options ) {
+	for ( i in options ) {
+		if ( i == '_jslint' || i == '_shortcuts' ) {
+			config[ i ] = config[ i ] || {};
+			for ( k in options[ i ] ) {
+				config[ i ][ k ] = options[ i ][ k ];
+			}
+		}
+		else {
+			config[ i ] = options[ i ];
+		}
+	}
+}
+global._NodelintOptions = config;
+module.exports = require('#{path}');

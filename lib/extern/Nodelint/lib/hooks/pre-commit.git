@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Nodelint [VERSION]
+# [DATE]
+# A fork of tav's nodelint (http://github.com/tav/nodelint)
+# Corey Hart @ http://www.codenothing.com
+#
+
+# For running jslint only on files being committed
+Nodelint --Nodelint-pre-commit=git
+
+# For running jslint only on a subset of files
+Nodelint --Nodelint-pre-commit-all dir1/ dir2/ dir3/ file.js
+
+# For running jslint on the entire project
+Nodelint --Nodelint-pre-commit-all
