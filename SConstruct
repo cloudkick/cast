@@ -57,7 +57,7 @@ testsource = filter(lambda x: str(x) not in skiptest, testsource)
 
 allsource = testsource + source
 
-env["JSLINT"] = "$NODE lib/extern/node-jslint/bin/jslint.js"
+env["JSLINT"] = "NODE_PATH=lib/extern/ $NODE lib/extern/Nodelint/bin/jslint"
 jslint = env.Command(".xjslint", source, ["$JSLINT "+ " ".join([str(x) for x in source])])
 
 env.AlwaysBuild(jslint)
