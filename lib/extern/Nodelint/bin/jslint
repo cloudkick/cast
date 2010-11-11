@@ -6,7 +6,10 @@
  * A fork of tav's nodelint (http://github.com/tav/nodelint)
  * Corey Hart @ http://www.codenothing.com
  */
-var config = { verbose: true, 'show-passed': true, 'Nodelint-cli': true }, options = global._NodelintOptions, i, k;
+var config = { verbose: true, 'show-passed': true, 'Nodelint-cli': true,
+               jslint: 'jslint', _jslint: { node: true, browser: true,
+                                            eqeqeq: true, undef: true }},
+               options = global._NodelintOptions, i, k;
 if ( options ) {
 	for ( i in options ) {
 		if ( i == '_jslint' || i == '_shortcuts' ) {
