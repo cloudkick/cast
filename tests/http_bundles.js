@@ -72,22 +72,23 @@ exports['GET /bundles/./'] = verify_response_code('/bundles/./', 404);
 exports['PUT /bundles/foo/../'] = verify_response_code('/bundles/foo/../', 404, 'PUT', hello);
 
 // Uploading to a file in the bundles directory
-exports['PUT /bundles/baz/baz-1.0.tar.gz'] = verify_response_code('/bundles/baz/baz-1.0.tar.gz', 500, 'PUT', hello);
+exports['PUT /bundles/baz/baz@1.0.tar.gz'] = verify_response_code('/bundles/baz/baz@1.0.tar.gz', 500, 'PUT', hello);
 
 // Listing a file in the bundles directory
 exports['GET /bundles/baz/'] = verify_response_code('/bundles/baz/', 404);
 
 // Get a file that is actually a directory
-exports['GET /bundles/foo/foo-3.0.tar.gz'] = verify_response_code('/bundles/foo/foo-3.0.tar.gz', 404);
+exports['GET /bundles/foo/foo@3.0.tar.gz'] = verify_response_code('/bundles/foo/foo@3.0.tar.gz', 404);
 
 // Delete a file that is actually a directory
-exports['DELETE /bundles/foo/foo-3.0.tar.gz'] = verify_response_code('/bundles/foo/foo-3.0.tar.gz', 404);
+exports['DELETE /bundles/foo/foo@3.0.tar.gz'] = verify_response_code('/bundles/foo/foo@3.0.tar.gz', 404);
 
 
 // These tests must be executed in series and enforce this using util/pubsub
 
 exports['GET /bundles/'] = function(assert, beforeExit) {
-  // Make sure the 'foo' bundle is listed
+  // The result body is empty, because bundle "foo" does not have any extracted
+  // versions yet
   var n = 0;
   assert.response(getServer(), {
     url: '/bundles/',
@@ -98,8 +99,7 @@ exports['GET /bundles/'] = function(assert, beforeExit) {
     assert.equal(res.statusCode, 200);
     var data = JSON.parse(res.body);
     assert.ok(data instanceof Array);
-    assert.equal(data.length, 1);
-    assert.equal(data[0], "foo");
+    assert.equal(data.length, 0);
     ps.emit('bundles listed');
   });
   beforeExit(function(){
@@ -107,7 +107,30 @@ exports['GET /bundles/'] = function(assert, beforeExit) {
   });
 };
 
-exports['PUT foo-1.0.tar.gz'] = function(assert, beforeExit) {
+/*exports['GET /bundles/ after PUT'] = function(assert, beforeExit) {
+  // Make sure the 'foo' bundle is listed
+  var n = 0;
+  ps.on('foo@1.0.tar.gz listed', function() {
+    assert.response(getServer(), {
+      url: '/bundles/',
+      method: 'GET'
+    },
+    function(res) {
+      n++;
+      assert.equal(res.statusCode, 200);
+      var data = JSON.parse(res.body);
+      assert.ok(data instanceof Array);
+      assert.equal(data.length, 1);
+      assert.equal(data[0].name, "foo");
+      ps.emit('bundles listed');
+    });
+    beforeExit(function(){
+      assert.equal(1, n, 'Responses Received');
+    });
+  });
+};*/
+
+exports['PUT foo@1.0.tar.gz'] = function(assert, beforeExit) {
   var n = 0;
   fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
     n++;
@@ -115,7 +138,7 @@ exports['PUT foo-1.0.tar.gz'] = function(assert, beforeExit) {
     sha1.update(data);
 
     assert.response(getServer(), {
-      url: '/bundles/foo/foo-1.0.tar.gz',
+      url: '/bundles/foo/foo@1.0.tar.gz',
       method: 'PUT',
       data: data,
       headers: {'X-Content-SHA1': sha1.digest('base64')}
@@ -123,7 +146,7 @@ exports['PUT foo-1.0.tar.gz'] = function(assert, beforeExit) {
     function(res) {
       n++;
       assert.equal(res.statusCode, 204);
-      ps.emit('foo-1.0.tar.gz created');
+      ps.emit('foo@1.0.tar.gz created');
     });
   });
 
@@ -135,7 +158,7 @@ exports['PUT foo-1.0.tar.gz'] = function(assert, beforeExit) {
 exports['GET /bundles/foo/'] = function(assert, beforeExit) {
   // Make sure listing the bundle shows the file
   var n = 0;
-  ps.on('foo-1.0.tar.gz created', function() {
+  ps.on('foo@1.0.tar.gz created', function() {
     assert.response(getServer(), {
       url: '/bundles/foo/',
       method: 'GET'
@@ -146,8 +169,8 @@ exports['GET /bundles/foo/'] = function(assert, beforeExit) {
       var data = JSON.parse(res.body);
       assert.ok(data instanceof Array);
       assert.equal(data.length, 1);
-      assert.equal(data[0], "foo-1.0.tar.gz");
-      ps.emit('foo-1.0.tar.gz listed');
+      assert.equal(data[0], "foo@1.0.tar.gz");
+      ps.emit('foo@1.0.tar.gz listed');
     });
   });
 
@@ -156,19 +179,19 @@ exports['GET /bundles/foo/'] = function(assert, beforeExit) {
   });
 };
 
-exports['GET foo-1.0.tar.gz'] = function(assert, beforeExit) {
+exports['GET foo@1.0.tar.gz'] = function(assert, beforeExit) {
   // Make sure we can download the file and the contents are correct
   var n = 0;
-  ps.on('foo-1.0.tar.gz listed', function() {
+  ps.on('foo@1.0.tar.gz listed', function() {
     assert.response(getServer(), {
-      url: '/bundles/foo/foo-1.0.tar.gz',
+      url: '/bundles/foo/foo@1.0.tar.gz',
       method: 'GET'
     },
     function(res) {
       n++;
       assert.equal(200, res.statusCode);
       // TODO: Check body contents
-      ps.emit('foo-1.0.tar.gz read');
+      ps.emit('foo@1.0.tar.gz read');
     });
   });
 
@@ -177,32 +200,32 @@ exports['GET foo-1.0.tar.gz'] = function(assert, beforeExit) {
   });
 };
 
-exports['DELETE foo-1.0.tar.gz'] = function(assert, beforeExit) {
+exports['DELETE foo@1.0.tar.gz'] = function(assert, beforeExit) {
   // Make sure we can delete the file
   var n = 0;
-  ps.on('foo-1.0.tar.gz read', function() {
+  ps.on('foo@1.0.tar.gz read', function() {
     assert.response(getServer(), {
-      url: '/bundles/foo/foo-1.0.tar.gz',
+      url: '/bundles/foo/foo@1.0.tar.gz',
       method: 'DELETE'
     },
     function(res) {
       n++;
       assert.equal(res.statusCode, 204);
       assert.length(res.body, 0);
-      ps.emit('foo-1.0.tar.gz deleted');
+      ps.emit('foo@1.0.tar.gz deleted');
     });
   });
 
   // And that it gets deleted
-  ps.on('foo-1.0.tar.gz deleted', function() {
+  ps.on('foo@1.0.tar.gz deleted', function() {
     assert.response(getServer(), {
-      url: '/bundles/foo/foo-1.0.tar.gz',
+      url: '/bundles/foo/foo@1.0.tar.gz',
       method: 'GET'
     },
     function(res) {
       n++;
       assert.equal(404, res.statusCode);
-      ps.emit('foo-1.0.tar.gz verified deleted');
+      ps.emit('foo@1.0.tar.gz verified deleted');
     });
   });
 
@@ -211,11 +234,11 @@ exports['DELETE foo-1.0.tar.gz'] = function(assert, beforeExit) {
   });
 };
 
-exports['PUT bar-1.0.tar.gz'] = function(assert, beforeExit) {
+exports['PUT bar@1.0.tar.gz'] = function(assert, beforeExit) {
   var n = 0;
   ps.on('bundles listed', function() {
     var req = {
-      url: '/bundles/bar/bar-1.0.tar.gz',
+      url: '/bundles/bar/bar@1.0.tar.gz',
       method: 'PUT',
       headers: {
         'Transfer-Encoding': 'chunked'
@@ -225,11 +248,11 @@ exports['PUT bar-1.0.tar.gz'] = function(assert, beforeExit) {
         function write_some() {
           request.write(misc.randstr(1024));
           if (++n === 1000) {
-            request.end();
             clearInterval(intervalId);
+            request.end();
           }
         }
-        intervalId = setInterval(write_some, 5);
+        intervalId = setInterval(write_some, 2);
       }
     };
     assert.response(getServer(), req, function(res) {
@@ -238,14 +261,14 @@ exports['PUT bar-1.0.tar.gz'] = function(assert, beforeExit) {
     });
   });
 
-  beforeExit(function(){
+  beforeExit(function() {
     assert.equal(1001, n, 'Responses Received');
   });
 };
 
-exports['PUT foo-4.1.tar.gz'] = function(assert, beforeExit) {
+exports['PUT foo@4.1.tar.gz'] = function(assert, beforeExit) {
   var n = 0;
-  ps.on('foo-1.0.tar.gz listed', function() {
+  ps.on('foo@1.0.tar.gz listed', function() {
     fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
       n++;
       var sha1 = crypto.createHash('sha1');
@@ -254,7 +277,7 @@ exports['PUT foo-4.1.tar.gz'] = function(assert, beforeExit) {
       data[9] = data[9] ^ 010;
 
       assert.response(getServer(), {
-        url: '/bundles/foo/foo-4.1.tar.gz',
+        url: '/bundles/foo/foo@4.1.tar.gz',
         method: 'PUT',
         data: data,
         headers: {'X-Content-SHA1': sha1.digest('base64')}
@@ -274,10 +297,10 @@ exports['PUT foo-4.1.tar.gz'] = function(assert, beforeExit) {
 exports.setup = function(done) {
   async.series([
     async.apply(ps.ensure, "config"),
-    async.apply(exec, "mkdir -p .tests/data_root/bundles/foo/foo-3.0.tar.gz"),
+    async.apply(exec, "mkdir -p .tests/data_root/bundles/foo/foo@3.0.tar.gz"),
     async.apply(exec, "mkdir -p .tests/data_root/extracted"),
     async.apply(exec, "touch .tests/data_root/bundles/foo/foobar"),
-    async.apply(exec, "touch .tests/data_root/bundles/foo/bar-1.0.tar.gz"),
+    async.apply(exec, "touch .tests/data_root/bundles/foo/bar@1.0.tar.gz"),
     async.apply(exec, "touch .tests/data_root/bundles/baz")
   ], done);
 };
