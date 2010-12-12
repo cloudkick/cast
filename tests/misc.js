@@ -61,7 +61,7 @@ exports['expanduser with HOME unset hack'] = function(assert, beforeExit) {
   beforeExit(function() {
     var n = 0;
     var orig = process.env.HOME;
-    process.env.HOME = undefined;
+    delete process.env.HOME;
     try {
       var out = misc.expanduser("~");
     }

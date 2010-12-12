@@ -1,0 +1,65 @@
+.\" Nodelint [VERSION]
+.\" [DATE]
+.\" A fork of tav's nodelint (http://github.com/tav/nodelint)
+.\" Corey Hart @ http://www.codenothing.com
+.
+.TH "NODELINT" "1" "[DATE]"
+.
+.SH "NAME"
+Nodelint, jslint \- JSLint with Node\.
+.
+.SH "SYNOPSIS"
+\fBNodelint\fR [options] file\.js [file2\.js dir dir2]
+.br
+\fBjslint\fR [options] file\.js [file2\.js dir dir2]
+.
+.SH "DESCRIPTION"
+\fBNodelint\fR is a tool that runs designated files through the JSLint parser to check for syntax errors\.
+It can be used on the command line, as a pre\-commit hook, or incorporated into your build process\.
+.PP
+In addition, a secondary binfile \fBjslint\fR is available\. \fBjslint\fR is the same as \fBNodelint \-\-Nodelint\-cli \-vp\fR\.
+.
+.SH "Options"
+.
+.SS "\-l \fIFILE\fB, \-\-logfile=\fIFILE\fR"
+Define a logfile to output results to\.
+.
+.SS "\-j \fIFILE\fB, \-\-jslint=\fIFILE\fR"
+Define a custom jslint file to use\.
+.
+.SS "\-e \fIENCODINGS\fB, \-\-encodings=\fIENCODINGS\fR"
+Define a comma-sparated list of encodings to check for\.
+.
+.SS "\-c, \-\-no-color"
+Disable coloring of output\.
+.
+.SS "\-v, \-\-verbose"
+Verbose mode\. Outputs processing information like what directory is currently being read, or what file is currently being linted\.
+.
+.SS "\-p, \-\-show\-passed"
+Output list of files that passed jslint\.
+.
+.SS "\-i, \-\-show\-ignored"
+Output list of files ignored based on lintignore files\.
+.
+.SS "\-m, \-\-show\-missing"
+Output missing files that were expected\.
+.
+.SS "\-w, \-\-show\-warnings"
+Output warning messages during processing\.
+.
+.SS "\-\-Nodelint\-cli"
+Trigger Cli run of arguments\.
+.
+.SS "\-\-Nodelint\-pre\-commit=\fIVCS\fR"
+Run the pre\-commit hook on files to be committed for the version control system defined\. Blocks commit on error\.
+.
+.SS "\-\-Nodelint\-pre\-commit\-all"
+Run Nodelint across the entire project before, and block commit on error\.
+.
+.SH "JSLint Options"
+JSLint options can be passed through the command line as well. Check out http://www.jslint.com/lint.html#options for a list 
+of settings.
+.
+.SH "Using JSLint Options"
+Nodelint --adsafe=true [more options] file.js

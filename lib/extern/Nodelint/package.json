@@ -1,0 +1,43 @@
+{
+	"name": "Nodelint",
+	"description": "Nodelint is a tool that uses the power of JSLINT to parse your javascript files for errors.",
+	"version": "[VERSION]",
+	"homepage": "http://www.codenothing.com/archives/2010/Nodelint/",
+	"author": "Corey Hart <corey@codenothing.com> (http://www.codenothing.com)",
+	"main": "index",
+	"man": "./man1/Nodelint.1",
+	"contributors": [
+		"tav <tav@espians.com> (http://tav.espians.com)",
+		"Felix Geisendörfer (http://debuggable.com)",
+		"Nathan Landis (http://github.com/my8bird)"
+	],
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/codenothing/Nodelint.git"
+	},
+	"bugs": {
+		"web": "http://github.com/codenothing/Nodelint/issues",
+		"mail": "corey@codenothing.com"
+	},
+	"directories": {
+		"doc": "./doc",
+		"lib": "./lib",
+		"man": "./man1"
+	},
+	"bin": {
+		"jslint": "./bin/jslint",
+		"Nodelint": "./bin/Nodelint"
+	},
+	"engines": {
+		"node": ">= 0.2.0"
+	},
+	"scripts": {
+		"test": "make test"
+	},
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "http://www.codenothing.com/license/"
+		}
+	]
+}

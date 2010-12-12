@@ -1,0 +1,14 @@
+#
+# Nodelint [VERSION]
+# [DATE]
+# A fork of tav's nodelint (http://github.com/tav/nodelint)
+# Corey Hart @ http://www.codenothing.com
+#
+
+
+# Additions
+-Encoding module to handle custom conversions
+-Added UTF-8-BOM encoding conversion
+
+# Removals
+-buffer-wait option removed in favor of Nodelint.leave hack
