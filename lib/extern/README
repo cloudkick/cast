@@ -38,6 +38,11 @@ node-jscoverage 0d4608a6b4275b (May 25, 2010)
   Note: Due to GPL v2 license, we should remove this from release tarballs,
   it is a utility for developers, not something we are 'based on'.
 
+node-worker 6bbe8092bc0cbf2e2e6b (December 12, 2010)
+  https://github.com/cramforce/node-worker/
+  License: MIT
+  An implementation of the WebWorker API for node.js.
+
 optparse cae3b09d324223 (June 28, 2010)
   http://github.com/jfd/optparse-js
   License: "MIT-style license"
