@@ -21,7 +21,7 @@
  */
 var path_setup = require('../lib/util/path_setup').path_setup;
 
-path_setup(__filename);
+path_setup();
 
 function main() {
   path_setup();
