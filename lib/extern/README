@@ -27,6 +27,11 @@ uuid d0cad69cbf3e1bc31f3f (August 29, 2010)
   License: BSD
   Library for generating random UUIDs (taken from narwal).
 
+jsdoc-toolkit v2.4.0 (December 13, 2010)
+  http://code.google.com/p/jsdoc-toolkit/
+  License: X11/MIT
+  A documentation generator for JavaScript.
+
 jspack 4753fb1a8de (May 22, 2010)
   http://github.com/pgriess/node-jspack
   License: MIT
@@ -42,6 +47,11 @@ node-worker 693f3fb2c3cf9fa2a22a (December 13, 2010)
   https://github.com/Kami/node-worker (forked from https://github.com/cramforce/node-worker/)
   License: MIT
   An implementation of the WebWorker API for node.js.
+
+outline-jsdoc-toolkit-template v0.1 (December 13, 2010)
+  http://code.google.com/p/jproton/
+  License: MIT
+  jsdoc-toolkit template.
 
 optparse cae3b09d324223 (June 28, 2010)
   http://github.com/jfd/optparse-js
