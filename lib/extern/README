@@ -38,8 +38,8 @@ node-jscoverage 0d4608a6b4275b (May 25, 2010)
   Note: Due to GPL v2 license, we should remove this from release tarballs,
   it is a utility for developers, not something we are 'based on'.
 
-node-worker 6bbe8092bc0cbf2e2e6b (December 12, 2010)
-  https://github.com/cramforce/node-worker/
+node-worker 693f3fb2c3cf9fa2a22a (December 13, 2010)
+  https://github.com/Kami/node-worker (forked from https://github.com/cramforce/node-worker/)
   License: MIT
   An implementation of the WebWorker API for node.js.
 
@@ -64,7 +64,7 @@ stacktrace fe9d84729c5 (May 29, 2010)
   Utility function to make a stack trace. Slightly modified to use CommonJS style exports.
 
 strobe-templates ba66628009c0ed4145ba (September 10, 2010)
-  http://github.com/Kami/strobe-templates (forked from http://github.com/Kami/strobe-templates)
+  http://github.com/Kami/strobe-templates (forked from https://github.com/skid/strobe-templates)
   License: MIT
   A clone of django templates in node.js
 
