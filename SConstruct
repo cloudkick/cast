@@ -76,11 +76,19 @@ lenv.AlwaysBuild(gfixjsstyle)
 lenv.Alias('gjslint', gjslint)
 lenv.Alias('gfixjsstyle', gfixjsstyle)
 
-# dox just didn't work well when I last tried it, the JSdoc -> Markdown code was recursive and buggy.
-#env['JSDOX'] = "$NODE lib/extern/dox/bin/dox"
-#docscmd = env.Command('cast-api-docs.html', allsource, "$JSDOX -p -t 'Cloudkick Cast' "+ " ".join([x.get_path() for x in source]) + ">$TARGET")
-#env.Alias('docs', docscmd)
+env['JSDOC'] = "java -jar lib/extern/jsdoc-toolkit/jsrun.jar lib/extern/jsdoc-toolkit/app/run.js -a -t=lib/extern/jsdoc-toolkit/templates/outline -D='Cloudkick Cast' -d=jsdoc/"
+docscmd = env.Command('.builddocs', allsource, "$JSDOC " + " ".join([x.get_path() for x in source]))
+env.Alias('docs', docscmd)
 
+uploaddocscmd = env.Command('.uploaddocs', '',
+                            'git checkout gh-pages; '+
+                            ' git add jsdoc/*; ' +
+                            'git commit -m "Re-build documentation"; ' +
+                            #'git push origin gh-pages;' +
+                            'git checkout master')
+env.Alias('upload-docs', uploaddocscmd)
+env.Alias('build-docs', [ docscmd, uploaddocscmd ])
+env.Depends(uploaddocscmd, docscmd)
 
 tests = sorted(testsource)
 testcmd = env.Command('.tests_run', tests, "rm -rf .tests/ ; $NODE lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
