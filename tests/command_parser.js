@@ -24,7 +24,7 @@ var COMMANDS_PATH = path.join(__dirname, 'data/commands');
 exports['test initialization'] = function(assert, beforeExit) {
   var parser = new CommandParser(COMMANDS_PATH);
 
-  assert.deepEqual(parser._global_commands, []);
+  assert.deepEqual(parser._global_commands, ['completion']);
   assert.deepEqual(parser._normal_commands, {});
   assert.equal(parser.banner, '');
 };
@@ -32,9 +32,9 @@ exports['test initialization'] = function(assert, beforeExit) {
 exports['test command addition and removal works properly'] = function(assert, beforeExit) {
   var parser = new CommandParser(COMMANDS_PATH);
 
-  assert.deepEqual(parser._global_commands, []);
+  assert.deepEqual(parser._global_commands, ['completion']);
   parser.add_command('hello');
-  assert.deepEqual(parser._global_commands, ['hello']);
+  assert.deepEqual(parser._global_commands, ['completion', 'hello']);
   parser.remove_command('hello');
 
   assert.deepEqual(parser._normal_commands, {});

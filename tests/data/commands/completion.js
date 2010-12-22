@@ -1,15 +1,15 @@
 var sys = require('sys');
 
 var config = {
-  'short_description': 'Return hello world',
-  'long_description': 'Return hello world long',
+  'short_description': 'Bash completion',
+  'long_description': 'Bash completion',
   'required_arguments' : [],
   'optional_arguments': [],
   'options': []
 }
 
 function handle_command(arg, command_parser) {
-  return 'Hello world';
+  return '';
 }
 
 exports.config = config;
