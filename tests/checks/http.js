@@ -35,22 +35,23 @@ exports['test invalid hostname'] = function(assert, beforeExit) {
   var n = 0;
   var check = new http_check.HTTPCheck({'url': 'http://non.exis-te.nt.123', 'type': http_check.config.types.STATUS_CODE_MATCH,
                                         'match_value': 200});
-                                        
+
   check.run(function(result) {
     assert.equal(result.status, CheckStatus.ERROR);
     assert.match(result.details, /returned exception/i);
     n++;
   });
-  
+
   beforeExit(function() {
     assert.equal(1, n, 'Check run callback called');
   });
 };
 
-exports['test secure on non ssl'] = function(assert, beforeExit) {
+// @TODO: Update the test when the SSL support is added to the http streams.
+/*exports['test secure on non ssl'] = function(assert, beforeExit) {
   var port = test.get_port();
   var n = 0;
-  
+
   test.run_test_http_server('127.0.0.1', port, routes, function() {
     var self = this;
     var check = new http_check.HTTPCheck({'url': 'https://127.0.0.1:'+port, 'type': http_check.config.types.STATUS_CODE_MATCH,
@@ -60,35 +61,35 @@ exports['test secure on non ssl'] = function(assert, beforeExit) {
       assert.equal(result.status, CheckStatus.ERROR);
       assert.match(result.details, /unknown/i);
       n++;
-      
+
       self.close();
     });
   });
-  
+
   beforeExit(function() {
     assert.equal(1, n, 'Check run callback called');
   });
-};
+};*/
 
 exports['test check status codes match'] = function(assert, beforeExit) {
   var port = test.get_port();
   var n = 0;
-  
+
   test.run_test_http_server('127.0.0.1', port, routes, function() {
     var self = this;
-    
+
     var check1 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:'+port+'/test1', 'type': http_check.config.types.STATUS_CODE_MATCH,
                                           'match_value': 200});
     var check2 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:'+port+'/test1', 'type': http_check.config.types.STATUS_CODE_MATCH,
                                           'match_value': 404});
-                                          
+
     async.parallel([
     function(callback) {
       check1.run(function(result) {
         assert.equal(result.status, CheckStatus.SUCCESS);
         assert.match(result.details, /returned status code/i);
         n++;
-        
+
        callback();
       });
     },
@@ -97,7 +98,7 @@ exports['test check status codes match'] = function(assert, beforeExit) {
         assert.equal(result.status, CheckStatus.ERROR);
         assert.match(result.details, /returned status code/i);
         n++;
-        
+
        callback();
       });
     }],
@@ -105,7 +106,7 @@ exports['test check status codes match'] = function(assert, beforeExit) {
       self.close();
     });
   });
-    
+
   beforeExit(function() {
     assert.equal(2, n, 'Check run callback called');
   });
@@ -114,22 +115,22 @@ exports['test check status codes match'] = function(assert, beforeExit) {
 exports['test check response body match'] = function(assert, beforeExit) {
   var port = test.get_port();
   var n = 0;
-  
+
   test.run_test_http_server('127.0.0.1', port, routes, function() {
     var self = this;
-    
+
     var check1 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:'+port+'/test3', 'type': http_check.config.types.BODY_REGEX_MATCH,
                                           'match_value': 'some text which wont match'});
     var check2 = new http_check.HTTPCheck({'url': 'http://127.0.0.1:'+port+'/test3', 'type': http_check.config.types.BODY_REGEX_MATCH,
                                           'match_value': /.*test \d+ CONTENT.*/i});
-                                          
+
     async.parallel([
     function(callback) {
       check1.run(function(result) {
         assert.equal(result.status, CheckStatus.ERROR);
         assert.match(result.details, /didn\'t match/i);
         n++;
-        
+
        callback();
       });
     },
@@ -138,7 +139,7 @@ exports['test check response body match'] = function(assert, beforeExit) {
         assert.equal(result.status, CheckStatus.SUCCESS);
         assert.match(result.details, /matched/i);
         n++;
-        
+
        callback();
       });
     }],
@@ -146,7 +147,7 @@ exports['test check response body match'] = function(assert, beforeExit) {
       self.close();
     });
   });
-    
+
   beforeExit(function() {
     assert.equal(2, n, 'Check run callback called');
   });
