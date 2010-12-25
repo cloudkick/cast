@@ -25,8 +25,14 @@ var CheckResult = require('health').CheckResult;
 var CheckStatus = require('health').CheckStatus;
 
 var response_dictionary = {
-  'hello': 'Hello World\nTesting server',
-  'stats': 'KEYS 5\nKEYSIZE 2058\nEND'
+  'hello': {
+    'type': 'string',
+    'response': 'Hello World\nTesting server'
+  },
+  'stats': {
+    'type': 'string',
+    'response': 'KEYS 5\nKEYSIZE 2058\nEND'
+  }
 };
 
 exports['test invalid ip address'] = function(assert, beforeExit) {
@@ -83,7 +89,7 @@ exports['test check connection success'] = function(assert, beforeExit) {
   var port = test.get_port();
   var n = 0;
 
-  test.run_test_tcp_server('127.0.0.1', port, response_dictionary, function() {
+  test.run_test_tcp_server('127.0.0.1', port, response_dictionary, true, function() {
     var self = this;
     var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcp_check.config.types.CONNECTION_CHECK});
 
@@ -105,7 +111,7 @@ exports['test check response regex match error'] = function(assert, beforeExit) 
   var port = test.get_port();
   var n = 0;
 
-  var tcp_server = test.run_test_tcp_server('127.0.0.1', port, response_dictionary, function() {
+  var tcp_server = test.run_test_tcp_server('127.0.0.1', port, response_dictionary, true, function() {
     var self = this;
     var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcp_check.config.types.RESPONSE_REGEX_MATCH,
                                         'match_value': /blah/i});
@@ -128,7 +134,7 @@ exports['test check response regex match success'] = function(assert, beforeExit
   var port = test.get_port();
   var n = 0;
 
-  test.run_test_tcp_server('127.0.0.1', port, response_dictionary, function() {
+  test.run_test_tcp_server('127.0.0.1', port, response_dictionary, true, function() {
     var self = this;
     var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcp_check.config.types.RESPONSE_REGEX_MATCH,
                                        'command': 'hello', 'match_value': /.*hello world.*/i});
