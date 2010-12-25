@@ -19,6 +19,7 @@ var test = require('util/test');
 var log = require('util/log');
 
 var async = require('extern/async');
+var sprintf = require('extern/sprintf').sprintf;
 
 var tcp_check = require('health/checks/tcp');
 var CheckResult = require('health').CheckResult;
@@ -29,9 +30,9 @@ var response_dictionary = {
     'type': 'string',
     'response': 'Hello World\nTesting server'
   },
-  'stats': {
-    'type': 'string',
-    'response': 'KEYS 5\nKEYSIZE 2058\nEND'
+  'stats (\\d+)': {
+    'type': 'regexp',
+    'response': function(matches) { return sprintf('KEYS %s\nEND', matches[1]); }
   }
 };
 
@@ -130,7 +131,7 @@ exports['test check response regex match error'] = function(assert, beforeExit) 
   });
 };
 
-exports['test check response regex match success'] = function(assert, beforeExit) {
+exports['test check response regex match success 1'] = function(assert, beforeExit) {
   var port = test.get_port();
   var n = 0;
 
@@ -138,6 +139,29 @@ exports['test check response regex match success'] = function(assert, beforeExit
     var self = this;
     var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcp_check.config.types.RESPONSE_REGEX_MATCH,
                                        'command': 'hello', 'match_value': /.*hello world.*/i});
+
+    check.run(function(result) {
+      n++;
+      assert.equal(result.status, CheckStatus.SUCCESS);
+      assert.match(result.details, /matched the regular/i);
+
+      self.close();
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(1, n, 'Check run callback called');
+  });
+};
+
+exports['test check response regex match success 2'] = function(assert, beforeExit) {
+  var port = test.get_port();
+  var n = 0;
+
+  test.run_test_tcp_server('127.0.0.1', port, response_dictionary, true, function() {
+    var self = this;
+    var check = new tcp_check.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcp_check.config.types.RESPONSE_REGEX_MATCH,
+                                       'command': 'stats 12345', 'match_value': /.*keys 12345.*/i});
 
     check.run(function(result) {
       n++;
