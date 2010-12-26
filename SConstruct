@@ -53,6 +53,9 @@ source = SConscript("lib/SConscript")
 
 testsource = env.Glob("tests/*.js") + env.Glob("tests/checks/*.js")
 skiptest = ["tests/service_management.js"]
+skiptest_env = os.environ['SKIP_TEST'].split(';') if os.environ.get('SKIP_TEST', None) else []
+skiptest = skiptest + skiptest_env
+
 testsource = filter(lambda x: str(x) not in skiptest, testsource)
 
 allsource = testsource + source
