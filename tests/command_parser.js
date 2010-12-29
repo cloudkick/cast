@@ -311,3 +311,35 @@ exports['test command services list'] = function(assert, beforeExit) {
   assert.match(value1, /listing services for all servers/i);
   assert.match(value2, /listing services for server server1/i);
 };
+
+exports['test global_options'] = function(assert, beforeExit) {
+  var stdout_data = [], value1, value2;
+  var capture_write = function (string) {
+    stdout_data.push(string);
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH, capture_write);
+  parser.add_commands(['return_args']);
+
+  value1 = parser.parse(['bin', 'file', 'return_args']);
+
+  try {
+    parser.parse(['bin', 'file', 'return_args', '--colors']);
+  }
+  catch (err) {
+    assert.ok('Too many arguments exception was thrown');
+  }
+
+  parser.add_global_options([{
+      names: ['--colors'],
+      dest: 'colors',
+      action: 'store_true',
+      desc: 'Test option.'
+     }
+  ]);
+
+  value2 = parser.parse(['bin', 'file', 'return_args', '--colors']);
+
+  assert.deepEqual(value1, {});
+  assert.deepEqual(value2, { 'colors': true });
+};
