@@ -46,7 +46,7 @@ exports['test command addition and removal works properly'] = function(assert, b
 
 exports['test exception is thrown on "append" option with no value'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -72,7 +72,7 @@ exports['test exception is thrown on "append" option with no value'] = function(
 
 exports['test exception is thrown when "store_true" action is given key=value'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -92,11 +92,11 @@ exports['test exception is thrown when "store_true" action is given key=value'] 
   beforeExit(function() {
     assert.equal(1, n, 'Exceptions thrown');
   });
-}
+};
 
 exports['test exception is thrown upon invalid command name'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -132,7 +132,7 @@ exports['test exception is thrown upon invalid command name'] = function(assert,
 
 exports['test exception is thrown upon invalid argument or argument type'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -163,7 +163,7 @@ exports['test exception is thrown upon invalid argument or argument type'] = fun
 
 exports['test exception is thrown on invalid command'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -187,7 +187,7 @@ exports['test exception is thrown on invalid command'] = function(assert, before
 
 exports['test exception is thrown on too many arguments'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -211,7 +211,7 @@ exports['test exception is thrown on too many arguments'] = function(assert, bef
 
 exports['test exception is thrown on missing required argument'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -235,7 +235,7 @@ exports['test exception is thrown on missing required argument'] = function(asse
 
 exports['test global help'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -249,7 +249,7 @@ exports['test global help'] = function(assert, beforeExit) {
 
 exports['test command help'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -267,7 +267,7 @@ exports['test command help'] = function(assert, beforeExit) {
 
 exports['test sub-command help'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -284,7 +284,7 @@ exports['test sub-command help'] = function(assert, beforeExit) {
 };
 exports['test global command'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
@@ -298,7 +298,7 @@ exports['test global command'] = function(assert, beforeExit) {
 
 exports['test command services list'] = function(assert, beforeExit) {
   var stdout_data = [];
-  capture_write = function (string) {
+  var capture_write = function (string) {
     stdout_data.push(string);
   };
 
