@@ -40,3 +40,19 @@ exports['test compare_versions ver_b >= ver_a'] = function(assert, beforeExit) {
     assert.ok(req.compare_versions(version_a, version));
   }
 };
+
+exports['test is_defined'] = function(assert, beforeExit) {
+  var i, item;
+  var assert_true = [ '1', ['foo', 'bar'], 1, {}, { 'foo': 'bar'}, true ];
+  var assert_false = [ null, undefined, false ];
+
+  for (i = 0; i < assert_true.length; i++) {
+    item = assert_true[i];
+    assert.ok(req.is_defined(null, item), item + ' is defined');
+  }
+
+  for (i = 0; i < assert_false.length; i++) {
+    item = assert_false[i];
+    assert.equal(req.is_defined(null, item), false);
+  }
+};
