@@ -49,14 +49,15 @@ AgentTest.prototype.log_command = function(command, type, command_arguments) {
   this._log_buffer.push([ command, type, command_arguments ]);
 };
 
-AgentTest.prototype.log_buffer_contains = function(command) {
-  var i, item, item_command;
+AgentTest.prototype.log_buffer_contains = function(command, type) {
+  var i, item, item_command, item_type;
 
   for (i = 0; i < this._log_buffer.length; i++) {
     item = this._log_buffer[i];
     item_command = item[0];
+    item_type = item[1];
 
-    if (item_command === command) {
+    if (item_command === command && item_type === type) {
       return true;
     }
   }
@@ -175,7 +176,7 @@ exports['test incoming error command'] = function(assert, beforeExit) {
       var stream;
       n++;
       assert.ok(agent._connected);
-      assert.equal(agent.log_buffer_contains('error'), false);
+      assert.equal(agent.log_buffer_contains('error', 'incoming'), false);
 
       stream = self._streams[0];
       stream.write('error Test error reason.\n');
@@ -190,7 +191,11 @@ exports['test incoming error command'] = function(assert, beforeExit) {
   });
 
   beforeExit(function() {
-    assert.ok(agent.log_buffer_contains('error'));
+    assert.ok(agent.log_buffer_contains('error', 'incoming'));
+    assert.equal(n, 2, 'Callbacks called');
+  });
+};
+
     assert.equal(n, 2, 'Callbacks called');
   });
 };
