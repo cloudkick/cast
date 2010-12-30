@@ -196,6 +196,36 @@ exports['test incoming error command'] = function(assert, beforeExit) {
   });
 };
 
+exports['test incoming restart command'] = function(assert, beforeExit) {
+  var n = 0;
+  var log_buffer = [];
+  var port = test.get_port();
+  var agent = new AgentTest();
+
+  test.run_test_tcp_server('127.0.0.1', port, response_dictionary, false, function(connection) {
+    var self = this;
+    agent.start(port, '127.0.0.1');
+
+    setTimeout(function() {
+      var stream;
+      n++;
+      assert.ok(agent._connected);
+      assert.equal(agent.log_buffer_contains('restart', 'incoming'), false);
+
+      stream = self._streams[0];
+      stream.write('restart\n');
+    }, 500);
+
+    setTimeout(function() {
+      n++;
+
+      agent.stop();
+      self.close();
+    }, 2500);
+  });
+
+  beforeExit(function() {
+    assert.ok(agent.log_buffer_contains('restart', 'incoming'));
     assert.equal(n, 2, 'Callbacks called');
   });
 };
