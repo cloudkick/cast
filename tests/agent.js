@@ -88,8 +88,6 @@ exports['test connect'] = function(assert, beforeExit) {
   });
 };
 
-
-
 exports['test hello and ping'] = function(assert, beforeExit) {
   var n = 0;
   var port = test.get_port();
