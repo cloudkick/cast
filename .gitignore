@@ -3,8 +3,10 @@ config.log
 *~
 lib-cov
 *.o
+*.swp
 .deps
 *-h1
 lib/extern/node-jscoverage/*
 .tests
 *.pyc
+temp/*
