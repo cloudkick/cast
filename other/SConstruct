@@ -1,0 +1,168 @@
+#
+# Copyright 2010, Cloudkick, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+EnsureSConsVersion(1, 1, 0)
+
+import os
+import re
+import shutil
+import subprocess
+import os.path
+from os.path import join as pjoin
+
+import SCons
+import utils
+from site_scons.utils import copy_tree, copy_files, symlink, delete_paths
+from site_scons.utils import get_runit_directory_name
+
+cwd = os.getcwd()
+
+opts = Variables('build.py')
+opts.Add(PathVariable('PREFIX', default = '/opt/cast_test',
+                      help = 'Directory to install under',
+                      validator = SCons.Variables.PathVariable.PathAccept))
+
+env = Environment(options = opts, ENV = os.environ.copy())
+opts.Update(env)
+
+# Variables
+node_tarball = 'deps/node.tar.gz'
+runit_tarball = 'deps/runit.tar.gz'
+
+prefix = env['PREFIX']
+base_install_prefix = '%s/' % (prefix)
+node_install_prefix = '%s/node/' % (prefix)
+runit_install_prefix = '%s/runit/' % (prefix)
+cast_install_prefix = '%s/cast/' % (prefix)
+cast_data_prefix = '%s/cast/data/' % (prefix)
+
+cast_config_path = pjoin(os.path.expanduser('~'), '.cast/config.json')
+runit_binaries_path = pjoin(runit_install_prefix, 'bin')
+cast_paths = [ 'lib/', 'bin/' ]
+
+default_config = """{
+  "service_dir_enabled": "%s"
+}
+"""
+
+cast_client_bin_path = pjoin('/usr/local/bin', 'cast')
+cast_agent_bin_path = pjoin('/usr/local/bin', 'cast-agent')
+
+node_binary_path = pjoin(node_install_prefix, 'bin/node')
+shebang_line = '#!%s' % (node_binary_path)
+
+# Builder functions
+def replace_lines(target, source, env):
+  """"
+  Update cast scripts shebang and base path line.
+  """
+  replacements = [
+    [ '#!/usr/bin/env node', shebang_line ],
+    [ "var path_setup = require('../lib/util/path_setup').path_setup;",
+      "var path_setup = require('%slib/util/path_setup').path_setup;" %
+      (cast_install_prefix) ]
+  ]
+
+  for file in [ 'cast', 'cast-agent' ]:
+    file_path = pjoin(cast_install_prefix, 'bin', file)
+    content = open(file_path, 'r').read()
+
+    for replacement in replacements:
+      content = content.replace(replacement[0], replacement[1])
+
+    fp = open(file_path, 'w')
+    fp.write(content)
+    fp.close()
+
+  return None
+
+def populate_cast_config(target, source, env):
+  """
+  Populate default config.
+  """
+  target_path = str(target[0])
+
+  config = default_config % (pjoin(runit_install_prefix, 'enabled'))
+  fp = open(target_path, 'w')
+  fp.write(config)
+  fp.close()
+
+  return None
+
+# Install runit
+extract_runit = env.Command('.extract_runit', '',
+                            'mkdir -p build/runit/; tar -xzvf %s -C build/runit/' %
+                            (runit_tarball))
+build_runit = env.Command('.build_runit', '', 'package/install',
+                            chdir = 'build/runit/admin/%s/' %
+                            get_runit_directory_name(pjoin(cwd,
+                            'build/runit/admin/')))
+runit_binaries = env.Glob('build/runit/admin/%s/command/*' % get_runit_directory_name(pjoin(cwd,
+                                                                                       'build/runit/admin/')))
+runit_binaries = [str(file) for file in runit_binaries]
+runit_binaries_targets = [pjoin(runit_install_prefix, 'bin', os.path.basename(str(binary))) for binary in runit_binaries]
+runit_binaries_path = pjoin(runit_install_prefix, 'bin')
+copy_binaries_to_prefix = env.Command(runit_binaries_targets, runit_binaries, [
+                                        Mkdir(runit_binaries_path),
+                                        copy_files
+                                     ])
+Depends(build_runit, extract_runit)
+Depends(copy_binaries_to_prefix, build_runit)
+install_runit = [ extract_runit, build_runit, copy_binaries_to_prefix ]
+
+# Install node
+extract_node = env.Command('.extract_node', '', 'mkdir -p build/node/; tar -xzvf %s -C build/node/ --strip-components=1' % (node_tarball))
+configure_node = env.Command('.configure_node', '', './configure --prefix=%s' % (node_install_prefix), chdir = 'build/node/')
+install_node = env.Command('.build_node', '','make install', chdir = 'build/node/')
+
+Depends(configure_node, extract_node)
+Depends(install_node, configure_node)
+install_node = [ extract_node, configure_node, install_node ]
+
+replace_cast_lines = env.Command('.replace_lines', '', replace_lines)
+
+# Copy cast files into the install prefix
+copy_cast_files = env.Command('.%s' % (cast_install_prefix), cast_paths, copy_tree)
+AlwaysBuild(copy_cast_files)
+
+# Symlink Cast scripts to /usr/local/bin
+symlink_cast_client = env.Command(cast_client_bin_path, pjoin(cast_install_prefix, 'bin/cast'), symlink)
+symlink_cast_agent = env.Command(cast_agent_bin_path, pjoin(cast_install_prefix, 'bin/cast-agent'), symlink)
+
+# Populate default cast config
+populate_cast_config = env.Command(cast_config_path, '', populate_cast_config)
+
+Depends(replace_cast_lines, copy_cast_files)
+Depends(symlink_cast_client, copy_cast_files)
+Depends(symlink_cast_agent, copy_cast_files)
+install_cast = [ copy_cast_files, replace_cast_lines, populate_cast_config,
+                 symlink_cast_client, symlink_cast_agent]
+
+# Cleanup
+cleanup = env.Command('.build', 'build', 'rm -rf $SOURCE')
+
+# Uninstall (delete base path and remove symlinks)
+paths_to_delete = [ cast_client_bin_path, cast_agent_bin_path, base_install_prefix ];
+uninstall = env.Command('.uninstall', paths_to_delete, delete_paths)
+
+install = install_node + install_runit + install_cast
+
+# Aliases
+env.Alias('install', install)
+env.Alias('uninstall', uninstall)
+env.Alias('cleanup', cleanup)
+env.Alias('delete', 'uninstall')
+
+env.Default('install')
