@@ -21,11 +21,18 @@ import os
 import re
 from os.path import join as pjoin
 
+from utils import download_file, get_file_list
+
+cwd = os.getcwd()
+
 opts = Variables('build.py')
+
+opts.Add('node_tarball_url', default = '', help = 'URL to the Node tarball')
+opts.Add('runit_tarball_url', default = '', help = 'URL to the Runit tarball')
 
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
-                  tools=['default'])
+                  tools = ['packaging', 'default'])
 
 #TODO: convert this to a configure builder, so it gets cached
 def read_version(prefix, path):
@@ -75,7 +82,7 @@ gjslint = lenv.Command(".gjslint", source, ["$GJSLINT "+ " ".join([x.get_path() 
 gfixjsstyle = lenv.Command(".gfixjsstyle", source, ["$GJSFIXSTYLE "+ " ".join([x.get_path() for x in source])])
 
 lenv.AlwaysBuild(gjslint)
-lenv.AlwaysBuild(gfixjsstyle)
+#lenv.AlwaysBuild(gfixjsstyle)
 lenv.Alias('gjslint', gjslint)
 lenv.Alias('gfixjsstyle', gfixjsstyle)
 
@@ -99,8 +106,36 @@ env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
 
+# Create a distribution tarball
+dependencies = [
+  [ env['node_tarball_url'], 'dist/deps/node.tar.gz' ],
+  [ env['runit_tarball_url'], 'dist/deps/runit.tar.gz' ]
+]
+
+download_dependencies  = []
+for dependency in dependencies:
+  download_dependencies.append((env.Command('.%s' % (dependency[1]), '', download_file(dependency[0], dependency[1]))))
+
+paths_to_include = [ 'bin', 'lib', 'other' ]
+paths_to_skip = [ 'lib/extern/expresso', 'lib/extern/whiskey', 'lib/extern/Nodelint',
+                  'lib/extern/jsdoc-toolkit', 'lib/extern/closure-linter',
+                  'lib/extern/node-jscoverage',
+                  'lib/SConscript', 'lib/README', 'other/SConstruct', 'other/site_scons' ]
+files_to_pack = get_file_list(cwd, paths_to_include, paths_to_skip)
+
+package = env.Package(
+  PACKAGEROOT = '.',
+  NAME = 'cast',
+  VERSION = env['version_string'],
+  PACKAGETYPE = 'src_targz',
+  LICENSE = 'Apache 2.0',
+  source =  files_to_pack,
+  SOURCE_URL = 'https://github.com/cloudkick/cast/tarball/v%s' % (env['version_string'])
+)
+
+"""
 jscovbuild = env.Command('lib/extern/node-jscoverage/jscoverage', env.Glob('lib/extern/node-jscoverage/*.c'),
-                        "cd lib/extern/node-jscoverage/ && ./configure && make")
+                         "cd lib/extern/node-jscoverage/ && ./configure && make")
 jsconvcopy = env.Command('lib-cov/out.list', allsource,
                         ['rm -rf lib-cov',
                         'lib/extern/node-jscoverage/jscoverage --no-instrument=extern lib lib-cov',
@@ -109,8 +144,12 @@ env.Depends(jsconvcopy, jscovbuild)
 covcmd = env.Command('.tests_coverage', tests, "$NODE lib/extern/expresso/bin/expresso -I lib-cov/ "+ " ".join([x.get_path() for x in tests]))
 env.Depends(covcmd, jsconvcopy)
 env.AlwaysBuild(covcmd)
-env.Alias('coverage', covcmd)
-env.Alias('cov', 'coverage')
-targets = []
+"""
 
+# Targets
+#env.Alias('coverage', covcmd)
+#env.Alias('cov', 'coverage')
+env.Alias('download-deps', download_dependencies)
+
+targets = []
 env.Default(targets)
