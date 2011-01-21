@@ -24,7 +24,7 @@ exports.setup = function(done) {
   var ps = require('util/pubsub');
   var path = require('path');
   config.config_files = ["~/.xxx_no_such_file", path.join(__dirname, "test.conf")];
-  config.setup(function(error) {
+  config.setup_agent(function(error) {
     if (error) {
       throw new Error('Error during test configuration');
     }
