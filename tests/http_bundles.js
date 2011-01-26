@@ -149,6 +149,63 @@ exports['PUT foo@1.0.tar.gz'] = function(assert, beforeExit) {
   });
 };
 
+exports['PUT foo@5.0.tar.gz trailer'] = function(assert, beforeExit) {
+  var n = 0;
+  ps.on('foo@1.0.tar.gz listed', function() {
+    fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
+      n++;
+      var sha1 = crypto.createHash('sha1');
+      sha1.update(data);
+
+      assert.response(getServer(), {
+        url: '/bundles/foo/foo@5.0.tar.gz',
+        method: 'PUT',
+        data: data,
+        trailers: {'X-Content-SHA1': sha1.digest('base64')}
+      },
+      function(res) {
+        n++;
+        assert.equal(res.statusCode, 204);
+        ps.emit('foo@5.0.tar.gz created');
+      });
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(n, 2);
+  });
+};
+
+exports['PUT foo@6.0.tar.gz trailer bad'] = function(assert, beforeExit) {
+  var n = 0;
+  ps.on('foo@1.0.tar.gz listed', function() {
+    fs.readFile('tests/data/fooserv.tar.gz', function(err, data) {
+      n++;
+      var sha1 = crypto.createHash('sha1');
+      sha1.update(data);
+      // Flip one bit
+      data[9] = data[9] ^ 010;
+
+      assert.response(getServer(), {
+        url: '/bundles/foo/foo@6.0.tar.gz',
+        method: 'PUT',
+        data: data,
+        trailers: {'X-Content-SHA1': sha1.digest('base64')}
+      },
+      function(res) {
+        n++;
+        assert.equal(res.statusCode, 400);
+        ps.emit('foo@6.0.tar.gz created');
+      });
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(n, 2);
+  });
+};
+
+
 exports['GET /bundles/foo/'] = function(assert, beforeExit) {
   // Make sure listing the bundle shows the file
   var n = 0;
