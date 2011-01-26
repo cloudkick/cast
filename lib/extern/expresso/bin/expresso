@@ -351,14 +351,32 @@ assert.response = function(server, req, res, msg){
     function do_request() {
       // Issue request
       var timer,
+          trailer,
           client = server.client,
           method = req.method || 'GET',
           status = res.status || res.statusCode,
           data = req.data || req.body,
           streamer = req.streamer,
-          timeout = req.timeout || 0;
+          timeout = req.timeout || 0,
+          headers = req.headers || {};
 
-      var request = client.request(method, req.url, req.headers);
+      for (trailer in req.trailers) {
+          if (req.trailers.hasOwnProperty(trailer)) {
+              if (headers['Trailer']) {
+                  headers['Trailer'] += ', ' + trailer;
+              }
+              else {
+                  headers['Trailer'] = trailer;
+              }
+          }
+      }
+
+
+      var request = client.request(method, req.url, headers);
+
+      if (req.trailers) {
+          request.addTrailers(req.trailers);
+      }
 
       // Timeout
       if (timeout) {
