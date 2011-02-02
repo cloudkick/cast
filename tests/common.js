@@ -13,6 +13,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Many of the modifications to 'assert' that take place here are borrowed
+ * from the 'Expresso' test framework:
+ *  <http://visionmedia.github.com/expresso/>
+ *
+ * Expresso
+ * Copyright(c) TJ Holowaychuk <tj@vision-media.ca>
+ * (MIT Licensed)
  */
 
 require.paths.unshift('../lib');
