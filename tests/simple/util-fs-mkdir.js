@@ -26,7 +26,7 @@ var assert = require('assert');
   var PATH1_SUBDIR = '.tests/utilfs/foo/bar';
   var PATH2 = '.tests/utilfs/bar/baz';
   var PATH3 = '.tests/utilfs/baz/buz';
-  var PATH4 = '.test/utilfs/whammy';
+  var PATH4 = '.tests/utilfs/whammy';
   var completed = false;
 
   async.series([
