@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+process.chdir(__dirname);
 require.paths.unshift('../lib');
 
 var fs = require('fs');
