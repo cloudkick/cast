@@ -50,13 +50,7 @@ env = conf.Finish()
 Export("env")
 
 source = SConscript("lib/SConscript")
-
-testsource = env.Glob("tests/*.js") + env.Glob("tests/checks/*.js")
-skiptest = ["tests/service_management.js"]
-skiptest_env = os.environ['SKIP_TEST'].split(';') if os.environ.get('SKIP_TEST', None) else []
-skiptest = skiptest + skiptest_env
-
-testsource = filter(lambda x: str(x) not in skiptest, testsource)
+testsource = env.Glob("tests/*.js") + env.Glob("tests/*/*.js")
 
 allsource = testsource + source
 
@@ -94,19 +88,20 @@ env.Alias('build-docs', [ docscmd, uploaddocscmd ])
 env.Depends(uploaddocscmd, docscmd)
 
 tests = sorted(testsource)
-testcmd = env.Command('.tests_run', tests, "rm -rf .tests/ ; $NODE lib/extern/expresso/bin/expresso -I lib/ "+ " ".join([x.get_path() for x in tests]))
+testcmd = env.Command('.tests_run', tests, "$NODE tests/run.js")
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
 
 jscovbuild = env.Command('lib/extern/node-jscoverage/jscoverage', env.Glob('lib/extern/node-jscoverage/*.c'),
                         "cd lib/extern/node-jscoverage/ && ./configure && make")
-jsconvcopy = env.Command('lib-cov/out.list', allsource,
+jsconvcopy = env.Command('lib-cov/out.list', source,
                         ['rm -rf lib-cov',
                         'lib/extern/node-jscoverage/jscoverage --no-instrument=extern lib lib-cov',
                         'echo $SOURCES>lib-cov/out.list'])
 env.Depends(jsconvcopy, jscovbuild)
-covcmd = env.Command('.tests_coverage', tests, "$NODE lib/extern/expresso/bin/expresso -I lib-cov/ "+ " ".join([x.get_path() for x in tests]))
+#TODO: Find a way to make coverage work in the new tester
+covcmd = env.Command('.tests_coverage', tests, "$NODE tests/run.js --coverage")
 env.Depends(covcmd, jsconvcopy)
 env.AlwaysBuild(covcmd)
 env.Alias('coverage', covcmd)
