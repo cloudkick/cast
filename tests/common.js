@@ -31,6 +31,7 @@ var assert = require('assert');
 var exec = require('child_process').exec;
 var config = require('util/config');
 var async = require('extern/async');
+var util_http = require('util/http');
 
 var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
@@ -151,137 +152,123 @@ assert.length = function(val, n, msg) {
  */
 
 assert.response = function(server, req, res, msg){
-    // Callback as third or fourth arg
-    var callback = typeof res === 'function'
-        ? res
-        : typeof msg === 'function'
-            ? msg
-            : function(){};
+  // Callback as third or fourth arg
+  var callback = typeof res === 'function'
+      ? res
+      : typeof msg === 'function'
+          ? msg
+          : function(){};
 
-    // Default messate to test title
-    if (typeof msg === 'function') msg = null;
-    msg = msg || assert.testTitle;
-    msg += '. ';
+  // Default messate to test title
+  if (typeof msg === 'function') msg = null;
+  msg = msg || assert.testTitle;
+  msg += '. ';
 
-    // Pending responses
-    server.__pending = server.__pending || 0;
-    server.__pending++;
+  // Pending responses
+  server.__pending = server.__pending || 0;
+  server.__pending++;
 
-    // Create client
-    if (!server.fd) {
-        server.listen(server.__port = port++, '127.0.0.1');
-        var util_http = require('util/http');
-        server.client = util_http._base_client(server.__port)
-        //server.client = http.createClient(server.__port);
+  server.listen(server.__port = port++, '127.0.0.1');
+
+  process.nextTick(function() {
+    // Issue request
+    var timer;
+    var trailer;
+    var method = req.method || 'GET';
+    var status = res.status || res.statusCode;
+    var data = req.data || req.body;
+    var streamer = req.streamer;
+    var timeout = req.timeout || 0;
+    var headers = req.headers || {};
+
+    for (trailer in req.trailers) {
+      if (req.trailers.hasOwnProperty(trailer)) {
+        if (headers['Trailer']) {
+          headers['Trailer'] += ', ' + trailer;
+        }
+        else {
+          headers['Trailer'] = trailer;
+        }
+      }
     }
 
-    function do_request() {
-      // Issue request
-      var timer,
-          trailer,
-          client = server.client,
-          method = req.method || 'GET',
-          status = res.status || res.statusCode,
-          data = req.data || req.body,
-          streamer = req.streamer,
-          timeout = req.timeout || 0,
-          headers = req.headers || {};
+    var remote = { hostname: '127.0.0.1', port: server.__port };
+    var opts = { path: req.url, method: method, headers: headers };
 
-      for (trailer in req.trailers) {
-          if (req.trailers.hasOwnProperty(trailer)) {
-              if (headers['Trailer']) {
-                  headers['Trailer'] += ', ' + trailer;
-              }
-              else {
-                  headers['Trailer'] = trailer;
-              }
-          }
-      }
-
-
-      var request = client.request(method, req.url, headers);
-
+    util_http._base_request(remote, opts, function(err, request) {
       if (req.trailers) {
-          request.addTrailers(req.trailers);
+        request.addTrailers(req.trailers);
       }
 
       // Timeout
       if (timeout) {
-          timer = setTimeout(function(){
-              --server.__pending || server.close();
-              delete req.timeout;
-              assert.fail(msg + 'Request timed out after ' + timeout + 'ms.');
-          }, timeout);
+        timer = setTimeout(function(){
+          --server.__pending || server.close();
+          delete req.timeout;
+          assert.fail(msg + 'Request timed out after ' + timeout + 'ms.');
+        }, timeout);
       }
 
       if (data) request.write(data);
+
       request.addListener('response', function(response){
-          response.body = '';
-          response.setEncoding('utf8');
-          response.addListener('data', function(chunk){ response.body += chunk; });
-          response.addListener('end', function(){
-              --server.__pending || server.close();
-              if (timer) clearTimeout(timer);
+        response.body = '';
+        response.setEncoding('utf8');
+        response.addListener('data', function(chunk){ response.body += chunk; });
+        response.addListener('end', function(){
+          --server.__pending || server.close();
+          if (timer) clearTimeout(timer);
 
-              // Assert response body
-              if (res.body !== undefined) {
-                  assert.equal(
-                      response.body,
-                      res.body,
-                      msg + 'Invalid response body.\n'
-                          + '    Expected: ' + sys.inspect(res.body) + '\n'
-                          + '    Got: ' + sys.inspect(response.body)
-                  );
-              }
+          // Assert response body
+          if (res.body !== undefined) {
+            assert.equal(
+              response.body,
+              res.body,
+              msg + 'Invalid response body.\n'
+                  + '    Expected: ' + sys.inspect(res.body) + '\n'
+                  + '    Got: ' + sys.inspect(response.body)
+            );
+          }
 
-              // Assert response status
-              if (typeof status === 'number') {
-                  assert.equal(
-                      response.statusCode,
-                      status,
-                      msg + colorize('Invalid response status code.\n'
-                          + '    Expected: [green]{' + status + '}\n'
-                          + '    Got: [red]{' + response.statusCode + '}')
-                  );
-              }
+          // Assert response status
+          if (typeof status === 'number') {
+            assert.equal(
+              response.statusCode,
+              status,
+              msg + colorize('Invalid response status code.\n'
+                  + '    Expected: [green]{' + status + '}\n'
+                  + '    Got: [red]{' + response.statusCode + '}')
+            );
+          }
 
-              // Assert response headers
-              if (res.headers) {
-                  var keys = Object.keys(res.headers);
-                  for (var i = 0, len = keys.length; i < len; ++i) {
-                      var name = keys[i],
-                          actual = response.headers[name.toLowerCase()],
-                          expected = res.headers[name];
-                      assert.equal(
-                          actual,
-                          expected,
-                          msg + colorize('Invalid response header [bold]{' + name + '}.\n'
-                              + '    Expected: [green]{' + expected + '}\n'
-                              + '    Got: [red]{' + actual + '}')
-                      );
-                  }
-              }
+          // Assert response headers
+          if (res.headers) {
+            var keys = Object.keys(res.headers);
+            for (var i = 0, len = keys.length; i < len; ++i) {
+              var name = keys[i];
+              var actual = response.headers[name.toLowerCase()];
+              var expected = res.headers[name];
+              assert.equal(
+                actual,
+                expected,
+                msg + colorize('Invalid response header [bold]{' + name + '}.\n'
+                    + '    Expected: [green]{' + expected + '}\n'
+                    + '    Got: [red]{' + actual + '}')
+              );
+            }
+          }
 
-              // Callback
-              callback(response);
-          });
+          // Callback
+          callback(response);
+        });
       });
       if (streamer) {
         streamer(request);
       } else {
         request.end();
       }
-    }
-
-    if (!server.client.fd) {
-      process.nextTick(function() {
-        do_request();
-      });
-    }
-    else {
-      do_request();
-    }
-
+    });
+  });
 };
 
 /**
