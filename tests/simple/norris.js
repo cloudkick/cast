@@ -27,7 +27,6 @@ var assert = require('assert');
 
     // Check the architecture
     assert.ok(facts.arch);
-    assert.ok(facts.arch == "i386" || facts.arch == "x86_64");
 
     // Check gnutar
     assert.ok(facts.gnutar);
