@@ -15,6 +15,16 @@
  * limitations under the License.
  */
 
+/*
+ * TODO: Expand these tests
+ *
+ * In order to test the cast client properly we need to have a way to give it
+ * custom remotes. Putting them in ~/.cast/remotes.json isn't an appropriate
+ * solution, so we should either make that location configurable or (and I this
+ * is probably a good idea one way or another) allow per-project remotes. This
+ * way we could test the command for adding remotes as well.
+ */
+
 var sys = require('sys');
 var fs = require('fs');
 var path = require('path');
