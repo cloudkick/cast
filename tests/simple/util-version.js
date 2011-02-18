@@ -16,21 +16,15 @@
  */
 
 var version = require('util/version');
+var assert = require('assert');
 
-
-exports['verion string'] = function(assert, beforeExit) {
-  beforeExit(function() {
-    var orig = version.IS_DEV;
-    version.IS_DEV = false;
-    var v = version.toString();
-    assert.match(v, /cast-(\d+)\.(\d+).(\d+)-release$/);
-    version.IS_DEV = true;
-    v = version.toString();
-    assert.match(v, /cast-(\d+)\.(\d+).(\d+)-dev$/);
-    version.IS_DEV = orig;
-  });
-};
-
-exports.setup = function(done) {
-  require('util/pubsub').ensure("config", done);
-};
+(function() {
+  var orig = version.IS_DEV;
+  version.IS_DEV = false;
+  var v = version.toString();
+  assert.match(v, /cast-(\d+)\.(\d+).(\d+)-release$/);
+  version.IS_DEV = true;
+  v = version.toString();
+  assert.match(v, /cast-(\d+)\.(\d+).(\d+)-dev$/);
+  version.IS_DEV = orig;
+})();

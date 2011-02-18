@@ -1,0 +1,102 @@
+/*
+ * Licensed to Cloudkick, Inc ('Cloudkick') under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * Cloudkick licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var fs = require('fs');
+var fsutil = require('util/fs');
+var async = require('extern/async');
+var assert = require('assert');
+
+(function() {
+  var completed = false;
+  var tmpl = {
+    afile: "simple file",
+    subdir: {
+      "subfile": "subfile contents"
+    }
+  };
+
+  async.series([
+    async.apply(fs.mkdir, '.tests/fsutil', 0700),
+
+    // Render a template to a tree
+    function(callback) {
+      fsutil.template_to_tree('.tests/fsutil/template', tmpl, false, callback);
+    },
+
+    // Make sure it worked as expected
+    function(callback) {
+      fs.stat('.tests/fsutil/template', function(err, stats) {
+        assert.ifError(err);
+        assert.ok(stats.isDirectory());
+        assert.equal(stats.mode & 0777, 0700);
+        callback();
+      });
+    },
+
+    function(callback) {
+      fs.stat('.tests/fsutil/template/subdir', function(err, stats) {
+        assert.ifError(err);
+        assert.ok(stats.isDirectory());
+        assert.equal(stats.mode & 0777, 0700);
+        callback();
+      });
+    },
+
+    function(callback) {
+      fs.stat('.tests/fsutil/template/afile', function(err, stats) {
+        assert.ifError(err);
+        assert.ok(stats.isFile());
+        assert.equal(stats.mode & 0777, 0700);
+        callback();
+      });
+    },
+
+    function(callback) {
+      fs.stat('.tests/fsutil/template/subdir/subfile', function(err, stats) {
+        assert.ifError(err);
+        assert.ok(stats.isFile());
+        assert.equal(stats.mode & 0777, 0700);
+        callback();
+      });
+    },
+
+    // Attempt to re-render the template - this should fail
+    function(callback) {
+      fsutil.template_to_tree('.tests/fsutil/template', tmpl, false, function(err) {
+        assert.ok(err);
+        assert.equal(err.errno, 17);
+        callback();
+      });
+    },
+
+    // Attempt to re-render the template with ignore_existing set
+    function(callback) {
+      fsutil.template_to_tree('.tests/fsutil/template', tmpl, true, function(err) {
+        assert.ifError(err);
+        callback();
+      });
+    },
+  ],
+  function(err) {
+    assert.ifError(err);
+    completed = true;
+  });
+
+  process.on('exit', function() {
+    assert.ok(completed, 'Tests completed');
+  });
+})();

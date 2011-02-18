@@ -15,35 +15,27 @@
  * limitations under the License.
  */
 
-var path = require('path');
-var exec = require('child_process').exec;
+var norris = require('norris');
 var async = require('extern/async');
-var config = require('util/config');
+var assert = require('assert');
 
-exports.setup = function(done) {
-  var ps = require('util/pubsub');
-  var path = require('path');
-  config.config_files = ["~/.xxx_no_such_file", path.join(__dirname, "test.conf")];
-  config.setup_agent(function(error) {
-    if (error) {
-      throw new Error('Error during test configuration');
-    }
-    async.series([
-      async.apply(exec, 'rm -rf .tests'),
-      async.apply(exec, 'mkdir .tests')
-    ],
-    function() {
-      process.nextTick(function() {
-        ps.emit("config");
-        done();
-      });
-    });
+(function() {
+  var completed = false;
+  norris.get(function(facts)  {
+    // Check the hostname
+    assert.ok(facts.hostname);
+
+    // Check the architecture
+    assert.ok(facts.arch);
+    assert.ok(facts.arch == "i386" || facts.arch == "x86_64");
+
+    // Check gnutar
+    assert.ok(facts.gnutar);
+
+    completed = true;
   });
-};
 
-exports['basic config'] = function(assert, beforeExit) {
-  var conf = config.get();
-  assert.equal(49443, conf.port);
-  assert.equal(".tests/data_root", conf.data_root);
-};
-
+  process.on('exit', function() {
+    assert.ok(completed, 'Tests completed');
+  });
+})();

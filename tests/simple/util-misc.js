@@ -16,12 +16,10 @@
  */
 
 var misc = require('util/misc');
-var exec = require('child_process').exec;
-var async = require('extern/async');
-var fs =  require('fs');
-var test = require('util/test');
+var assert = require('assert');
 
-exports['object merge'] = function(assert, beforeExit) {
+// object merge
+(function() {
   var a = {foo: 1};
   var b = {bar: 2};
   var c = {foo: 1, bar: 2};
@@ -31,50 +29,54 @@ exports['object merge'] = function(assert, beforeExit) {
   assert.deepEqual(c, out);
   out = misc.merge({}, out);
   assert.deepEqual(c, out);
-};
+})();
 
-exports['empty merge'] = function(assert, beforeExit) {
+// empty merge
+(function() {
   var a = {};
   var b = {};
   var c = {};
   var out = misc.merge(a, b);
   assert.deepEqual(c, out);
-};
+})();
 
-exports['empty expanduser'] = function(assert, beforeExit) {
+// empty expanduser
+(function() {
   var out = misc.expanduser("/foo/bar");
   assert.equal("/foo/bar", out);
-};
+})();
 
-exports['expanduser on self'] = function(assert, beforeExit) {
+// expanduser on self
+(function() {
   var out = misc.expanduser("~/foo/bar");
   assert.equal(process.env.HOME+"/foo/bar", out);
-};
+})();
 
-exports['expanduser on nothing'] = function(assert, beforeExit) {
+// expanduser on nothing
+(function() {
   var path = require('path');
   var out = misc.expanduser("~");
   assert.equal(path.join(process.env.HOME, "/"), out);
-};
+})();
 
-exports['expanduser with HOME unset hack'] = function(assert, beforeExit) {
-  beforeExit(function() {
-    var n = 0;
-    var orig = process.env.HOME;
-    delete process.env.HOME;
-    try {
-      var out = misc.expanduser("~");
-    }
-    catch (e1) {
-      n++;
-      assert.match(e1, /was undefined/);
-    }
-    process.env.HOME = orig;
-    assert.equal(1, n, 'Exceptions thrown');
-  });
-};
+// expanduser with HOME unset hack
+(function() {
+  var n = 0;
+  var orig = process.env.HOME;
+  delete process.env.HOME;
+  try {
+    var out = misc.expanduser("~");
+  }
+  catch (e1) {
+    n++;
+    assert.match(e1, /was undefined/);
+  }
+  process.env.HOME = orig;
+  assert.equal(1, n, 'Exceptions thrown');
+})();
 
-exports['missing getpwnam for expanduser'] = function(assert, beforeExit) {
+// missing getpwnam for expanduser
+(function() {
   var n = 0;
   var out;
   try {
@@ -93,12 +95,11 @@ exports['missing getpwnam for expanduser'] = function(assert, beforeExit) {
     assert.match(e2, /getpwnam/);
   }
 
-  beforeExit(function() {
-    assert.equal(2, n, 'Exceptions thrown');
-  });
-};
+  assert.equal(2, n, 'Exceptions thrown');
+})();
 
-exports['templating to a tree'] = function(assert, beforeExit)
+// templating to a tree
+/*
 {
   var n = 0;
 
@@ -130,7 +131,7 @@ exports['templating to a tree'] = function(assert, beforeExit)
   });
 };
 
-exports['templating to a tree throws exception on existing directory'] = function(assert, beforeExit)
+// templating to a tree throws exception on existing directory
 {
   var n = 0;
 
@@ -161,25 +162,28 @@ exports['templating to a tree throws exception on existing directory'] = functio
     assert.equal(3, n, 'Callbacks called');
   });
 };
+*/
 
-exports['trimming whitespace'] = function(assert, beforeExit)
-{
+// trimming whitespace
+(function() {
   assert.equal("foo", misc.trim("foo"));
   assert.equal("foo", misc.trim(" foo"));
   assert.equal("foo", misc.trim("foo "));
   assert.equal("foo", misc.trim(" foo "));
   assert.equal("fo o", misc.trim(" fo o "));
   assert.equal("foo", misc.trim(" foo\n"));
-};
+})();
 
-exports['in array'] = function(assert, beforeExit ) {
+// in array
+(function() {
   var haystack = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
   assert.equal(misc.in_array('item 2', haystack), true);
   assert.equal(misc.in_array('not in array', haystack), false);
-};
+})();
 
-exports['in array compare function'] = function(assert, beforeExit ) {
+// in array compare function
+(function() {
   var haystack = [ ['item 1', 'a'], ['item 2', 'b'], ['item 3', 'c'], ['item 4', 'd'] ];
   var compare_function = function(item, needle) {
     return item[1] === needle;
@@ -187,16 +191,18 @@ exports['in array compare function'] = function(assert, beforeExit ) {
 
   assert.equal(misc.in_array('a', haystack, null, compare_function), true);
   assert.equal(misc.in_array('not in array', haystack, null, compare_function), false);
-};
+})();
 
-exports['array find'] = function(assert, beforeExit ) {
+// array find
+(function() {
   var haystack = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
   assert.equal(misc.array_find('item 2', haystack), 1);
   assert.equal(misc.array_find('not in array', haystack), false);
-};
+})();
 
-exports['arrays contains same elements'] = function(assert, beforeExit) {
+// arrays contains same elements
+(function() {
   var array1 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
   var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
   var array3 = [ 'item 4', 'item 3', 'item 2', 'item 1' ];
@@ -206,9 +212,10 @@ exports['arrays contains same elements'] = function(assert, beforeExit) {
   assert.equal(misc.arrays_contains_same_elements(array1, array3, true), false);
   assert.equal(misc.arrays_contains_same_elements(array1, array3, false), true);
   assert.equal(misc.arrays_contains_same_elements(array1, array4), false);
-};
+})();
 
-exports['array is subset of'] = function(assert, beforeExit) {
+// array is subset of
+(function() {
   var array1 = [ 'item 1', 'item 2' ];
   var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
   var array3 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
@@ -221,17 +228,19 @@ exports['array is subset of'] = function(assert, beforeExit) {
   assert.equal(misc.array_is_subset_of(array2, array3, false), true);
   assert.equal(misc.array_is_subset_of(array3, array2, false), true);
   assert.equal(misc.array_is_subset_of(array3, array2, true), false);
-};
+})();
 
-exports['array difference'] = function(assert, beforeExit) {
+// array difference
+(function() {
   var array1 = [ 'item 1', 'item 2' ];
   var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
   assert.deepEqual(misc.array_difference(array1, array2), []);
   assert.deepEqual(misc.array_difference(array2, array1), [ 'item 3', 'item 4' ]);
-};
+})();
 
-exports['filter paths'] = function(assert, beforeExit) {
+// filter paths
+(function() {
   var paths1 = [ 'foo/', 'bar/', 'foo.txt', 'bar/file.tar.gz', 'bar', 'foo/bar', 'foo/test.ini', 'dir/file.tar.gz' ];
   var paths2 = [ 'foo/1.txt', 'foo/', 'foo.txt', 'bar/file.tar.gz', 'bar', 'bar', 'bar/', 'foo/bar', 'foo/test.ini',
                 'dir/file.tar.gz', 'dir/file.tar.gz', 'foo/', 'foo/bar/1' ];
@@ -239,23 +248,26 @@ exports['filter paths'] = function(assert, beforeExit) {
 
   assert.deepEqual(misc.filter_repeated_paths(paths1), paths_filtered);
   assert.deepEqual(misc.filter_repeated_paths(paths2), paths_filtered);
-};
+})();
 
-exports['get valid bundle name'] = function(assert, beforeExit) {
+// get valid bundle name
+(function() {
   assert.equal(misc.get_valid_bundle_name('ABC DEFG HIJ'), 'abc_defg_hij');
   assert.equal(misc.get_valid_bundle_name('test-app-name 1.0'), 'test-app-name_10');
   assert.equal(misc.get_valid_bundle_name('NodeJS Test app'), 'nodejs_test_app');
-};
+})();
 
-exports['is valid bundle version'] = function(assert, beforeExit) {
+// is valid bundle version
+(function() {
   assert.equal(misc.is_valid_bundle_version('1.0.1'), true);
   assert.equal(misc.is_valid_bundle_version('20100810'), true);
   assert.equal(misc.is_valid_bundle_version('20100912.d261151fad5b2ce95a2281a70fed2c6dab221731'), true);
   assert.equal(misc.is_valid_bundle_version('1.0'), true);
   assert.equal(misc.is_valid_bundle_version('a.b.c'), true);
   assert.equal(misc.is_valid_bundle_version('a.b@c'), false);
-};
+})();
 
+/*
 exports.setup = function(done) {
   async.series([
     async.apply(require('util/pubsub').ensure, "config"),
@@ -263,3 +275,4 @@ exports.setup = function(done) {
   ],
   done);
 };
+*/
