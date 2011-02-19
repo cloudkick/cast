@@ -313,33 +313,31 @@ exports['test command services list'] = function(assert, beforeExit) {
 };
 
 exports['test global_options'] = function(assert, beforeExit) {
-  var stdout_data = [], value1, value2;
+  var stdout_data = [], value, m;
   var capture_write = function (string) {
     stdout_data.push(string);
   };
 
   var parser = new CommandParser(COMMANDS_PATH, capture_write);
-  parser.add_commands(['return_args']);
-
-  value1 = parser.parse(['bin', 'file', 'return_args']);
+  parser.add_commands(['with_color']);
 
   try {
-    parser.parse(['bin', 'file', 'return_args', '--colors']);
+    parser.parse(['bin', 'file', 'with_color', '--colors']);
   }
-  catch (err) {
-    assert.ok('Too many arguments exception was thrown');
+  catch (e) {
+    m = e.message;
   }
+  assert.match(m, /colors' is undefined/i);
 
-  parser.add_global_options([{
+  parser.add_global_options({
+    'colors': {
       names: ['--colors'],
       dest: 'colors',
       action: 'store_true',
       desc: 'Test option.'
-     }
-  ]);
+    }
+  });
 
-  value2 = parser.parse(['bin', 'file', 'return_args', '--colors']);
-
-  assert.deepEqual(value1, {});
-  assert.deepEqual(value2, { 'colors': true });
+  value = parser.parse(['bin', 'file', 'with_color', '--colors']);
+  assert.deepEqual(value, { 'colors': true });
 };
