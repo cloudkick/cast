@@ -21,34 +21,33 @@ var test = require('util/test');
 var certgen = require('security/certgen');
 var exec = require('child_process').exec;
 var misc = require('util/misc');
+var assert = require('assert');
 
-exports['create selfsigned cert'] = function(assert, beforeExit)
-{
-  var n = 0;
-  var hostname = 'testhostnamerare' + misc.randstr(5);
-  certgen.selfsigned(hostname,
-                    '.tests/certs/t.key',
-                    '.tests/certs/t.crt',
-                    function(err)
-  {
-    n++;
-    assert.equal(null, err, 'no errors from cert generation');
-    exec("openssl x509 -noout -subject -in .tests/certs/t.crt", function(err, stdout, stderr) {
-      n++;
-      assert.equal(null, err, 'no errors from cert verification');
-      assert.equal("subject= /CN="+hostname, misc.trim(stdout));
-    });
-  });
-
-  beforeExit(function() {
-    assert.equal(2, n, 'callbacks run');
-  });
-};
-
-exports.setup = function(done) {
+(function() {
+  var completed = false;
   async.series([
-    async.apply(require('util/pubsub').ensure, "config"),
-    async.apply(fs.mkdir, '.tests/certs', 0700)
+    async.apply(fs.mkdir, '.tests/certs', 0700),
+
+    function(callback) {
+      var hostname = 'testhostnamerare' + misc.randstr(5);
+      var keypath = '.tests/certs/t.key';
+      var crtpath = '.tests/certs/t.crt';
+      certgen.selfsigned(hostname, keypath, crtpath, function(err) {
+        assert.ifError(err);
+        exec("openssl x509 -noout -subject -in .tests/certs/t.crt", function(err, stdout, stderr) {
+          assert.ifError(err);
+          assert.equal("subject= /CN=" + hostname, misc.trim(stdout));
+          callback();
+        });
+      });
+    }
   ],
-  done);
-};
+  function(err) {
+    completed = true;
+    assert.ifError(err);
+  });
+
+  process.on('exit', function() {
+    assert.ok(completed, 'Tests completed');
+  });
+})();

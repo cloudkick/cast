@@ -16,32 +16,34 @@
  */
 
 var req = require('util/requirements');
+var assert = require('assert');
 
-exports['test compare_versions ver_b < ver_a'] = function(assert, beforeExit) {
+// Test compare_versions ver_b < ver_a
+(function() {
   var i, version;
   var version_a = '0.2.1';
   var versions_b = [ '0.1.0', '0.1.9', '0.2.0', '0.0.0' ];
 
   for (i = 0; i < versions_b.length; i++) {
     version = versions_b[i];
-
     assert.equal(req.compare_versions(version_a, version), false);
   }
-};
+})();
 
-exports['test compare_versions ver_b >= ver_a'] = function(assert, beforeExit) {
+// Test compare_versions ver_b >= ver_a
+(function() {
   var i, version;
   var version_a = '0.2.1';
   var versions_b = [ '0.2.1', '0.2.2', '0.2.3', '0.2.9', '0.3.0', '1.0.0' ];
 
   for (i = 0; i < versions_b.length; i++) {
     version = versions_b[i];
-
     assert.ok(req.compare_versions(version_a, version));
   }
-};
+})();
 
-exports['test is_defined'] = function(assert, beforeExit) {
+// Test is_defined
+(function() {
   var i, item;
   var assert_true = [ '1', ['foo', 'bar'], 1, {}, { 'foo': 'bar'}, true ];
   var assert_false = [ null, undefined, false ];
@@ -55,4 +57,4 @@ exports['test is_defined'] = function(assert, beforeExit) {
     item = assert_false[i];
     assert.equal(req.is_defined(null, item), false);
   }
-};
+})();

@@ -15,8 +15,16 @@
  * limitations under the License.
  */
 
-var instances = require('deployment/instances');
+var version = require('util/version');
+var assert = require('assert');
 
-exports.create_instance = instances.create_instance;
-exports.get_instance = instances.get_instance;
-exports.get_instance_list = instances.get_instance_list;
+(function() {
+  var orig = version.IS_DEV;
+  version.IS_DEV = false;
+  var v = version.toString();
+  assert.match(v, /cast-(\d+)\.(\d+).(\d+)-release$/);
+  version.IS_DEV = true;
+  v = version.toString();
+  assert.match(v, /cast-(\d+)\.(\d+).(\d+)-dev$/);
+  version.IS_DEV = orig;
+})();

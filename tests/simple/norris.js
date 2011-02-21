@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-var version = require('util/version');
+var norris = require('norris');
+var async = require('extern/async');
+var assert = require('assert');
 
+(function() {
+  var completed = false;
+  norris.get(function(facts)  {
+    // Check the hostname
+    assert.ok(facts.hostname);
 
-exports['verion string'] = function(assert, beforeExit) {
-  beforeExit(function() {
-    var orig = version.IS_DEV;
-    version.IS_DEV = false;
-    var v = version.toString();
-    assert.match(v, /cast-(\d+)\.(\d+).(\d+)-release$/);
-    version.IS_DEV = true;
-    v = version.toString();
-    assert.match(v, /cast-(\d+)\.(\d+).(\d+)-dev$/);
-    version.IS_DEV = orig;
+    // Check the architecture
+    assert.ok(facts.arch);
+
+    // Check gnutar
+    assert.ok(facts.gnutar);
+
+    completed = true;
   });
-};
 
-exports.setup = function(done) {
-  require('util/pubsub').ensure("config", done);
-};
+  process.on('exit', function() {
+    assert.ok(completed, 'Tests completed');
+  });
+})();
