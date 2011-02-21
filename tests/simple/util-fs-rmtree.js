@@ -94,15 +94,6 @@ var assert = require('assert');
         assert.match(err.message, /ENOENT/);
         callback();
       });
-    },
-
-    // Try to delete no path at all (should fail)
-    function(callback) {
-      fsutil.rmtree('', function(err) {
-        assert.ok(err);
-        assert.match(err.message, /nothing/);
-        callback();
-      });
     }
   ],
   function(err) {
