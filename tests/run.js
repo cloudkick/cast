@@ -22,10 +22,13 @@ var fs = require('fs');
 var sys = require('sys');
 var path = require('path');
 var spawn = require('child_process').spawn;
-var config = require('util/config');
-var ps = require('util/pubsub');
+
 var async = require('extern/async');
 var sprintf = require('extern/sprintf').sprintf;
+
+var config = require('util/config');
+var ps = require('util/pubsub');
+var terminal = require('util/terminal');
 
 var TEST_TIMEOUT = 5 * 1000;
 var MAX_BUFFER = 512 * 1024;
@@ -41,10 +44,9 @@ var succeeded_tests = [];
 var failed_tests = [];
 
 function equals_line(str) {
-  return  "\033[34m===================="
-        + "\033[31m " + str + " "
-        + "\033[34m===================="
-        + "\033[0m";
+  return  "[blue]====================[/blue]"
+        + " [red]" + str + "[/red] "
+        + "[blue]====================[/blue]";
 }
 
 function execute_test(dir, file, callback) {
@@ -67,18 +69,18 @@ function execute_test(dir, file, callback) {
   child.on('exit', function(code) {
     clearTimeout(timeout_id);
     if (code !== 0) {
-      sys.puts(equals_line(sprintf("%s/%s", dir, file)));
+      terminal.puts(equals_line(sprintf("%s/%s", dir, file)));
       if (timed_out) {
-        sys.puts('--- test timed out ---');
+        terminal.puts('--- test timed out ---');
       }
-      sys.puts('--- exit code: ' + code + ' ---');
+      terminal.puts('--- exit code: ' + code + ' ---');
       if (stderr.length > 0) {
-        sys.puts('--- stderr ---');
-        sys.puts(stderr.join(''));
+        terminal.puts('--- stderr ---');
+        terminal.puts(stderr.join(''));
       }
       if (stdout.length > 0) {
-        sys.puts('--- stdout ---');
-        sys.puts(stdout.join(''));
+        terminal.puts('--- stdout ---');
+        terminal.puts(stdout.join(''));
       }
       failures += 1;
       failed_tests.push(file);
@@ -103,7 +105,7 @@ function print_test_results(tests) {
 
   for (i = 0; i < tests_len; i++) {
     test = tests[i];
-    sys.puts(sprintf('     - %s', test));
+    terminal.puts(sprintf('     - %s', test));
   }
 }
 
@@ -131,12 +133,12 @@ fs.readdir(__dirname, function(err, dirs) {
     });
   },
   function() {
-    sys.puts(equals_line("Tests Complete"));
-    sys.puts(sprintf("    Successes: %d", successes));
+    terminal.puts(equals_line("Tests Complete"));
+    terminal.puts(sprintf("    Successes: [green]%s[/green]", successes));
     print_test_results(succeeded_tests);
-    sys.puts(sprintf("     Failures: %d", failures));
-    sys.puts("    ------------------");
+    terminal.puts(sprintf("     Failures: [red]%s[/red]", failures));
+    terminal.puts("    ------------------");
     print_test_results(failed_tests);
-    sys.puts("        Total: " + total);
+    terminal.puts("        Total: " + total);
   });
 });
