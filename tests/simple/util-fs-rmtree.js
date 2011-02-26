@@ -100,7 +100,7 @@ var assert = require('assert');
     function(callback) {
       fsutil.rmtree('', function(err) {
         assert.ok(err);
-        assert.match(err.message, /nothing/);
+        assert.match(err.message, /ENOENT/);
         callback();
       });
     }
