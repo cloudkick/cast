@@ -37,6 +37,9 @@ var total = 0;
 var successes = 0;
 var failures = 0;
 
+var succeeded_tests = [];
+var failed_tests = [];
+
 function equals_line(str) {
   return  "\033[34m===================="
         + "\033[31m " + str + " "
@@ -78,9 +81,11 @@ function execute_test(dir, file, callback) {
         sys.puts(stdout.join(''));
       }
       failures += 1;
+      failed_tests.push(file);
     }
     else {
       successes += 1;
+      succeeded_tests.push(file);
     }
     total += 1;
     return callback();
@@ -90,6 +95,16 @@ function execute_test(dir, file, callback) {
     timed_out = true;
     child.kill('SIGKILL');
   }, TEST_TIMEOUT);
+}
+
+function print_test_results(tests) {
+  var i = 0;
+  var tests_len = tests.length;
+
+  for (i = 0; i < tests_len; i++) {
+    test = tests[i];
+    sys.puts(sprintf('     - %s', test));
+  }
 }
 
 fs.readdir(__dirname, function(err, dirs) {
@@ -117,9 +132,11 @@ fs.readdir(__dirname, function(err, dirs) {
   },
   function() {
     sys.puts(equals_line("Tests Complete"));
-    sys.puts("    Successes: " + successes);
-    sys.puts("     Failures: " + failures);
+    sys.puts(sprintf("    Successes: %d", successes));
+    print_test_results(succeeded_tests);
+    sys.puts(sprintf("     Failures: %d", failures));
     sys.puts("    ------------------");
+    print_test_results(failed_tests);
     sys.puts("        Total: " + total);
   });
 });
