@@ -193,6 +193,7 @@ assert.response = function(server, req, res, msg){
     }
 
     var remote = { hostname: '127.0.0.1', port: server.__port };
+    remote.url = 'http://' + remote.hostname + ':' + remote.port;
     var opts = { path: req.url, method: method, headers: headers };
 
     util_http._base_request(remote, opts, function(err, request) {
