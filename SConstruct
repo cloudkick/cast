@@ -80,7 +80,7 @@ lenv.AlwaysBuild(gjslint)
 lenv.Alias('gjslint', gjslint)
 lenv.Alias('gfixjsstyle', gfixjsstyle)
 
-env['JSDOC'] = "java -jar lib/extern/jsdoc-toolkit/jsrun.jar lib/extern/jsdoc-toolkit/app/run.js -a -t=lib/extern/jsdoc-toolkit/templates/outline -D='Cloudkick Cast' -d=jsdoc/"
+env['JSDOC'] = "NODE_PATH=lib/extern lib/extern/nclosure/bin/ncdoc.js"
 docscmd = env.Command('.builddocs', allsource, "$JSDOC " + " ".join([x.get_path() for x in source]))
 env.Alias('docs', docscmd)
 
