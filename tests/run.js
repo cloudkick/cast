@@ -140,5 +140,8 @@ fs.readdir(__dirname, function(err, dirs) {
     terminal.puts("    ------------------");
     print_test_results(failed_tests);
     terminal.puts("        Total: " + total);
+
+
+    process.exit(failures);
   });
 });
