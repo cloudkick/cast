@@ -37,6 +37,10 @@ jspack 4753fb1a8de (May 22, 2010)
   License: MIT
   Packing and Unpacking of binary data structures
 
+nclosure 110533de7074935032d6 (March 1, 2011)
+  License: Apache 2.0
+  Server-side Google Closure with Node.js
+
 node-jscoverage 0d4608a6b4275b (May 25, 2010)
   License: GPL v2
   Generates reports on test coverage of the agent.
