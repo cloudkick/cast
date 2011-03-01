@@ -27,11 +27,6 @@ uuid d0cad69cbf3e1bc31f3f (August 29, 2010)
   License: BSD
   Library for generating random UUIDs (taken from narwal).
 
-jsdoc-toolkit v2.4.0 (December 13, 2010)
-  http://code.google.com/p/jsdoc-toolkit/
-  License: X11/MIT
-  A documentation generator for JavaScript.
-
 jspack 4753fb1a8de (May 22, 2010)
   http://github.com/pgriess/node-jspack
   License: MIT
