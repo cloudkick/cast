@@ -111,7 +111,7 @@ function verify_response_code(url, code, method, data, callback) {
         async.apply(verify_response_code, '/bundles/foo/foo@3.0.tar.gz', 404)
 
       ],
-      callback());
+      callback);
     },
 
     // Remove bundles from the previous tests
