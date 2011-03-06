@@ -81,6 +81,29 @@ function getServer() {
       });
     },
 
+    // List remotes
+    function(callback) {
+      cexec(['remotes', 'list'], function(err, stdout, stderr) {
+        assert.match(stdout, /test\n/);
+        callback();
+      });
+    },
+
+    // Set a default remote
+    function(callback) {
+      cexec(['remotes', 'set-default', 'test'], function(err, stdout, stderr) {
+        callback();
+      });
+    },
+
+    // List remotes again to check the default
+    function(callback) {
+      cexec(['remotes', 'list'], function(err, stdout, stderr) {
+        assert.match(stdout, /test \(default\)\n/);
+        callback();
+      });
+    },
+
     // Create a bundle
     function(callback) {
       cexec(['bundles', 'create', 'v1.0'], function(err, stdout, stderr) {
