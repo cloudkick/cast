@@ -109,3 +109,22 @@ instance.root = path.join(__dirname, '../data/instances/test_instance/');
     assert.ok(completed, 'Tests completed');
   });
 })();
+
+// Test failure (hook script is not executable)
+(function() {
+  var completed = false;
+
+  var callback = function(err, killed, stdout, stderr) {
+    assert.ok(err);
+    assert.ok(!killed);
+
+    completed = true;
+  };
+
+  hooks.execute(instance, '1.0', 'hook_not_executable.js', null, [],
+                callback);
+
+  process.on('exit', function() {
+    assert.ok(completed, 'Tests completed');
+  });
+})();
