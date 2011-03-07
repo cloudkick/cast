@@ -30,7 +30,7 @@ var config = require('util/config');
 var ps = require('util/pubsub');
 var terminal = require('util/terminal');
 
-var TEST_TIMEOUT = 10 * 1000;
+var TEST_TIMEOUT = 15 * 1000;
 var MAX_BUFFER = 512 * 1024;
 
 var total = 0;

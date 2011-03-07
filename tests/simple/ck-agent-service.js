@@ -25,7 +25,7 @@ var async = require('extern/async');
 var assert = require('assert');
 
 // Dirty hack to make the tests run much faster
-agent_constants.PING_INTERVAL = 1500;
+agent_constants.PING_INTERVAL = 1000;
 
 var response_dictionary = {
   'hello (\\d) (.*?) ([a-zA-Z0-9]+) ([a-zA-Z0-9]+)': {
@@ -118,7 +118,7 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
         }, 500);
       });
     },
-    
+
     /*
     TODO: This is failing for reasons that remain unclear
     // Test command queing
