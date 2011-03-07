@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
+var path = require('path');
 var assert = require('assert');
 
+var instances = require('deployment/instances');
 var hooks = require('deployment/hooks');
+
+instance = new instances.Instance('test_instance');
+instance._bundle_name = 'test_bundle';
+instance.root = path.join(__dirname, '../data/instances/test_instance/');
 
 // Test success (exit code == 0)
 (function() {
@@ -33,7 +39,7 @@ var hooks = require('deployment/hooks');
     completed = true;
   };
 
-  hooks.execute('test_instance', '1.0', 'hook_success', null, [],
+  hooks.execute(instance, '1.0', 'hook_success.js', null, [],
                 callback);
 
   process.on('exit', function() {
@@ -55,7 +61,7 @@ var hooks = require('deployment/hooks');
     completed = true;
   };
 
-  hooks.execute('test_instance', '1.0', 'hook_failure', null, [],
+  hooks.execute(instance, '1.0', 'hook_failure.js', null, [],
                 callback);
 
   process.on('exit', function() {
@@ -77,7 +83,7 @@ var hooks = require('deployment/hooks');
     completed = true;
   };
 
-  hooks.execute('test_instance', '1.0', 'hook_success', null, [ 'test1', 'test2'],
+  hooks.execute(instance, '1.0', 'hook_args.js', null, [ 'test1', 'test2'],
                 callback);
 
   process.on('exit', function() {
@@ -93,13 +99,10 @@ var hooks = require('deployment/hooks');
     assert.ok(err);
     assert.ok(killed);
 
-    assert.equal('test hook timeout stdout', stdout);
-    assert.equal('test hook timeout stderr', stderr);
-
     completed = true;
   };
 
-  hooks.execute('test_instance', '1.0', 'hook_success', null, [],
+  hooks.execute(instance, '1.0', 'hook_timeout.js', 300, [],
                 callback);
 
   process.on('exit', function() {
