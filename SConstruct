@@ -107,7 +107,14 @@ for test in tests:
   if not skip:
     test_files.append(test.get_path())
 
-testcmd = env.Command('.tests_run', [], "$NODE tests/run.js %s" % ' '.join(test_files))
+tests_to_run = ARGUMENTS.get('tests', None)
+
+if tests_to_run:
+  tests_to_run = tests_to_run.split(' ')
+else:
+  tests_to_run = test_files
+
+testcmd = env.Command('.tests_run', [], "$NODE tests/run.js %s" % ' '.join(tests_to_run))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
