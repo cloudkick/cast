@@ -94,8 +94,20 @@ env.Alias('upload-docs', uploaddocscmd)
 env.Alias('build-docs', [ docscmd, uploaddocscmd ])
 env.Depends(uploaddocscmd, docscmd)
 
+IGNORED_TESTS = [ 'tests/run.js', 'tests/common.js', 'tests/data/' ]
 tests = sorted(testsource)
-testcmd = env.Command('.tests_run', tests, "$NODE tests/run.js")
+
+test_files = []
+for test in tests:
+  skip = False
+  for ignored_test in IGNORED_TESTS:
+    if test.get_path().startswith(ignored_test):
+      skip = True
+      break
+  if not skip:
+    test_files.append(test.get_path())
+
+testcmd = env.Command('.tests_run', [], "$NODE tests/run.js %s" % ' '.join(test_files))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')

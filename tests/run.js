@@ -32,9 +32,6 @@ var terminal = require('util/terminal');
 
 var TEST_TIMEOUT = 5 * 1000;
 var MAX_BUFFER = 512 * 1024;
-var EXCLUDE_DIRS = [
-  'data'
-];
 
 var total = 0;
 var successes = 0;
@@ -49,8 +46,12 @@ function equals_line(str) {
         + "[blue]====================[/blue]";
 }
 
-function execute_test(dir, file, callback) {
-  var args = ['common.js', sprintf('./%s/%s', dir, file)];
+function execute_test(file, callback) {
+  if (file.indexOf('tests/') == 0) {
+    file = file.replace('tests/', '');
+  }
+
+  var args = ['common.js', sprintf('./%s', file)];
   var child = spawn(process.execPath, args);
   var stderr = [];
   var stdout = [];
@@ -69,7 +70,7 @@ function execute_test(dir, file, callback) {
   child.on('exit', function(code) {
     clearTimeout(timeout_id);
     if (code !== 0) {
-      terminal.puts(equals_line(sprintf("%s/%s", dir, file)));
+      terminal.puts(equals_line(sprintf("%s", file)));
       if (timed_out) {
         terminal.puts('--- test timed out ---');
       }
@@ -109,29 +110,12 @@ function print_test_results(tests) {
   }
 }
 
-fs.readdir(__dirname, function(err, dirs) {
-  async.forEachSeries(dirs, function(dir, callback) {
-    // Skip excluded directories
-    if (EXCLUDE_DIRS.indexOf(dir) !== -1) {
-      return callback();
-    }
-
-    fs.readdir(dir, function(err, files) {
-      // This is the dirty way to skip non-directories
-      if (err) {
-        return callback();
-      }
-
-      async.forEachSeries(files, function(file, callback) {
-        if (!file.match(/.*\.js$/)) {
-          return callback();
-        }
-
-        // Execute the test file and report any errors
-        execute_test(dir, file, callback);
-      }, callback);
-    });
+function run_tests(tests) {
+  async.forEachSeries(tests, function(test, callback) {
+    // Execute the test file and report any errors
+    execute_test(test, callback);
   },
+
   function() {
     terminal.puts(equals_line("Tests Complete"));
     terminal.puts(sprintf("    Successes: [green]%s[/green]", successes));
@@ -144,4 +128,7 @@ fs.readdir(__dirname, function(err, dirs) {
 
     process.exit(failures);
   });
-});
+}
+
+var tests = process.argv.splice(2);
+run_tests(tests);
