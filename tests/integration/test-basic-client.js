@@ -32,6 +32,7 @@ var crypto = require('crypto');
 var exec = require('child_process').exec;
 var async = require('extern/async');
 var assert = require('assert');
+var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
 function getServer() {
   return require('services/http')._serverOnly();
@@ -43,14 +44,26 @@ function getServer() {
   var aroot = path.join(process.cwd(), '.tests');
   var croot = path.join(process.cwd(), '.tests/fooserv');
   var tbp = path.join(process.cwd(), 'data/fooserv.tar.gz');
+  var server = getServer();
+  server.listen(port);
 
   var copts = {
     cwd: croot
   };
 
-  function cexec(args, callback) {
+  function cexec(args, doChecks, callback) {
+    if (doChecks !== false) {
+      callback = doChecks;
+      doChecks = true;
+    }
     args.unshift(cbin);
-    exec(args.join(' '), copts, callback);
+    exec(args.join(' '), copts, function(err, stdout, stderr) {
+      if (doChecks) {
+        assert.ifError(err);
+        assert.equal(stderr.length, 0);
+      }
+      callback(err, stdout, stderr);
+    });
   }
 
   async.series([
@@ -58,17 +71,50 @@ function getServer() {
 
     async.apply(exec, 'tar -C ' + aroot + ' -xf ' + tbp),
 
+    // Add a remote
+    function(callback) {
+      var addr = 'http://localhost:' + port + '/';
+      var args = ['remotes', 'add', '-p', '-y', 'test', addr];
+      cexec(args, function(err, stdout, stderr) {
+        assert.match(stdout, /Remote added/);
+        callback();
+      });
+    },
+
+    // List remotes
+    function(callback) {
+      cexec(['remotes', 'list'], function(err, stdout, stderr) {
+        assert.match(stdout, /test\n/);
+        callback();
+      });
+    },
+
+    // Set a default remote
+    function(callback) {
+      cexec(['remotes', 'set-default', 'test'], function(err, stdout, stderr) {
+        callback();
+      });
+    },
+
+    // List remotes again to check the default
+    function(callback) {
+      cexec(['remotes', 'list'], function(err, stdout, stderr) {
+        assert.match(stdout, /test \(default\)\n/);
+        callback();
+      });
+    },
+
+    // Create a bundle
     function(callback) {
       cexec(['bundles', 'create', 'v1.0'], function(err, stdout, stderr) {
-        assert.ifError(err);
         assert.match(stdout, /validation succeeded/);
         assert.match(stdout, /Bundle created/);
-        assert.equal(stderr.length, 0);
         callback();
       });
     },
   ],
   function(err) {
+    server.close();
     completed = true;
     assert.ifError(err);
   });

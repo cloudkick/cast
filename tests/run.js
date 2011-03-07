@@ -137,8 +137,8 @@ fs.readdir(__dirname, function(err, dirs) {
     terminal.puts(sprintf("    Successes: [green]%s[/green]", successes));
     print_test_results(succeeded_tests);
     terminal.puts(sprintf("     Failures: [red]%s[/red]", failures));
-    terminal.puts("    ------------------");
     print_test_results(failed_tests);
+    terminal.puts("    ------------------");
     terminal.puts("        Total: " + total);
 
 
