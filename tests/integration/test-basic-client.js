@@ -30,8 +30,11 @@ var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
 var exec = require('child_process').exec;
-var async = require('extern/async');
 var assert = require('assert');
+
+var async = require('extern/async');
+var sprintf = require('extern/sprintf').sprintf;
+
 var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
 function getServer() {
@@ -56,7 +59,7 @@ function getServer() {
       callback = doChecks;
       doChecks = true;
     }
-    args.unshift(cbin);
+    args.unshift(sprintf('"%s"', cbin));
     exec(args.join(' '), copts, function(err, stdout, stderr) {
       if (doChecks) {
         assert.ifError(err);
@@ -69,7 +72,7 @@ function getServer() {
   async.series([
     async.apply(exec, 'mkdir -p ' + aroot),
 
-    async.apply(exec, 'tar -C ' + aroot + ' -xf ' + tbp),
+    async.apply(exec, 'tar -C "' + aroot + '" -xf "' + tbp + '"'),
 
     // Add a remote
     function(callback) {
@@ -113,6 +116,7 @@ function getServer() {
       });
     },
   ],
+
   function(err) {
     server.close();
     completed = true;
