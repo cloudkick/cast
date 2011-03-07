@@ -43,6 +43,7 @@ def read_version(prefix, path):
     m = version_re.match(line)
     if m:
       versions[m.group('id')] = int(m.group('num'))
+
   fp.close()
   return (versions['MAJOR'], versions['MINOR'], versions['PATCH'])
 
