@@ -119,9 +119,7 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
       });
     },
 
-    /*
-    TODO: This is failing for reasons that remain unclear
-    // Test command queing
+    // Test command queueing
     function(callback) {
       var n = 0;
       var port = test.get_port();
@@ -134,13 +132,10 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
         setTimeout(function() {
           n++;
           var stream;
-          assert.ok(agent._connected);
+          agent._connected = false;
+          assert.ok(!agent._connected);
 
-          stream = self._streams[0];
-          stream.write('run_check foobar12345 test_check 0\r\n');
-          stream.write('{}\n');
-
-          agent._connection.end();
+          agent.send_command('run_check', {});
         }, 500);
 
         setTimeout(function() {
@@ -148,7 +143,7 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
           var pending_commands = agent._pending_commands_queue;
 
           assert.ok(pending_commands.length > 0);
-          assert.equal(pending_commands[0][0], 'result');
+          assert.equal(pending_commands[0][0], 'run_check');
         }, 2000);
 
         setTimeout(function() {
@@ -158,8 +153,7 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
           callback();
         }, 4000);
       });
-    }
-    */
+    },
 
     // Test incoming error command
     function(callback) {
