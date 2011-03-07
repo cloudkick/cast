@@ -98,7 +98,7 @@ function verify_instance(name, bundle, version, versions, callback) {
     async.apply(exec, 'mkdir -p .tests/data_root/services'),
     async.apply(exec, 'mkdir -p .tests/data_root/services-enabled'),
     async.apply(exec, 'mkdir -p .tests/data_root/extracted/fooapp'),
-    
+
     // Prepare some extracted bundles
     function(callback) {
       var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');
@@ -148,7 +148,7 @@ function verify_instance(name, bundle, version, versions, callback) {
 
     // Verify that one too
     async.apply(verify_instance, 'foo1', 'fooapp', 'v1.0'),
-    
+
     // Try to create an instance that already exists
     function(callback) {
       deployment.create_instance('foo1', 'fooapp', 'v1.0', function(err) {
