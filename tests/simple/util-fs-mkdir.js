@@ -97,8 +97,8 @@ var assert = require('assert');
       });
     },
 
-    // Mkdir with implicit perms
-    async.apply(fsutil.mkdir, PATH4),
+    // Mkdir with 0775 perms
+    async.apply(fsutil.mkdir, PATH4, 0775),
 
     // Make sure it worked
     function(callback) {
