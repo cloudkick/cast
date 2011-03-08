@@ -22,7 +22,6 @@ require.paths.unshift(path.join(root, '../'));
 
 var assert = require('assert');
 
-var test= require('util/test');
 var http = require('services/http');
 
 // test route function
@@ -73,7 +72,7 @@ var http = require('services/http');
 (function() {
   var n = 0;
 
-  assert.response(test.getServer('data/http_services/', [ 'test-service' ]), {
+  assert.response(http._serverOnly('data/http_services/', [ 'test-service' ]), {
     url: '/1.0/test-service/',
     method: 'GET'
   },
@@ -86,7 +85,7 @@ var http = require('services/http');
     assert.equal(data.text, 'test 1.0');
   });
 
-  assert.response(test.getServer('data/http_services/', [ 'test-service' ]), {
+  assert.response(http._serverOnly('data/http_services/', [ 'test-service' ]), {
     url: '/2.0/test-service/',
     method: 'GET'
   },
@@ -98,7 +97,7 @@ var http = require('services/http');
     assert.equal(data.text, 'test 2.0');
   });
 
-  assert.response(test.getServer('data/http_services/', [ 'test-service' ]), {
+  assert.response(http._serverOnly('data/http_services/', [ 'test-service' ]), {
     url: '/5.5/test-service/',
     method: 'GET'
   },

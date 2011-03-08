@@ -24,7 +24,8 @@ var assert = require('assert');
 var async = require('extern/async');
 
 var misc = require('util/misc');
-var getServer = require('util/test').getServer;
+var http = require('services/http');
+var getServer = http._serverOnly;
 
 var API_VERSION = '1.0'
 
