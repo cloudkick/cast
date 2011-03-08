@@ -20,6 +20,8 @@ var path = require('path');
 var root = path.dirname(__filename);
 require.paths.unshift(path.join(root, '../'));
 
+var sprintf = require('extern/sprintf').sprintf;
+
 var assert = require('assert');
 
 var http = require('services/http');
@@ -71,6 +73,7 @@ var http = require('services/http');
 // test URL routing
 (function() {
   var n = 0;
+  var latest_version = '2.0';
 
   assert.response(http._serverOnly('data/http_services/', [ 'test-service' ]), {
     url: '/1.0/test-service/',
@@ -107,7 +110,21 @@ var http = require('services/http');
     assert.equal(res.statusCode, 404);
   });
 
+  assert.response(http._serverOnly('data/http_services/', [ 'test-service' ],
+                                   latest_version), {
+    url: '/test-service/',
+    method: 'GET'
+  },
+
+  function(res) {
+    n++;
+    assert.equal(res.statusCode, 202);
+    var data = JSON.parse(res.body);
+    console.log(data)
+    assert.equal(data.text, sprintf('test %s', latest_version));
+  });
+
   process.on('exit', function() {
-    assert.equal(n, 3, 'Callbacks called');
+    assert.equal(n, 4, 'Callbacks called');
   });
 })();
