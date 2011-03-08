@@ -15,8 +15,14 @@
  * limitations under the License.
  */
 
+var path = require('path');
+
+var root = path.dirname(__filename);
+require.paths.unshift(path.join(root, '../'));
+
 var assert = require('assert');
 
+var test= require('util/test');
 var http = require('services/http');
 
 // test route function
@@ -61,4 +67,48 @@ var http = require('services/http');
       assert.equal(version_route_args[1], expected_routes_args[1]);
     }
   }
+})();
+
+// test URL routing
+(function() {
+  var n = 0;
+
+  assert.response(test.getServer('data/http_services/', [ 'test-service' ]), {
+    url: '/1.0/test-service/',
+    method: 'GET'
+  },
+
+  function(res) {
+    n++;
+    assert.equal(res.statusCode, 200);
+    var data = JSON.parse(res.body);
+    console.log(data)
+    assert.equal(data.text, 'test 1.0');
+  });
+
+  assert.response(test.getServer('data/http_services/', [ 'test-service' ]), {
+    url: '/2.0/test-service/',
+    method: 'GET'
+  },
+
+  function(res) {
+    n++;
+    assert.equal(res.statusCode, 202);
+    var data = JSON.parse(res.body);
+    assert.equal(data.text, 'test 2.0');
+  });
+
+  assert.response(test.getServer('data/http_services/', [ 'test-service' ]), {
+    url: '/5.5/test-service/',
+    method: 'GET'
+  },
+
+  function(res) {
+    n++;
+    assert.equal(res.statusCode, 404);
+  });
+
+  process.on('exit', function() {
+    assert.equal(n, 3, 'Callbacks called');
+  });
 })();
