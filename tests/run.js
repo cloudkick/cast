@@ -91,7 +91,8 @@ function execute_test(file, callback) {
       succeeded_tests.push(file);
     }
     total += 1;
-    return callback();
+    callback();
+    return;
   });
 
   timeout_id = setTimeout(function() {
