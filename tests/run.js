@@ -115,6 +115,18 @@ function print_test_results(tests) {
   }
 }
 
+function print_tests_results() {
+  terminal.puts(equals_line("Tests Complete"));
+  terminal.puts(sprintf("    Successes: [green]%s[/green]", successes));
+  print_test_results(succeeded_tests);
+  terminal.puts(sprintf("     Failures: [red]%s[/red]", failures));
+  print_test_results(failed_tests);
+  terminal.puts("    ------------------");
+  terminal.puts("        Total: " + total);
+
+  process.exit(failures);
+}
+
 function print_msg(msg, verbosity, min_verbosity) {
   if (verbosity >= min_verbosity) {
     terminal.puts(msg);
@@ -127,19 +139,12 @@ function run_tests(tests, verbosity) {
     execute_test(test, verbosity, callback);
   },
 
-  function() {
-    terminal.puts(equals_line("Tests Complete"));
-    terminal.puts(sprintf("    Successes: [green]%s[/green]", successes));
-    print_test_results(succeeded_tests);
-    terminal.puts(sprintf("     Failures: [red]%s[/red]", failures));
-    print_test_results(failed_tests);
-    terminal.puts("    ------------------");
-    terminal.puts("        Total: " + total);
-
-
-    process.exit(failures);
-  });
+  print_tests_results);
 }
+
+process.addListener('SIGINT', function() {
+  print_tests_results();
+});
 
 var tests = process.argv.splice(2);
 run_tests(tests, 2);
