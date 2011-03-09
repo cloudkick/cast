@@ -46,10 +46,14 @@ function equals_line(str) {
         + "[blue]====================[/blue]";
 }
 
-function execute_test(file, callback) {
+function execute_test(file, verbosity, callback) {
   if (file.indexOf('tests/') == 0) {
     file = file.replace('tests/', '');
   }
+
+  var file_name = path.basename(file);
+
+  print_msg(sprintf('Running test: [bold]%s[/bold]', file_name), verbosity, 2);
 
   var args = ['common.js', sprintf('./%s', file)];
   var child = spawn(process.execPath, args);
@@ -111,10 +115,16 @@ function print_test_results(tests) {
   }
 }
 
-function run_tests(tests) {
+function print_msg(msg, verbosity, min_verbosity) {
+  if (verbosity >= min_verbosity) {
+    terminal.puts(msg);
+  }
+}
+
+function run_tests(tests, verbosity) {
   async.forEachSeries(tests, function(test, callback) {
     // Execute the test file and report any errors
-    execute_test(test, callback);
+    execute_test(test, verbosity, callback);
   },
 
   function() {
@@ -132,4 +142,4 @@ function run_tests(tests) {
 }
 
 var tests = process.argv.splice(2);
-run_tests(tests);
+run_tests(tests, 2);
