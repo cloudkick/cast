@@ -15,14 +15,18 @@
  * limitations under the License.
  */
 
-var log = require('util/log');
+var http = require('util/http');
 var route = require('services/http').route;
 
-function hello(req, res) {
-    res.writeHead(200, {'Content-Type': 'text-plain'});
-    res.end('Hello World.\n');
+function get_1_0(req, res) {
+  http.return_json(res, 200, { 'text': 'test 1.0'});
+}
+
+function get_2_0(req, res) {
+  http.return_json(res, 202, { 'text': 'test 2.0'});
 }
 
 exports.urls = route([
-  ['GET /(.*)$', '1.0', hello]
+   ['GET /$', '1.0', get_1_0],
+   ['GET /$', '2.0', get_2_0]
 ]);

@@ -19,13 +19,15 @@ var sys = require('sys');
 var fs = require('fs');
 var crypto = require('crypto');
 var exec = require('child_process').exec;
-var misc = require('util/misc');
-var async = require('extern/async');
 var assert = require('assert');
 
-function getServer() {
-  return require('services/http')._serverOnly();
-}
+var async = require('extern/async');
+
+var misc = require('util/misc');
+var http = require('services/http');
+var getServer = http._serverOnly;
+
+var API_VERSION = '1.0'
 
 var hello = "Hello World";
 
@@ -87,28 +89,28 @@ function verify_response_code(url, code, method, data, callback) {
     function(callback) {
       async.parallel([
         // Non-existant bundle
-        async.apply(verify_response_code, '/bundles/bar/', 404),
+        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/bar/', 404),
 
         // Up one level from bundles
-        async.apply(verify_response_code, '/bundles/../', 404),
+        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/../', 404),
 
         // At the bundles level
-        async.apply(verify_response_code, '/bundles/./', 404),
+        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/./', 404),
 
         // Uploading to the bundles directory
-        async.apply(verify_response_code, '/bundles/foo/../', 404, 'PUT', hello),
+        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/foo/../', 404, 'PUT', hello),
 
         // Uploading to a file in the bundles directory
-        async.apply(verify_response_code, '/bundles/baz/baz@1.0.tar.gz', 500, 'PUT', hello),
+        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/baz/baz@1.0.tar.gz', 500, 'PUT', hello),
 
         // Listing a file in the bundles directory
-        async.apply(verify_response_code, '/bundles/baz/', 404),
+        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/baz/', 404),
 
         // Get a file that is actually a directory
-        async.apply(verify_response_code, '/bundles/foo/foo@3.0.tar.gz', 404),
+        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404),
 
         // Delete a file that is actually a directory
-        async.apply(verify_response_code, '/bundles/foo/foo@3.0.tar.gz', 404)
+        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404)
 
       ],
       callback);
@@ -120,7 +122,7 @@ function verify_response_code(url, code, method, data, callback) {
     // No bundles should be listed yet
     function(callback) {
       assert.response(getServer(), {
-        url: '/bundles/',
+        url: '/' + API_VERSION + '/bundles/',
         method: 'GET'
       },
       function(res) {
@@ -147,7 +149,7 @@ function verify_response_code(url, code, method, data, callback) {
     // Upload a bundle without a SHA1
     function(callback) {
       assert.response(getServer(), {
-        url: '/bundles/foo/foo@1.0.tar.gz',
+        url: '/' + API_VERSION + '/bundles/foo/foo@1.0.tar.gz',
         method: 'PUT',
         data: fooserv_tar_gz
       },
@@ -162,7 +164,7 @@ function verify_response_code(url, code, method, data, callback) {
     function(callback) {
       var sha1 = crypto.createHash('sha1').update(fooserv_tar_gz);
       assert.response(getServer(), {
-        url: '/bundles/foo/foo@2.0.tar.gz',
+        url: '/' + API_VERSION + '/bundles/foo/foo@2.0.tar.gz',
         method: 'PUT',
         data: fooserv_tar_gz,
         headers: {'X-Content-SHA1': sha1.digest('base64')}
@@ -178,7 +180,7 @@ function verify_response_code(url, code, method, data, callback) {
     function(callback) {
       var sha1 = crypto.createHash('sha1').update(fooserv_tar_gz);
       assert.response(getServer(), {
-        url: '/bundles/foo/foo@2.1.tar.gz',
+        url: '/' + API_VERSION + '/bundles/foo/foo@2.1.tar.gz',
         method: 'PUT',
         data: fooserv_tar_gz_bad,
         headers: {'X-Content-SHA1': sha1.digest('base64')}
@@ -193,7 +195,7 @@ function verify_response_code(url, code, method, data, callback) {
     function(callback) {
       var sha1 = crypto.createHash('sha1').update(fooserv_tar_gz);
       assert.response(getServer(), {
-        url: '/bundles/foo/foo@3.0.tar.gz',
+        url: '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz',
         method: 'PUT',
         data: fooserv_tar_gz,
         trailers: {'X-Content-SHA1': sha1.digest('base64')}
@@ -209,7 +211,7 @@ function verify_response_code(url, code, method, data, callback) {
     function(callback) {
       var sha1 = crypto.createHash('sha1').update(fooserv_tar_gz);
       assert.response(getServer(), {
-        url: '/bundles/foo/foo@3.1.tar.gz',
+        url: '/' + API_VERSION + '/bundles/foo/foo@3.1.tar.gz',
         method: 'PUT',
         data: fooserv_tar_gz_bad,
         trailers: {'X-Content-SHA1': sha1.digest('base64')}
@@ -223,7 +225,7 @@ function verify_response_code(url, code, method, data, callback) {
     // List available bundles
     function(callback) {
       assert.response(getServer(), {
-        url: '/bundles/',
+        url: '/' + API_VERSION + '/bundles/',
         method: 'GET'
       },
       function(res) {
@@ -245,7 +247,7 @@ function verify_response_code(url, code, method, data, callback) {
     function(callback) {
       var name = 'foo';
       assert.response(getServer(), {
-        url: '/bundles/' + name + '/',
+        url: '/' + API_VERSION + '/bundles/' + name + '/',
         method: 'GET'
       },
       function(res) {
@@ -267,7 +269,7 @@ function verify_response_code(url, code, method, data, callback) {
     // Retrieve a bundle file
     function(callback) {
       assert.response(getServer(), {
-        url: '/bundles/foo/foo@1.0.tar.gz',
+        url: '/' + API_VERSION + '/bundles/foo/foo@1.0.tar.gz',
         method: 'GET'
       },
       function(res) {
@@ -280,7 +282,7 @@ function verify_response_code(url, code, method, data, callback) {
     // Delete a bundle file
     function(callback) {
       assert.response(getServer(), {
-        url: '/bundles/foo/foo@1.0.tar.gz',
+        url: '/' + API_VERSION + '/bundles/foo/foo@1.0.tar.gz',
         method: 'DELETE'
       },
       function(res) {
@@ -292,7 +294,7 @@ function verify_response_code(url, code, method, data, callback) {
     // Verify its gone
     function(callback) {
       assert.response(getServer(), {
-        url: '/bundles/foo/foo@1.0.tar.gz',
+        url: '/' + API_VERSION + '/bundles/foo/foo@1.0.tar.gz',
         method: 'GET'
       },
       function(res) {
