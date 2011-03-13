@@ -19,11 +19,11 @@ var http = require('util/http');
 var route = require('services/http').route;
 
 function get_1_0(req, res) {
-  http.return_json(res, 200, { 'text': 'test 1.0'});
+  http.returnJson(res, 200, { 'text': 'test 1.0'});
 }
 
 function get_2_0(req, res) {
-  http.return_json(res, 202, { 'text': 'test 2.0'});
+  http.returnJson(res, 202, { 'text': 'test 2.0'});
 }
 
 exports.urls = route([
