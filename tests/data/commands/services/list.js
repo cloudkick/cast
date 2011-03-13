@@ -1,9 +1,9 @@
 var config = {
-  'short_description': 'List services',
-  'long_description': 'List services long',
-  'required_arguments' : [],
-  'optional_arguments': [['server', 'only list services on this server']],
-  'options': [
+  shortDescription: 'List services',
+  longDescription: 'List services long',
+  requiredArguments : [],
+  optionalArguments: [['server', 'only list services on this server']],
+  options: [
     {
       names: ['--display-disabled'],
       dest: 'display-disabled',
@@ -19,7 +19,7 @@ var config = {
   ]
 }
 
-function handle_command(args) {
+function handleCommand(args) {
   if (args.server) {
     return 'Listing services for server ' + args.server;
   }
@@ -29,4 +29,4 @@ function handle_command(args) {
 }
 
 exports.config = config;
-exports.handle_command = handle_command;
+exports.handleCommand = handleCommand;

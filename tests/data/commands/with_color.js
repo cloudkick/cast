@@ -1,17 +1,17 @@
 var sys = require('sys');
 
 var config = {
-  'short_description': 'Return passed args',
-  'long_description': 'Return passed args',
-  'required_arguments' : [],
-  'optional_arguments': [],
-  'options': [],
-  'uses_global_options': ['colors']
+  shortDescription: 'Return passed args',
+  longDescription: 'Return passed args',
+  requiredArguments : [],
+  optionalArguments: [],
+  options: [],
+  usesGlobalOptions: ['colors']
 };
 
-function handle_command(args, command_parser) {
+function handleCommand(args, commandParser) {
   return args;
 }
 
 exports.config = config;
-exports.handle_command = handle_command;
+exports.handleCommand = handleCommand;
