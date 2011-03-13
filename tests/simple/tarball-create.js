@@ -57,7 +57,7 @@ var tarballPath7 = path.join(dataPath, tarballName7);
   async.parallel([
     // Test invalid source path
     function(callback) {
-      extract.createTarball('/invalid/source/path/', dataPath, tarballName1, {'delete_if_exists': false}, function(error) {
+      extract.createTarball('/invalid/source/path/', dataPath, tarballName1, {deleteIfExists: false}, function(error) {
         assert.ok(error);
         assert.match(error.message, /source path does not exist/i);
         callback();
@@ -66,7 +66,7 @@ var tarballPath7 = path.join(dataPath, tarballName7);
 
     // Test invalid target path
     function(callback) {
-      extract.createTarball(bundlePath, '/invalid/path', tarballName1, {'delete_if_exists': false}, function(error) {
+      extract.createTarball(bundlePath, '/invalid/path', tarballName1, {deleteIfExists: false}, function(error) {
         assert.ok(error);
         assert.match(error.message, /target path does not exist/i);
         callback();
@@ -78,7 +78,7 @@ var tarballPath7 = path.join(dataPath, tarballName7);
       test.fileDelete(tarballPath1);
       assert.equal(test.fileExists(tarballPath1), false);
 
-      extract.createTarball(bundlePath, dataPath, tarballName1, {'delete_if_exists': false}, function(error) {
+      extract.createTarball(bundlePath, dataPath, tarballName1, {deleteIfExists: false}, function(error) {
         assert.ifError(error);
         assert.equal(test.fileExists(tarballPath1), true);
         test.fileDelete(tarballPath1);
@@ -91,11 +91,11 @@ var tarballPath7 = path.join(dataPath, tarballName7);
       test.fileDelete(tarballPath2);
       assert.equal(test.fileExists(tarballPath2), false);
 
-      extract.createTarball(bundlePath, dataPath, tarballName2, {'delete_if_exists': false}, function(error) {
+      extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(error) {
         assert.ifError(error);
         assert.equal(test.fileExists(tarballPath2), true);
 
-        extract.createTarball(bundlePath, dataPath, tarballName2, {'delete_if_exists': false}, function(error) {
+        extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(error) {
           assert.match(error, /tarball already exists/i);
           assert.equal(test.fileExists(tarballPath2), true);
           test.fileDelete(tarballPath2);
@@ -109,11 +109,11 @@ var tarballPath7 = path.join(dataPath, tarballName7);
       test.fileDelete(tarballPath3);
       assert.equal(test.fileExists(tarballPath3), false);
 
-      extract.createTarball(bundlePath, dataPath, tarballName3, {'delete_if_exists': false}, function(error) {
+      extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: false}, function(error) {
         assert.ifError(error);
         assert.equal(test.fileExists(tarballPath3), true);
 
-        extract.createTarball(bundlePath, dataPath, tarballName3, {'delete_if_exists': true}, function(error) {
+        extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: true}, function(error) {
           assert.ifError(error);
           assert.equal(test.fileExists(tarballPath3), true);
           test.fileDelete(tarballPath3);
@@ -127,7 +127,7 @@ var tarballPath7 = path.join(dataPath, tarballName7);
       test.fileDelete(tarballPath4);
       assert.equal(test.fileExists(tarballPath4), false);
 
-      extract.createTarball(bundlePath, dataPath, tarballName4, {'store_in_tarball_name_directory': false}, function(error) {
+      extract.createTarball(bundlePath, dataPath, tarballName4, {storeInTarballNameDirectory: false}, function(error) {
         assert.ifError(error);
         assert.equal(test.fileExists(tarballPath4), true);
 
@@ -149,7 +149,7 @@ var tarballPath7 = path.join(dataPath, tarballName7);
       test.fileDelete(tarballPath5);
       assert.equal(test.fileExists(tarballPath5), false);
 
-      extract.createTarball(bundlePath, dataPath, tarballName5, {'store_in_tarball_name_directory': true}, function(error) {
+      extract.createTarball(bundlePath, dataPath, tarballName5, {storeInTarballNameDirectory: true}, function(error) {
         assert.ifError(error);
         assert.equal(test.fileExists(tarballPath5), true);
 
@@ -171,7 +171,7 @@ var tarballPath7 = path.join(dataPath, tarballName7);
       test.fileDelete(tarballPath6);
       assert.equal(test.fileExists(tarballPath6), false);
 
-      extract.createTarball(bundlePath, dataPath, tarballName6, {'delete_if_exists': false, 'exclude_pattern': '*.sh'}, function(error) {
+      extract.createTarball(bundlePath, dataPath, tarballName6, {deleteIfExists: false, excludePattern: '*.sh'}, function(error) {
         assert.ifError(error);
         assert.equal(test.fileExists(tarballPath6), true);
 
@@ -188,7 +188,7 @@ var tarballPath7 = path.join(dataPath, tarballName7);
     function(callback) {
       test.fileDelete(tarballPath7);
       assert.equal(test.fileExists(tarballPath7), false);
-      extract.createTarball(dataPath, dataPath, tarballName7, {'delete_if_exists': false, 'ignore_file_changed_error': true}, function(error) {
+      extract.createTarball(dataPath, dataPath, tarballName7, {deleteIfExists: false, ignoreFileChangedError: true}, function(error) {
         assert.ifError(error);
         assert.equal(test.fileExists(tarballPath7), true);
         test.fileDelete(tarballPath7);
