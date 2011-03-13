@@ -37,31 +37,31 @@ var total = 0;
 var successes = 0;
 var failures = 0;
 
-var succeeded_tests = [];
-var failed_tests = [];
+var succeededTests = [];
+var failedTests = [];
 
-function equals_line(str) {
+function equalsLine(str) {
   return  "[blue]====================[/blue]"
         + " [red]" + str + "[/red] "
         + "[blue]====================[/blue]";
 }
 
-function execute_test(file, verbosity, callback) {
+function executeTest(file, verbosity, callback) {
   if (file.indexOf('tests/') == 0) {
     file = file.replace('tests/', '');
   }
 
-  var file_name = path.basename(file);
+  var fileName = path.basename(file);
 
-  print_msg(sprintf('Running test: [bold]%s[/bold]', file_name), verbosity, 2);
+  printMsg(sprintf('Running test: [bold]%s[/bold]', fileName), verbosity, 2);
 
   var args = ['common.js', sprintf('./%s', file)];
   var child = spawn(process.execPath, args);
   var stderr = [];
   var stdout = [];
   var dead = false;
-  var timed_out = false;
-  var timeout_id;
+  var timedOut = false;
+  var timeoutId;
 
   child.stderr.on('data', function(chunk) {
     stderr.push(chunk);
@@ -72,10 +72,10 @@ function execute_test(file, verbosity, callback) {
   });
 
   child.on('exit', function(code) {
-    clearTimeout(timeout_id);
+    clearTimeout(timeoutId);
     if (code !== 0) {
-      terminal.puts(equals_line(sprintf("%s", file)));
-      if (timed_out) {
+      terminal.puts(equalsLine(sprintf("%s", file)));
+      if (timedOut) {
         terminal.puts('--- test timed out ---');
       }
       terminal.puts('--- exit code: ' + code + ' ---');
@@ -88,63 +88,63 @@ function execute_test(file, verbosity, callback) {
         terminal.puts(stdout.join(''));
       }
       failures += 1;
-      failed_tests.push(file);
+      failedTests.push(file);
     }
     else {
       successes += 1;
-      succeeded_tests.push(file);
+      succeededTests.push(file);
     }
     total += 1;
     callback();
     return;
   });
 
-  timeout_id = setTimeout(function() {
-    timed_out = true;
+  timeoutId = setTimeout(function() {
+    timedOut = true;
     child.kill('SIGKILL');
   }, TEST_TIMEOUT);
 }
 
-function print_test_results(tests) {
+function printTestResults(tests) {
   var i = 0;
-  var tests_len = tests.length;
+  var testsLen = tests.length;
 
-  for (i = 0; i < tests_len; i++) {
+  for (i = 0; i < testsLen; i++) {
     test = tests[i];
     terminal.puts(sprintf('     - %s', test));
   }
 }
 
-function print_tests_results() {
-  terminal.puts(equals_line("Tests Complete"));
+function printTestsResults() {
+  terminal.puts(equalsLine("Tests Complete"));
   terminal.puts(sprintf("    Successes: [green]%s[/green]", successes));
-  print_test_results(succeeded_tests);
+  printTestResults(succeededTests);
   terminal.puts(sprintf("     Failures: [red]%s[/red]", failures));
-  print_test_results(failed_tests);
+  printTestResults(failedTests);
   terminal.puts("    ------------------");
   terminal.puts("        Total: " + total);
 
   process.exit(failures);
 }
 
-function print_msg(msg, verbosity, min_verbosity) {
-  if (verbosity >= min_verbosity) {
+function printMsg(msg, verbosity, minVerbosity) {
+  if (verbosity >= minVerbosity) {
     terminal.puts(msg);
   }
 }
 
-function run_tests(tests, verbosity) {
+function runTests(tests, verbosity) {
   async.forEachSeries(tests, function(test, callback) {
     // Execute the test file and report any errors
-    execute_test(test, verbosity, callback);
+    executeTest(test, verbosity, callback);
   },
 
-  print_tests_results);
+  printTestsResults);
 }
 
 process.addListener('SIGINT', function() {
-  print_tests_results();
+  printTestsResults();
 });
 
 var tests = process.argv.splice(2);
-run_tests(tests, 2);
+runTests(tests, 2);

@@ -30,8 +30,8 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
     function(callback) {
       var parser = new CommandParser(COMMANDS_PATH);
 
-      assert.deepEqual(parser._global_commands, ['completion']);
-      assert.deepEqual(parser._normal_commands, {});
+      assert.deepEqual(parser._GlobalCommands, ['completion']);
+      assert.deepEqual(parser._NormalCommands, {});
       assert.equal(parser.banner, '');
       callback();
     },
@@ -40,28 +40,28 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
     function(callback) {
       var parser = new CommandParser(COMMANDS_PATH);
 
-      assert.deepEqual(parser._global_commands, ['completion']);
-      parser.add_command('hello');
-      assert.deepEqual(parser._global_commands, ['completion', 'hello']);
-      parser.remove_command('hello');
+      assert.deepEqual(parser._GlobalCommands, ['completion']);
+      parser.addCommand('hello');
+      assert.deepEqual(parser._GlobalCommands, ['completion', 'hello']);
+      parser.removeCommand('hello');
 
-      assert.deepEqual(parser._normal_commands, {});
-      parser.add_commands(['services/list', 'services/restart']);
-      assert.deepEqual(parser._normal_commands, { 'services': ['list', 'restart'] });
-      parser.remove_commands(['services/list', 'services/restart']);
-      assert.deepEqual(parser._normal_commands, {});
+      assert.deepEqual(parser._NormalCommands, {});
+      parser.addCommands(['services/list', 'services/restart']);
+      assert.deepEqual(parser._NormalCommands, { 'services': ['list', 'restart'] });
+      parser.removeCommands(['services/list', 'services/restart']);
+      assert.deepEqual(parser._NormalCommands, {});
       callback();
     },
 
     // Test exception is thrown on 'append' option with no value
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
       var n = 0;
 
@@ -80,13 +80,13 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
     // Test exception is thrown when 'store_true' action is given key=value
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
       var n = 0;
 
@@ -104,31 +104,31 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
     // Test exception is thrown upon invalid command name
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
       var n = 0;
 
       try {
-        parser.add_command('invalid name');
+        parser.addCommand('invalid name');
       }
       catch (e) {
         n++;
       }
       try {
-        parser.add_commands(['invalid name']);
+        parser.addCommands(['invalid name']);
       }
       catch (e2) {
         n++;
       }
 
       try {
-        parser.remove_command(['invalid name']);
+        parser.removeCommand(['invalid name']);
       }
       catch (e3) {
         n++;
@@ -140,25 +140,25 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
     // Test exception is thrown upon invalid argument or argument type
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
       var n = 0;
 
       try {
-        parser.add_commands('hello');
+        parser.addCommands('hello');
       }
       catch (e) {
         n++;
         assert.match(e.message, /must be an array/i);
       }
       try {
-        parser.remove_commands('hello');
+        parser.removeCommands('hello');
       }
       catch (e2) {
         n++;
@@ -171,13 +171,13 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
     // Test exception is thrown on invalid command
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
       var n = 0;
 
@@ -195,13 +195,13 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
     // Test exception is thrown on too many arguments
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
       var n = 0;
 
@@ -219,13 +219,13 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
     // Test exception is thrown on missing required argument
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
       var n = 0;
 
@@ -243,61 +243,61 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
     // Test global help
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
-      assert.equal(stdout_data.length, 0);
+      assert.equal(stdoutData.length, 0);
       parser.parse(['bin', 'file', 'help']);
-      assert.match(stdout_data.join(''), /.*available commands.*/i);
+      assert.match(stdoutData.join(''), /.*available commands.*/i);
       callback();
     },
 
     // Test command help
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
-      assert.equal(stdout_data.length, 0);
+      assert.equal(stdoutData.length, 0);
       parser.parse(['bin', 'file', 'help', 'services']);
-      assert.match(stdout_data.join(''), /.*available sub-commands for command.*/i);
+      assert.match(stdoutData.join(''), /.*available sub-commands for command.*/i);
       callback();
     },
 
     // Test sub-command help
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
-      assert.equal(stdout_data.length, 0);
+      assert.equal(stdoutData.length, 0);
       parser.parse(['bin', 'file', 'help', 'services', 'list']);
-      assert.match(stdout_data.join(''), /.*services list.*/i);
+      assert.match(stdoutData.join(''), /.*services list.*/i);
       callback();
     },
 
     // Test global command
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
       var value = parser.parse(['bin', 'file', 'hello']);
 
@@ -307,13 +307,13 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
     // Test command services list
     function(callback) {
-      var stdout_data = [];
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [];
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['hello', 'services/list', 'services/restart']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['hello', 'services/list', 'services/restart']);
 
       var value1 = parser.parse(['bin', 'file', 'services', 'list']);
       var value2 = parser.parse(['bin', 'file', 'services', 'list', 'server1']);
@@ -325,13 +325,13 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
     // Test global_options
     function(callback) {
-      var stdout_data = [], value, m;
-      var capture_write = function (string) {
-        stdout_data.push(string);
+      var stdoutData = [], value, m;
+      var captureWrite = function (string) {
+        stdoutData.push(string);
       };
 
-      var parser = new CommandParser(COMMANDS_PATH, capture_write);
-      parser.add_commands(['with_color']);
+      var parser = new CommandParser(COMMANDS_PATH, captureWrite);
+      parser.addCommands(['with_color']);
 
       try {
         parser.parse(['bin', 'file', 'with_color', '--colors']);
@@ -341,7 +341,7 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
       }
       assert.match(m, /colors' is undefined/i);
 
-      parser.add_global_options({
+      parser.addGlobalOptions({
         'colors': {
           names: ['--colors'],
           dest: 'colors',

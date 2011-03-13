@@ -34,14 +34,14 @@ var RENDERED_PATH = path.join(process.cwd(), '.tests', 'templates_rendered');
   async.series([
     // Test get_template_context with various arguments
     function(callback) {
-      templates.get_template_context(false, {}, function(error, context) {
+      templates.getTemplateContext(false, {}, function(error, context) {
         assert.equal(context.facts, undefined);
         callback();
       });
     },
 
     function(callback) {
-      templates.get_template_context(true, {'name': 'cast'}, function(error, context) {
+      templates.getTemplateContext(true, {'name': 'cast'}, function(error, context) {
         assert.notEqual(context.facts, undefined);
         assert.notEqual(context.facts.hostname, '');
         assert.equal(context.name, 'cast');
@@ -51,7 +51,7 @@ var RENDERED_PATH = path.join(process.cwd(), '.tests', 'templates_rendered');
 
     // Test render_template_as_string with various arguments
     function(callback) {
-      templates.render_template_as_string('/invalid/path', {}, function(error) {
+      templates.renderTemplateAsString('/invalid/path', {}, function(error) {
         assert.notEqual(error, undefined);
         assert.match(error.message, /ENOENT/i);
         callback();
@@ -59,37 +59,37 @@ var RENDERED_PATH = path.join(process.cwd(), '.tests', 'templates_rendered');
     },
 
     function(callback) {
-      templates.render_template_as_string(path.join(TEMPLATES_PATH, 'template.html'), {}, function(error, rendered_template) {
+      templates.renderTemplateAsString(path.join(TEMPLATES_PATH, 'template.html'), {}, function(error, renderedTemplate) {
         assert.equal(error, undefined);
-        assert.match(rendered_template, /Hello \./i);
+        assert.match(renderedTemplate, /Hello \./i);
         callback();
       });
     },
 
     function(callback) {
-      templates.render_template_as_string(path.join(TEMPLATES_PATH, 'template.html'),
+      templates.renderTemplateAsString(path.join(TEMPLATES_PATH, 'template.html'),
                                           {'name': 'cast'},
-                                          function(error, rendered_template)
+                                          function(error, renderedTemplate)
       {
         assert.equal(error, undefined);
-        assert.match(rendered_template, /Hello cast\./i);
+        assert.match(renderedTemplate, /Hello cast\./i);
         callback();
       });
     },
 
     // Test render_and_save_templates
     function(callback) {
-      var template1_path = path.join(RENDERED_PATH, 'template.html');
-      var template2_path = path.join(RENDERED_PATH, 'subdir1/template2.html');
+      var template1Path = path.join(RENDERED_PATH, 'template.html');
+      var template2Path = path.join(RENDERED_PATH, 'subdir1/template2.html');
 
-      templates.render_and_save_templates(TEMPLATES_PATH, ['template.html', 'subdir1/template2.html'],
+      templates.renderAndSaveTemplates(TEMPLATES_PATH, ['template.html', 'subdir1/template2.html'],
                                           RENDERED_PATH, {'name': 'cast'}, function(error)
       {
         assert.equal(error, undefined);
-        assert.isDefined(fs.statSync(template1_path).ino);
-        assert.isDefined(fs.statSync(template2_path).ino);
-        assert.equal(fs.readFileSync(template1_path).toString(), 'Hello cast.');
-        assert.equal(fs.readFileSync(template1_path).toString(), 'Hello cast.');
+        assert.isDefined(fs.statSync(template1Path).ino);
+        assert.isDefined(fs.statSync(template2Path).ino);
+        assert.equal(fs.readFileSync(template1Path).toString(), 'Hello cast.');
+        assert.equal(fs.readFileSync(template1Path).toString(), 'Hello cast.');
         callback();
       });
 

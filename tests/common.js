@@ -31,7 +31,7 @@ var assert = require('assert');
 var exec = require('child_process').exec;
 var config = require('util/config');
 var async = require('extern/async');
-var util_http = require('util/http');
+var utilHttp = require('util/http');
 
 var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
@@ -196,7 +196,7 @@ assert.response = function(server, req, res, msg){
     remote.url = 'http://' + remote.hostname + ':' + remote.port;
     var opts = { path: req.url, method: method, headers: headers };
 
-    util_http._base_request(remote, opts, function(err, request) {
+    utilHttp._BaseRequest(remote, opts, function(err, request) {
       if (req.trailers) {
         request.addTrailers(req.trailers);
       }
@@ -281,7 +281,7 @@ process.nextTick(function() {
     process.exit(1);
   }
 
-  config.config_files = [
+  config.configFiles = [
     "~/.xxx_no_such_file",
     path.join(__dirname, "test.conf")
   ];
@@ -289,7 +289,7 @@ process.nextTick(function() {
   async.series([
     async.apply(exec, 'rm -rf .tests'),
     async.apply(exec, 'mkdir .tests'),
-    async.apply(config.setup_agent)
+    async.apply(config.setupAgent)
   ],
   function(err) {
     if (err) {

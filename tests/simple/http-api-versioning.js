@@ -28,8 +28,8 @@ var http = require('services/http');
 
 // test route function
 (function() {
-  var i, expected_routes, expected_routes_len;
-  var api_version, version_routes, version_routes_len;
+  var i, expectedRoutes, expectedRoutesLen;
+  var apiVersion, versionRoutes, versionRoutesLen;
   var func = function() {}
 
   var routes = [
@@ -39,33 +39,33 @@ var http = require('services/http');
     ['HEAD /foobar/$', '1.2', func],
     ['DELETE /foobar/$', '2.0', func]
   ]
-  var expected_result = {
+  var expectedResult = {
     '1.0': [ ['PUT /foo/bar/$', func] ],
     '1.1': [ ['GET /foobar/$', func] ],
     '1.2': [ ['HEAD /foobar/$', func] ],
     '2.0': [ ['POST /foobar/$', func], ['DELETE /foobar/$', func] ]
   }
 
-  clutch_routes = http.route(routes);
+  clutchRoutes = http.route(routes);
 
-  assert.equal(Object.keys(clutch_routes).length, 4);
+  assert.equal(Object.keys(clutchRoutes).length, 4);
 
-  for (api_version in clutch_routes) {
-    assert.ok(expected_result.hasOwnProperty(api_version));
+  for (apiVersion in clutchRoutes) {
+    assert.ok(expectedResult.hasOwnProperty(apiVersion));
 
-    version_routes = clutch_routes[api_version];
-    version_routes_len = version_routes.length;
-    expected_routes = expected_result[api_version];
-    expected_routes_len = expected_routes.length
+    versionRoutes = clutchRoutes[apiVersion];
+    versionRoutesLen = versionRoutes.length;
+    expectedRoutes = expectedResult[apiVersion];
+    expectedRoutesLen = expectedRoutes.length
 
-    assert.equal(version_routes_len, expected_routes_len);
+    assert.equal(versionRoutesLen, expectedRoutesLen);
 
-    for (i = 0; i < version_routes_len; i++) {
-      version_route_args = version_routes[i];
-      expected_routes_args = expected_routes[i];
+    for (i = 0; i < versionRoutesLen; i++) {
+      versionRouteArgs = versionRoutes[i];
+      expectedRoutesArgs = expectedRoutes[i];
 
-      assert.equal(version_route_args[0], expected_routes_args[0]);
-      assert.equal(version_route_args[1], expected_routes_args[1]);
+      assert.equal(versionRouteArgs[0], expectedRoutesArgs[0]);
+      assert.equal(versionRouteArgs[1], expectedRoutesArgs[1]);
     }
   }
 })();
@@ -73,7 +73,7 @@ var http = require('services/http');
 // test URL routing
 (function() {
   var n = 0;
-  var latest_version = '2.0';
+  var latestVersion = '2.0';
 
   assert.response(http._serverOnly('data/http_services/', [ 'test-service' ]), {
     url: '/1.0/test-service/',
@@ -111,7 +111,7 @@ var http = require('services/http');
   });
 
   assert.response(http._serverOnly('data/http_services/', [ 'test-service' ],
-                                   latest_version), {
+                                   latestVersion), {
     url: '/test-service/',
     method: 'GET'
   },
@@ -121,7 +121,7 @@ var http = require('services/http');
     assert.equal(res.statusCode, 202);
     var data = JSON.parse(res.body);
     console.log(data)
-    assert.equal(data.text, sprintf('test %s', latest_version));
+    assert.equal(data.text, sprintf('test %s', latestVersion));
   });
 
   process.on('exit', function() {

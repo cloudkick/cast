@@ -34,7 +34,7 @@ var assert = require('assert');
 
     // Render a template to a tree
     function(callback) {
-      fsutil.template_to_tree('.tests/fsutil/template', tmpl, false, callback);
+      fsutil.templateToTree('.tests/fsutil/template', tmpl, false, callback);
     },
 
     // Make sure it worked as expected
@@ -76,7 +76,7 @@ var assert = require('assert');
 
     // Attempt to re-render the template - this should fail
     function(callback) {
-      fsutil.template_to_tree('.tests/fsutil/template', tmpl, false, function(err) {
+      fsutil.templateToTree('.tests/fsutil/template', tmpl, false, function(err) {
         assert.ok(err);
         assert.equal(err.errno, 17);
         callback();
@@ -85,7 +85,7 @@ var assert = require('assert');
 
     // Attempt to re-render the template with ignore_existing set
     function(callback) {
-      fsutil.template_to_tree('.tests/fsutil/template', tmpl, true, function(err) {
+      fsutil.templateToTree('.tests/fsutil/template', tmpl, true, function(err) {
         assert.ifError(err);
         callback();
       });

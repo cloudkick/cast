@@ -178,27 +178,27 @@ var assert = require('assert');
 (function() {
   var haystack = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
-  assert.equal(misc.in_array('item 2', haystack), true);
-  assert.equal(misc.in_array('not in array', haystack), false);
+  assert.equal(misc.inArray('item 2', haystack), true);
+  assert.equal(misc.inArray('not in array', haystack), false);
 })();
 
 // in array compare function
 (function() {
   var haystack = [ ['item 1', 'a'], ['item 2', 'b'], ['item 3', 'c'], ['item 4', 'd'] ];
-  var compare_function = function(item, needle) {
+  var compareFunction = function(item, needle) {
     return item[1] === needle;
   };
 
-  assert.equal(misc.in_array('a', haystack, null, compare_function), true);
-  assert.equal(misc.in_array('not in array', haystack, null, compare_function), false);
+  assert.equal(misc.inArray('a', haystack, null, compareFunction), true);
+  assert.equal(misc.inArray('not in array', haystack, null, compareFunction), false);
 })();
 
 // array find
 (function() {
   var haystack = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
-  assert.equal(misc.array_find('item 2', haystack), 1);
-  assert.equal(misc.array_find('not in array', haystack), false);
+  assert.equal(misc.arrayFind('item 2', haystack), 1);
+  assert.equal(misc.arrayFind('not in array', haystack), false);
 })();
 
 // arrays contains same elements
@@ -208,10 +208,10 @@ var assert = require('assert');
   var array3 = [ 'item 4', 'item 3', 'item 2', 'item 1' ];
   var array4 = [ 'item 1', 'item 2' ];
 
-  assert.equal(misc.arrays_contains_same_elements(array1, array2, true), true);
-  assert.equal(misc.arrays_contains_same_elements(array1, array3, true), false);
-  assert.equal(misc.arrays_contains_same_elements(array1, array3, false), true);
-  assert.equal(misc.arrays_contains_same_elements(array1, array4), false);
+  assert.equal(misc.arraysContainsSameElements(array1, array2, true), true);
+  assert.equal(misc.arraysContainsSameElements(array1, array3, true), false);
+  assert.equal(misc.arraysContainsSameElements(array1, array3, false), true);
+  assert.equal(misc.arraysContainsSameElements(array1, array4), false);
 })();
 
 // array is subset of
@@ -220,14 +220,14 @@ var assert = require('assert');
   var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
   var array3 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
-  assert.equal(misc.array_is_subset_of(array1, array2, true), true);
-  assert.equal(misc.array_is_subset_of(array2, array1, true), false);
-  assert.equal(misc.array_is_subset_of(array2, array1, false), false);
+  assert.equal(misc.arrayIsSubsetOf(array1, array2, true), true);
+  assert.equal(misc.arrayIsSubsetOf(array2, array1, true), false);
+  assert.equal(misc.arrayIsSubsetOf(array2, array1, false), false);
 
-  assert.equal(misc.array_is_subset_of(array2, array3, true), false);
-  assert.equal(misc.array_is_subset_of(array2, array3, false), true);
-  assert.equal(misc.array_is_subset_of(array3, array2, false), true);
-  assert.equal(misc.array_is_subset_of(array3, array2, true), false);
+  assert.equal(misc.arrayIsSubsetOf(array2, array3, true), false);
+  assert.equal(misc.arrayIsSubsetOf(array2, array3, false), true);
+  assert.equal(misc.arrayIsSubsetOf(array3, array2, false), true);
+  assert.equal(misc.arrayIsSubsetOf(array3, array2, true), false);
 })();
 
 // array difference
@@ -235,8 +235,8 @@ var assert = require('assert');
   var array1 = [ 'item 1', 'item 2' ];
   var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
-  assert.deepEqual(misc.array_difference(array1, array2), []);
-  assert.deepEqual(misc.array_difference(array2, array1), [ 'item 3', 'item 4' ]);
+  assert.deepEqual(misc.arrayDifference(array1, array2), []);
+  assert.deepEqual(misc.arrayDifference(array2, array1), [ 'item 3', 'item 4' ]);
 })();
 
 // filter paths
@@ -244,27 +244,27 @@ var assert = require('assert');
   var paths1 = [ 'foo/', 'bar/', 'foo.txt', 'bar/file.tar.gz', 'bar', 'foo/bar', 'foo/test.ini', 'dir/file.tar.gz' ];
   var paths2 = [ 'foo/1.txt', 'foo/', 'foo.txt', 'bar/file.tar.gz', 'bar', 'bar', 'bar/', 'foo/bar', 'foo/test.ini',
                 'dir/file.tar.gz', 'dir/file.tar.gz', 'foo/', 'foo/bar/1' ];
-  var paths_filtered = [ 'bar', 'bar/', 'dir/file.tar.gz', 'foo.txt', 'foo/' ];
+  var pathsFiltered = [ 'bar', 'bar/', 'dir/file.tar.gz', 'foo.txt', 'foo/' ];
 
-  assert.deepEqual(misc.filter_repeated_paths(paths1), paths_filtered);
-  assert.deepEqual(misc.filter_repeated_paths(paths2), paths_filtered);
+  assert.deepEqual(misc.filterRepeatedPaths(paths1), pathsFiltered);
+  assert.deepEqual(misc.filterRepeatedPaths(paths2), pathsFiltered);
 })();
 
 // get valid bundle name
 (function() {
-  assert.equal(misc.get_valid_bundle_name('ABC DEFG HIJ'), 'abc_defg_hij');
-  assert.equal(misc.get_valid_bundle_name('test-app-name 1.0'), 'test-app-name_10');
-  assert.equal(misc.get_valid_bundle_name('NodeJS Test app'), 'nodejs_test_app');
+  assert.equal(misc.getValidBundleName('ABC DEFG HIJ'), 'abc_defg_hij');
+  assert.equal(misc.getValidBundleName('test-app-name 1.0'), 'test-app-name_10');
+  assert.equal(misc.getValidBundleName('NodeJS Test app'), 'nodejs_test_app');
 })();
 
 // is valid bundle version
 (function() {
-  assert.equal(misc.is_valid_bundle_version('1.0.1'), true);
-  assert.equal(misc.is_valid_bundle_version('20100810'), true);
-  assert.equal(misc.is_valid_bundle_version('20100912.d261151fad5b2ce95a2281a70fed2c6dab221731'), true);
-  assert.equal(misc.is_valid_bundle_version('1.0'), true);
-  assert.equal(misc.is_valid_bundle_version('a.b.c'), true);
-  assert.equal(misc.is_valid_bundle_version('a.b@c'), false);
+  assert.equal(misc.isValidBundleVersion('1.0.1'), true);
+  assert.equal(misc.isValidBundleVersion('20100810'), true);
+  assert.equal(misc.isValidBundleVersion('20100912.d261151fad5b2ce95a2281a70fed2c6dab221731'), true);
+  assert.equal(misc.isValidBundleVersion('1.0'), true);
+  assert.equal(misc.isValidBundleVersion('a.b.c'), true);
+  assert.equal(misc.isValidBundleVersion('a.b@c'), false);
 })();
 
 /*

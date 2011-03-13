@@ -31,7 +31,7 @@ var API_VERSION = '1.0'
 
 var hello = "Hello World";
 
-function verify_response_code(url, code, method, data, callback) {
+function verifyResponseCode(url, code, method, data, callback) {
   if (!callback) {
     if (data) {
       callback = data;
@@ -57,23 +57,23 @@ function verify_response_code(url, code, method, data, callback) {
 
 (function() {
   var completed = false;
-  var fooserv_tar_gz, fooserv_tar_gz_bad;
+  var fooservTarGz, fooservTarGzBad;
 
   // This is handy for tracking successful uploads
   var uploaded = {};
-  var uploaded_count = 0;
+  var uploadedCount = 0;
 
-  function upload_successful(name, version) {
+  function uploadSuccessful(name, version) {
     if (!uploaded[name]) {
       uploaded[name] = [];
     }
     if (uploaded[name].indexOf(version) === -1) {
       uploaded[name].push(version);
-      uploaded_count++;
+      uploadedCount++;
     }
   }
 
-  function have_bundle(name, version) {
+  function haveBundle(name, version) {
     return (uploaded[name] && uploaded[name].indexOf(version) !== -1);
   }
 
@@ -89,28 +89,28 @@ function verify_response_code(url, code, method, data, callback) {
     function(callback) {
       async.parallel([
         // Non-existant bundle
-        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/bar/', 404),
+        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/bar/', 404),
 
         // Up one level from bundles
-        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/../', 404),
+        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/../', 404),
 
         // At the bundles level
-        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/./', 404),
+        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/./', 404),
 
         // Uploading to the bundles directory
-        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/foo/../', 404, 'PUT', hello),
+        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/foo/../', 404, 'PUT', hello),
 
         // Uploading to a file in the bundles directory
-        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/baz/baz@1.0.tar.gz', 500, 'PUT', hello),
+        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/baz/baz@1.0.tar.gz', 500, 'PUT', hello),
 
         // Listing a file in the bundles directory
-        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/baz/', 404),
+        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/baz/', 404),
 
         // Get a file that is actually a directory
-        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404),
+        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404),
 
         // Delete a file that is actually a directory
-        async.apply(verify_response_code, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404)
+        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404)
 
       ],
       callback);
@@ -138,10 +138,10 @@ function verify_response_code(url, code, method, data, callback) {
     function(callback) {
       fs.readFile('data/fooserv.tar.gz', function(err, data) {
         assert.ifError(err);
-        fooserv_tar_gz = data;
-        fooserv_tar_gz_bad = new Buffer(fooserv_tar_gz.length);
-        fooserv_tar_gz.copy(fooserv_tar_gz_bad);
-        fooserv_tar_gz_bad[9] = fooserv_tar_gz_bad[9] ^ 010;
+        fooservTarGz = data;
+        fooservTarGzBad = new Buffer(fooservTarGz.length);
+        fooservTarGz.copy(fooservTarGzBad);
+        fooservTarGzBad[9] = fooservTarGzBad[9] ^ 010;
         callback();
       });
     },
@@ -151,38 +151,38 @@ function verify_response_code(url, code, method, data, callback) {
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@1.0.tar.gz',
         method: 'PUT',
-        data: fooserv_tar_gz
+        data: fooservTarGz
       },
       function(res) {
         assert.equal(res.statusCode, 204);
-        upload_successful('foo', '1.0');
+        uploadSuccessful('foo', '1.0');
         callback();
       });
     },
 
     // Upload a bundle with a SHA1 header
     function(callback) {
-      var sha1 = crypto.createHash('sha1').update(fooserv_tar_gz);
+      var sha1 = crypto.createHash('sha1').update(fooservTarGz);
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@2.0.tar.gz',
         method: 'PUT',
-        data: fooserv_tar_gz,
+        data: fooservTarGz,
         headers: {'X-Content-SHA1': sha1.digest('base64')}
       },
       function(res) {
         assert.equal(res.statusCode, 204);
-        upload_successful('foo', '2.0');
+        uploadSuccessful('foo', '2.0');
         callback();
       });
     },
 
     // Upload a bundle with a bad SHA1 header
     function(callback) {
-      var sha1 = crypto.createHash('sha1').update(fooserv_tar_gz);
+      var sha1 = crypto.createHash('sha1').update(fooservTarGz);
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@2.1.tar.gz',
         method: 'PUT',
-        data: fooserv_tar_gz_bad,
+        data: fooservTarGzBad,
         headers: {'X-Content-SHA1': sha1.digest('base64')}
       },
       function(res) {
@@ -193,27 +193,27 @@ function verify_response_code(url, code, method, data, callback) {
 
     // Upload a bundle with a SHA1 trailer
     function(callback) {
-      var sha1 = crypto.createHash('sha1').update(fooserv_tar_gz);
+      var sha1 = crypto.createHash('sha1').update(fooservTarGz);
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz',
         method: 'PUT',
-        data: fooserv_tar_gz,
+        data: fooservTarGz,
         trailers: {'X-Content-SHA1': sha1.digest('base64')}
       },
       function(res) {
         assert.equal(res.statusCode, 204);
-        upload_successful('foo', '3.0');
+        uploadSuccessful('foo', '3.0');
         callback();
       });
     },
 
     // Upload a bundle with a bad SHA1 trailer
     function(callback) {
-      var sha1 = crypto.createHash('sha1').update(fooserv_tar_gz);
+      var sha1 = crypto.createHash('sha1').update(fooservTarGz);
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@3.1.tar.gz',
         method: 'PUT',
-        data: fooserv_tar_gz_bad,
+        data: fooservTarGzBad,
         trailers: {'X-Content-SHA1': sha1.digest('base64')}
       },
       function(res) {
@@ -233,11 +233,11 @@ function verify_response_code(url, code, method, data, callback) {
         var data = JSON.parse(res.body);
         var i;
         assert.ok(data instanceof Array);
-        assert.equal(data.length, uploaded_count);
+        assert.equal(data.length, uploadedCount);
         for (i = 0; i < data.length; i++) {
           assert.ok(data[i].name);
           assert.ok(data[i].version);
-          assert.ok(have_bundle(data[i].name, data[i].version));
+          assert.ok(haveBundle(data[i].name, data[i].version));
         }
         callback();
       });
@@ -260,7 +260,7 @@ function verify_response_code(url, code, method, data, callback) {
         for (i = 0; i < data.length; i++) {
           curName = data[i].split('@')[0];
           curVersion = data[i].split('@')[1].replace(/\.tar.gz$/, '');
-          assert.ok(have_bundle(curName, curVersion));
+          assert.ok(haveBundle(curName, curVersion));
         }
         callback();
       });

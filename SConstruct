@@ -64,9 +64,13 @@ allsource = testsource + source
 
 env["JSLINT"] = "NODE_PATH=lib/extern/ $NODE lib/extern/Nodelint/bin/jslint"
 jslint = env.Command(".xjslint", source, ["$JSLINT "+ " ".join([str(x) for x in source])])
+ccase = env.Command(".xccase", allsource, ["node camelCase.js "+ " ".join([str(x) for x in allsource])])
 
 env.AlwaysBuild(jslint)
 env.Alias('jslint', jslint)
+
+env.AlwaysBuild(ccase)
+env.Alias('ccase', ccase)
 
 lenv = env.Clone()
 

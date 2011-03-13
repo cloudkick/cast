@@ -19,12 +19,12 @@
 /**
  * Wrapper around agent entry point.
  */
-var path_setup = require('../lib/util/path_setup').path_setup;
+var pathSetup = require('../lib/util/path_setup').pathSetup;
 
-path_setup();
+pathSetup();
 
 function main() {
-  path_setup();
+  pathSetup();
   var client = require('cast-client/entry');
   client.run();
 }

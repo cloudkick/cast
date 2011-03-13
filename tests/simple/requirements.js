@@ -21,40 +21,40 @@ var assert = require('assert');
 // Test compare_versions ver_b < ver_a
 (function() {
   var i, version;
-  var version_a = '0.2.1';
-  var versions_b = [ '0.1.0', '0.1.9', '0.2.0', '0.0.0' ];
+  var versionA = '0.2.1';
+  var versionsB = [ '0.1.0', '0.1.9', '0.2.0', '0.0.0' ];
 
-  for (i = 0; i < versions_b.length; i++) {
-    version = versions_b[i];
-    assert.equal(req.compare_versions(version_a, version), false);
+  for (i = 0; i < versionsB.length; i++) {
+    version = versionsB[i];
+    assert.equal(req.compareVersions(versionA, version), false);
   }
 })();
 
 // Test compare_versions ver_b >= ver_a
 (function() {
   var i, version;
-  var version_a = '0.2.1';
-  var versions_b = [ '0.2.1', '0.2.2', '0.2.3', '0.2.9', '0.3.0', '1.0.0' ];
+  var versionA = '0.2.1';
+  var versionsB = [ '0.2.1', '0.2.2', '0.2.3', '0.2.9', '0.3.0', '1.0.0' ];
 
-  for (i = 0; i < versions_b.length; i++) {
-    version = versions_b[i];
-    assert.ok(req.compare_versions(version_a, version));
+  for (i = 0; i < versionsB.length; i++) {
+    version = versionsB[i];
+    assert.ok(req.compareVersions(versionA, version));
   }
 })();
 
 // Test is_defined
 (function() {
   var i, item;
-  var assert_true = [ '1', ['foo', 'bar'], 1, {}, { 'foo': 'bar'}, true ];
-  var assert_false = [ null, undefined, false ];
+  var assertTrue = [ '1', ['foo', 'bar'], 1, {}, { 'foo': 'bar'}, true ];
+  var assertFalse = [ null, undefined, false ];
 
-  for (i = 0; i < assert_true.length; i++) {
-    item = assert_true[i];
-    assert.ok(req.is_defined(null, item), item + ' is defined');
+  for (i = 0; i < assertTrue.length; i++) {
+    item = assertTrue[i];
+    assert.ok(req.isDefined(null, item), item + ' is defined');
   }
 
-  for (i = 0; i < assert_false.length; i++) {
-    item = assert_false[i];
-    assert.equal(req.is_defined(null, item), false);
+  for (i = 0; i < assertFalse.length; i++) {
+    item = assertFalse[i];
+    assert.equal(req.isDefined(null, item), false);
   }
 })();

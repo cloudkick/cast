@@ -28,7 +28,7 @@ var assert = require('assert');
     function(callback) {
       var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');
       var expath = path.join(process.cwd(), '.tests/fooserv');
-      tarball.extract_tarball(tbpath, expath, 0755, function(err) {
+      tarball.extractTarball(tbpath, expath, 0755, function(err) {
         assert.ifError(err);
         callback();
       });
@@ -38,7 +38,7 @@ var assert = require('assert');
     function(callback) {
       var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');
       var expath = path.join(process.cwd(), '.tests/fooserv');
-      tarball.extract_tarball(tbpath, expath, 0755, function(err) {
+      tarball.extractTarball(tbpath, expath, 0755, function(err) {
         assert.ok(err);
         callback();
       });
@@ -48,7 +48,7 @@ var assert = require('assert');
     function(callback) {
       var tbpath = path.join(process.cwd(), 'data/slowapp.tar.gz');
       var expath = path.join(process.cwd(), '.tests/slowserv');
-      tarball.extract_tarball(tbpath, expath, 0755, function(err) {
+      tarball.extractTarball(tbpath, expath, 0755, function(err) {
         assert.ok(err);
         callback();
       });

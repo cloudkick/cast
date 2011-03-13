@@ -20,14 +20,14 @@ var sprintf = require('extern/sprintf').sprintf;
 
 var test = require('util/test');
 var Agent = require('services/agent')._Agent;
-var agent_constants = require('agent/constants');
+var agentConstants = require('agent/constants');
 var async = require('extern/async');
 var assert = require('assert');
 
 // Dirty hack to make the tests run much faster
-agent_constants.PING_INTERVAL = 1000;
+agentConstants.PING_INTERVAL = 1000;
 
-var response_dictionary = {
+var responseDictionary = {
   'hello (\\d) (.*?) ([a-zA-Z0-9]+) ([a-zA-Z0-9]+)': {
     'type': 'regexp',
     'response': 'accepted\n'
@@ -46,24 +46,24 @@ var response_dictionary = {
 function AgentTest() {
   Agent.call(this);
 
-  this._log_buffer = [];
+  this._LogBuffer = [];
 }
 
 sys.inherits(AgentTest, Agent);
 
-AgentTest.prototype.log_command = function(command, type, command_arguments) {
-  this._log_buffer.push([ command, type, command_arguments ]);
+AgentTest.prototype.logCommand = function(command, type, commandArguments) {
+  this._LogBuffer.push([ command, type, commandArguments ]);
 };
 
-AgentTest.prototype.log_buffer_contains = function(command, type) {
-  var i, item, item_command, item_type;
+AgentTest.prototype.logBufferContains = function(command, type) {
+  var i, item, itemCommand, itemType;
 
-  for (i = 0; i < this._log_buffer.length; i++) {
-    item = this._log_buffer[i];
-    item_command = item[0];
-    item_type = item[1];
+  for (i = 0; i < this._LogBuffer.length; i++) {
+    item = this._LogBuffer[i];
+    itemCommand = item[0];
+    itemType = item[1];
 
-    if (item_command === command && item_type === type) {
+    if (itemCommand === command && itemType === type) {
       return true;
     }
   }
@@ -77,9 +77,9 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
   async.parallel([
     // Test agent connection
     function(callback) {
-      var port = test.get_port();
+      var port = test.getPort();
       var agent = new AgentTest();
-      test.run_test_tcp_server('127.0.0.1', port, {}, false, function() {
+      test.runTestTcpServer('127.0.0.1', port, {}, false, function() {
         var self = this;
         agent.start(port, '127.0.0.1');
 
@@ -95,9 +95,9 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
     // Test Agent 'hello' and 'ping'
     function(callback) {
       var n = 0;
-      var port = test.get_port();
+      var port = test.getPort();
       var agent = new AgentTest();
-      test.run_test_tcp_server('127.0.0.1', port, response_dictionary, false, function(connection) {
+      test.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
         var self = this;
         agent.start(port, '127.0.0.1');
 
@@ -106,11 +106,11 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
           assert.ok(agent._connected);
         }, 500);
 
-        var interval_id = setInterval(function() {
-          if (agent._pong_got_count >= 2) {
-            clearInterval(interval_id);
+        var intervalId = setInterval(function() {
+          if (agent._PongGotCount >= 2) {
+            clearInterval(intervalId);
             assert.equal(n, 1);
-            assert.equal(agent._ping_sent_count, agent._pong_got_count);
+            assert.equal(agent._PingSentCount, agent._PongGotCount);
             agent.stop();
             self.close();
             callback();
@@ -122,10 +122,10 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
     // Test command queueing
     function(callback) {
       var n = 0;
-      var port = test.get_port();
+      var port = test.getPort();
       var agent = new AgentTest();
 
-      test.run_test_tcp_server('127.0.0.1', port, response_dictionary, false, function(connection) {
+      test.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
         var self = this;
         agent.start(port, '127.0.0.1');
 
@@ -135,15 +135,15 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
           agent._connected = false;
           assert.ok(!agent._connected);
 
-          agent.send_command('run_check', {});
+          agent.sendCommand('run_check', {});
         }, 500);
 
         setTimeout(function() {
           n++;
-          var pending_commands = agent._pending_commands_queue;
+          var pendingCommands = agent._PendingCommandsQueue;
 
-          assert.ok(pending_commands.length > 0);
-          assert.equal(pending_commands[0][0], 'run_check');
+          assert.ok(pendingCommands.length > 0);
+          assert.equal(pendingCommands[0][0], 'run_check');
         }, 2000);
 
         setTimeout(function() {
@@ -158,11 +158,11 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
     // Test incoming error command
     function(callback) {
       var n = 0;
-      var log_buffer = [];
-      var port = test.get_port();
+      var logBuffer = [];
+      var port = test.getPort();
       var agent = new AgentTest();
 
-      test.run_test_tcp_server('127.0.0.1', port, response_dictionary, false, function(connection) {
+      test.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
         var self = this;
         agent.start(port, '127.0.0.1');
 
@@ -170,7 +170,7 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
           var stream;
           n++;
           assert.ok(agent._connected);
-          assert.equal(agent.log_buffer_contains('error', 'incoming'), false);
+          assert.equal(agent.logBufferContains('error', 'incoming'), false);
 
           stream = self._streams[0];
           stream.write('error Test error reason.\n');
@@ -188,11 +188,11 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
     // Test incoming restart command
     function(callback) {
       var n = 0;
-      var log_buffer = [];
-      var port = test.get_port();
+      var logBuffer = [];
+      var port = test.getPort();
       var agent = new AgentTest();
 
-      test.run_test_tcp_server('127.0.0.1', port, response_dictionary, false, function(connection) {
+      test.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
         var self = this;
         agent.start(port, '127.0.0.1');
 
@@ -200,7 +200,7 @@ AgentTest.prototype.log_buffer_contains = function(command, type) {
           var stream;
           n++;
           assert.ok(agent._connected);
-          assert.equal(agent.log_buffer_contains('restart', 'incoming'), false);
+          assert.equal(agent.logBufferContains('restart', 'incoming'), false);
 
           stream = self._streams[0];
           stream.write('restart\n');
