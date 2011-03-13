@@ -8,7 +8,8 @@
  */
 var config = { verbose: true, 'show-passed': true, 'Nodelint-cli': true,
                jslint: 'jslint', _jslint: { node: true, browser: true,
-                                            eqeqeq: true, undef: true }},
+                                            eqeqeq: true, undef: true,
+                                            sub: true }},
                options = global._NodelintOptions, i, k;
 if ( options ) {
 	for ( i in options ) {
