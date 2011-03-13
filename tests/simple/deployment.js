@@ -24,9 +24,9 @@ var config = require('util/config');
 var assert = require('assert');
 var deployment = require('deployment');
 
-var svcRootAvail = config.get().service_dir_available;
-var appRoot = config.get().app_dir;
-var extRoot = config.get().extracted_dir;
+var svcRootAvail = config.get()['service_dir_available'];
+var appRoot = config.get()['app_dir'];
+var extRoot = config.get()['extracted_dir'];
 
 function verifyInstance(name, bundle, version, versions, callback) {
   // TODO: More in-depth verification of data files, templated files
