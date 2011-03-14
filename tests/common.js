@@ -298,7 +298,7 @@ process.nextTick(function() {
 
     // Do a few basic sanity checks on the config to make sure its not broken
     var conf = config.get();
-    assert.equal(49443, conf.port);
+    assert.equal(49443, conf['port']);
     assert.equal(".tests/data_root", conf['data_root']);
 
     var tp = process.argv[2].replace(/\.js$/, '');
