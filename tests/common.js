@@ -196,7 +196,7 @@ assert.response = function(server, req, res, msg){
     remote.url = 'http://' + remote.hostname + ':' + remote.port;
     var opts = { path: req.url, method: method, headers: headers };
 
-    utilHttp._BaseRequest(remote, opts, function(err, request) {
+    utilHttp._baseRequest(remote, opts, function(err, request) {
       if (req.trailers) {
         request.addTrailers(req.trailers);
       }

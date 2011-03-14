@@ -19,7 +19,7 @@ var sys = require('sys');
 var sprintf = require('extern/sprintf').sprintf;
 
 var test = require('util/test');
-var Agent = require('services/agent')._Agent;
+var Agent = require('services/agent')._agent;
 var agentConstants = require('agent/constants');
 var async = require('extern/async');
 var assert = require('assert');
@@ -46,20 +46,20 @@ var responseDictionary = {
 function AgentTest() {
   Agent.call(this);
 
-  this._LogBuffer = [];
+  this._logBuffer = [];
 }
 
 sys.inherits(AgentTest, Agent);
 
 AgentTest.prototype.logCommand = function(command, type, commandArguments) {
-  this._LogBuffer.push([ command, type, commandArguments ]);
+  this._logBuffer.push([ command, type, commandArguments ]);
 };
 
 AgentTest.prototype.logBufferContains = function(command, type) {
   var i, item, itemCommand, itemType;
 
-  for (i = 0; i < this._LogBuffer.length; i++) {
-    item = this._LogBuffer[i];
+  for (i = 0; i < this._logBuffer.length; i++) {
+    item = this._logBuffer[i];
     itemCommand = item[0];
     itemType = item[1];
 
@@ -107,10 +107,10 @@ AgentTest.prototype.logBufferContains = function(command, type) {
         }, 500);
 
         var intervalId = setInterval(function() {
-          if (agent._PongGotCount >= 2) {
+          if (agent._pongGotCount >= 2) {
             clearInterval(intervalId);
             assert.equal(n, 1);
-            assert.equal(agent._PingSentCount, agent._PongGotCount);
+            assert.equal(agent._pingSentCount, agent._pongGotCount);
             agent.stop();
             self.close();
             callback();
@@ -140,7 +140,7 @@ AgentTest.prototype.logBufferContains = function(command, type) {
 
         setTimeout(function() {
           n++;
-          var pendingCommands = agent._PendingCommandsQueue;
+          var pendingCommands = agent._pendingCommandsQueue;
 
           assert.ok(pendingCommands.length > 0);
           assert.equal(pendingCommands[0][0], 'run_check');

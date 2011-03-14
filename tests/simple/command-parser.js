@@ -30,8 +30,8 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
     function(callback) {
       var parser = new CommandParser(COMMANDS_PATH);
 
-      assert.deepEqual(parser._GlobalCommands, ['completion']);
-      assert.deepEqual(parser._NormalCommands, {});
+      assert.deepEqual(parser._globalCommands, ['completion']);
+      assert.deepEqual(parser._normalCommands, {});
       assert.equal(parser.banner, '');
       callback();
     },
@@ -40,16 +40,16 @@ var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
     function(callback) {
       var parser = new CommandParser(COMMANDS_PATH);
 
-      assert.deepEqual(parser._GlobalCommands, ['completion']);
+      assert.deepEqual(parser._globalCommands, ['completion']);
       parser.addCommand('hello');
-      assert.deepEqual(parser._GlobalCommands, ['completion', 'hello']);
+      assert.deepEqual(parser._globalCommands, ['completion', 'hello']);
       parser.removeCommand('hello');
 
-      assert.deepEqual(parser._NormalCommands, {});
+      assert.deepEqual(parser._normalCommands, {});
       parser.addCommands(['services/list', 'services/restart']);
-      assert.deepEqual(parser._NormalCommands, { 'services': ['list', 'restart'] });
+      assert.deepEqual(parser._normalCommands, { 'services': ['list', 'restart'] });
       parser.removeCommands(['services/list', 'services/restart']);
-      assert.deepEqual(parser._NormalCommands, {});
+      assert.deepEqual(parser._normalCommands, {});
       callback();
     },
 

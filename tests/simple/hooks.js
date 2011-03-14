@@ -22,7 +22,7 @@ var instances = require('deployment/instances');
 var hooks = require('deployment/hooks');
 
 instance = new instances.Instance('test_instance');
-instance._BundleName = 'test_bundle';
+instance._bundleName = 'test_bundle';
 instance.root = path.join(__dirname, '../data/instances/test_instance/');
 
 // Test success (exit code == 0)
