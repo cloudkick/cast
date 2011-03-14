@@ -110,7 +110,7 @@ var assert = require('assert');
     }
   };
 
-  misc.template_to_tree(".tests/misc/template", tmpl, false, function(error) {
+  misc.templateToTree(".tests/misc/template", tmpl, false, function(error) {
     assert.equal(error, undefined);
 
     fs.stat('.tests/misc/template', function(err, stats) {
@@ -142,16 +142,16 @@ var assert = require('assert');
     }
   };
 
-  misc.template_to_tree(".tests/misc/template1", tmpl, false, function(error) {
+  misc.templateToTree(".tests/misc/template1", tmpl, false, function(error) {
     n++;
     assert.equal(error, undefined);
 
-    misc.template_to_tree(".tests/misc/template1", tmpl, false, function(error) {
+    misc.templateToTree(".tests/misc/template1", tmpl, false, function(error) {
       n++;
       assert.equal(error.errno, 17);
       assert.match(error.message, /eexist/i);
 
-      misc.template_to_tree(".tests/misc/template1", tmpl, true, function(error) {
+      misc.templateToTree(".tests/misc/template1", tmpl, true, function(error) {
         n++;
         assert.equal(error, undefined);
       });
