@@ -54,3 +54,19 @@ Hacking & Code Style notes
  * When exporting symbols, attach them directly to the exports object,
    and attempt to place all of the local functions in a file at the top
    of a file.
+
+  * use JSDoc annotations
+
+  * Modules must be imported in the following order:
+    * standard library modules (os, util, http, ..)
+    * external dependencies
+    * cast modules
+
+    Each group must be separated with a blank line.
+
+    For example:
+    var util = require('util');
+
+    var printf = require('extern/sprintf').sprintf;
+
+    var config = require('util/config');
