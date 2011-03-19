@@ -115,7 +115,7 @@ if tests_to_run:
 else:
   tests_to_run = test_files
 
-testcmd = env.Command('.tests_run', [], "$NODE tests/run.js %s" % ' '.join(tests_to_run))
+testcmd = env.Command('.tests_run', [], "$NODE tests/run.js --verbosity 2 --tests '%s'" % ' '.join(tests_to_run))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')

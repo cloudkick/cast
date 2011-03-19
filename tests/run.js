@@ -26,6 +26,7 @@ var spawn = require('child_process').spawn;
 var async = require('extern/async');
 var sprintf = require('extern/sprintf').sprintf;
 
+var getopt = require('util/getopt');
 var config = require('util/config');
 var ps = require('util/pubsub');
 var terminal = require('util/terminal');
@@ -146,5 +147,25 @@ process.addListener('SIGINT', function() {
   printTestsResults();
 });
 
-var tests = process.argv.splice(2);
-runTests(tests, 2);
+var options = [
+  ['-t', '--tests STRING', 'Whitespace separated list of tests to run'],
+  ['-v', '--verbosity [NUMBER]', 'Test runner verbosity']
+];
+
+var verbosity = 2;
+var tests = [];
+
+getopt.add(options);
+var p = getopt.parser();
+p.banner = 'Usage: node tests/run.js test files s [options]';
+
+p.on('verbosity', function(opt, value) {
+  verbosity = value;
+});
+
+p.on('tests', function(opt, value) {
+  tests = value.split(' ');
+});
+
+p.parse(process.argv);
+runTests(tests, verbosity);
