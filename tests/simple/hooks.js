@@ -102,6 +102,7 @@ var instance_version_path = path.join(instance.root, 'versions/test_bundle@1.0')
 
   var callback = function(err, killed, stdout, stderr) {
     assert.ok(err);
+    assert.match(err, /timeout/);
     assert.ok(killed);
 
     completed = true;
@@ -122,12 +123,34 @@ var instance_version_path = path.join(instance.root, 'versions/test_bundle@1.0')
 
   var callback = function(err, killed, stdout, stderr) {
     assert.ok(err);
+    assert.match(err, /status 127/);
     assert.ok(!killed);
 
     completed = true;
   };
 
   var hook = new hooks.InstanceHook('pre', 'hook_not_executable.js',
+                                    instance_version_path);
+  hook.execute(null, [], callback);
+
+  process.on('exit', function() {
+    assert.ok(completed, 'Tests completed');
+  });
+})();
+
+// Test failure (hook file does not exist)
+(function() {
+  var completed = false;
+
+  var callback = function(err, killed, stdout, stderr) {
+    assert.ok(err);
+    assert.match(err, /does not exist/);
+    assert.ok(!killed);
+
+    completed = true;
+  };
+
+  var hook = new hooks.InstanceHook('pre', 'hook_not_exists.js',
                                     instance_version_path);
   hook.execute(null, [], callback);
 
