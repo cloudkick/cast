@@ -25,6 +25,8 @@ instance = new instances.Instance('test_instance');
 instance._bundleName = 'test_bundle';
 instance.root = path.join(__dirname, '../data/instances/test_instance/');
 
+var instance_version_path = path.join(instance.root, 'versions/test_bundle@1.0');
+
 // Test success (exit code == 0)
 (function() {
   var completed = false;
@@ -39,8 +41,9 @@ instance.root = path.join(__dirname, '../data/instances/test_instance/');
     completed = true;
   };
 
-  hooks.execute(instance, '1.0', 'hook_success.js', null, [],
-                callback);
+  var hook = new hooks.InstanceHook('pre', 'hook_success.js',
+                                    instance_version_path);
+  hook.execute(null, [], callback);
 
   process.on('exit', function() {
     assert.ok(completed, 'Tests completed');
@@ -61,8 +64,9 @@ instance.root = path.join(__dirname, '../data/instances/test_instance/');
     completed = true;
   };
 
-  hooks.execute(instance, '1.0', 'hook_failure.js', null, [],
-                callback);
+  var hook = new hooks.InstanceHook('pre', 'hook_failure.js',
+                                    instance_version_path);
+  hook.execute(null, [], callback);
 
   process.on('exit', function() {
     assert.ok(completed, 'Tests completed');
@@ -83,8 +87,9 @@ instance.root = path.join(__dirname, '../data/instances/test_instance/');
     completed = true;
   };
 
-  hooks.execute(instance, '1.0', 'hook_args.js', null, [ 'test1', 'test2'],
-                callback);
+  var hook = new hooks.InstanceHook('pre', 'hook_args.js',
+                                    instance_version_path);
+  hook.execute(null, [ 'test1', 'test2'], callback);
 
   process.on('exit', function() {
     assert.ok(completed, 'Tests completed');
@@ -102,8 +107,9 @@ instance.root = path.join(__dirname, '../data/instances/test_instance/');
     completed = true;
   };
 
-  hooks.execute(instance, '1.0', 'hook_timeout.js', 300, [],
-                callback);
+  var hook = new hooks.InstanceHook('pre', 'hook_timeout.js',
+                                    instance_version_path);
+  hook.execute(300, [], callback);
 
   process.on('exit', function() {
     assert.ok(completed, 'Tests completed');
@@ -121,8 +127,9 @@ instance.root = path.join(__dirname, '../data/instances/test_instance/');
     completed = true;
   };
 
-  hooks.execute(instance, '1.0', 'hook_not_executable.js', null, [],
-                callback);
+  var hook = new hooks.InstanceHook('pre', 'hook_not_executable.js',
+                                    instance_version_path);
+  hook.execute(null, [], callback);
 
   process.on('exit', function() {
     assert.ok(completed, 'Tests completed');
