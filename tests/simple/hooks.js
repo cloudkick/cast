@@ -140,21 +140,31 @@ var instance_version_path = path.join(instance.root, 'versions/test_bundle@1.0')
 
 // Test failure (hook file does not exist)
 (function() {
-  var completed = false;
+  var n = 0;
 
-  var callback = function(err, killed, stdout, stderr) {
+  var callback1 = function(err, killed, stdout, stderr) {
+    assert.ok(!err);
+    assert.ok(!killed);
+
+    n++;
+  };
+
+  var callback2 = function(err, killed, stdout, stderr) {
     assert.ok(err);
     assert.match(err, /does not exist/);
     assert.ok(!killed);
 
-    completed = true;
+    n++;
   };
 
-  var hook = new hooks.InstanceHook('pre', 'hook_not_exists.js',
-                                    instance_version_path);
-  hook.execute(null, [], callback);
+  var hook1 = new hooks.InstanceHook('pre', 'hook_not_exists.js',
+                                     instance_version_path, false);
+  var hook2 = new hooks.InstanceHook('pre', 'hook_not_exists.js',
+                                     instance_version_path, true);
+  hook1.execute(null, [], callback1);
+  hook2.execute(null, [], callback2);
 
   process.on('exit', function() {
-    assert.ok(completed, 'Tests completed');
+    assert.equal(n, 2);
   });
 })();
