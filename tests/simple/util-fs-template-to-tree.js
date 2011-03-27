@@ -20,8 +20,7 @@ var fsutil = require('util/fs');
 var async = require('extern/async');
 var assert = require('assert');
 
-(function() {
-  var completed = false;
+exports['test_templateToTreeSimple_complex'] = function() {
   var tmpl = {
     afile: "simple file",
     subdir: {
@@ -30,7 +29,11 @@ var assert = require('assert');
   };
 
   async.series([
-    async.apply(fs.mkdir, '.tests/fsutil', 0700),
+    function(callback) {
+      fs.mkdir, '.tests/fsutil', 0700, function(err) {
+        callback();
+      }
+    },
 
     // Render a template to a tree
     function(callback) {
@@ -91,12 +94,73 @@ var assert = require('assert');
       });
     },
   ],
+
   function(err) {
     assert.ifError(err);
-    completed = true;
   });
+};
 
-  process.on('exit', function() {
-    assert.ok(completed, 'Tests completed');
+exports['test_templateToTreeSimple'] = function() {
+  var tmpl = {
+    afile: "simple file",
+    subdir: {
+      "subfile": "subfile contents"
+    }
+  };
+
+  async.series([
+    function(callback) {
+      fs.mkdir('.tests/fsutil', 0700, function(err) {
+        callback();
+      });
+    },
+
+    function(callback) {
+      fsutil.templateToTree(".tests/fsutil/template1", tmpl, false, callback);
+    },
+
+    function(callback) {
+      fs.stat('.tests/fsutil/template1', function(err, stats) {
+        assert.ifError(err);
+        assert.ok(stats.isDirectory());
+
+        callback();
+      });
+    },
+
+    function(callback) {
+      fs.stat('.tests/fsutil/template1/subdir', function(err, stats) {
+        assert.ifError(err);
+        assert.ok(stats.isDirectory());
+
+        callback();
+      });
+    }],
+
+    function(err) {
+      assert.ifError(err);
+    }
+  );
+};
+
+exports['test_templateToTree_throws_exception_on_existing_directory'] = function() {
+  var tmpl = {
+    afile: "simple file",
+    subdir: {
+      "subfile": "subfile contents"
+    }
+  };
+
+  fsutil.templateToTree(".tests/fsutil.template1", tmpl, false, function(err) {
+    assert.equal(err, undefined);
+
+    fsutil.templateToTree(".tests/fsutil.template1", tmpl, false, function(err) {
+      assert.equal(err.errno, 17);
+      assert.match(err.message, /eexist/i);
+
+      fsutil.templateToTree(".tests/fsutil.template1", tmpl, true, function(err) {
+        assert.equal(err, undefined);
+      });
+    });
   });
-})();
+};
