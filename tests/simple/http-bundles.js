@@ -24,12 +24,15 @@ var async = require('extern/async');
 
 var misc = require('util/misc');
 var http = require('services/http');
+var setUp = require('./../common').setUp;
 var assert = require('./../assert');
+
+var API_VERSION = '1.0';
+
 var getServer = http._serverOnly;
+var hello = 'Hello World';
 
-var API_VERSION = '1.0'
-
-var hello = "Hello World";
+exports['setUp'] = setUp;
 
 function verifyResponseCode(url, code, method, data, callback) {
   if (!callback) {
@@ -55,8 +58,7 @@ function verifyResponseCode(url, code, method, data, callback) {
   });
 }
 
-(function() {
-  var completed = false;
+exports['test_http_bundles'] = function() {
   var fooservTarGz, fooservTarGzBad;
 
   // This is handy for tracking successful uploads
@@ -301,15 +303,9 @@ function verifyResponseCode(url, code, method, data, callback) {
         assert.equal(res.statusCode, 404);
         callback();
       });
-    }
+    }],
 
-  ],
   function(err) {
-    completed = true;
     assert.ifError(err);
   });
-
-  process.on('exit', function() {
-    assert.ok(completed, 'Tests completed');
-  });
-})();
+};
