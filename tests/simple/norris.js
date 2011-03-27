@@ -19,7 +19,7 @@ var norris = require('norris');
 var async = require('extern/async');
 var assert = require('assert');
 
-(function() {
+exports['test_get_fact'] = function() {
   var completed = false;
   norris.get(function(facts)  {
     // Check the hostname
@@ -30,11 +30,5 @@ var assert = require('assert');
 
     // Check gnutar
     assert.ok(facts.gnutar);
-
-    completed = true;
   });
-
-  process.on('exit', function() {
-    assert.ok(completed, 'Tests completed');
-  });
-})();
+};
