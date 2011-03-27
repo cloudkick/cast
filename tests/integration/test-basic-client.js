@@ -41,8 +41,7 @@ function getServer() {
   return require('services/http')._serverOnly();
 }
 
-(function() {
-  var completed = false;
+exports['test_remotes'] = function() {
   var cbin = path.normalize(path.join(process.cwd(), '..', 'bin', 'cast'));
   var aroot = path.join(process.cwd(), '.tests');
   var croot = path.join(process.cwd(), '.tests/fooserv');
@@ -59,6 +58,7 @@ function getServer() {
       callback = doChecks;
       doChecks = true;
     }
+
     args.unshift(sprintf('"%s"', cbin));
     exec(args.join(' '), copts, function(err, stdout, stderr) {
       if (doChecks) {
@@ -119,11 +119,6 @@ function getServer() {
 
   function(err) {
     server.close();
-    completed = true;
     assert.ifError(err);
   });
-
-  process.on('exit', function() {
-    assert.ok(completed, 'Tests completed');
-  });
-})();
+};
