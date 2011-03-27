@@ -16,20 +16,32 @@
  */
 
 var fs = require('fs');
-var exec = require('child_process').exec;
 var path = require('path');
-var fsutil = require('util/fs');
-var async = require('extern/async');
 var assert = require('assert');
+var exec = require('child_process').exec;
 
-(function() {
-  var completed = false;
+var async = require('extern/async');
+var sprintf = require('extern/sprintf').sprintf;
 
+var fsutil = require('util/fs');
+
+var createTestDirectories = function(rootName, callback) {
+  // Create some nested directories and files
   async.series([
-    // Create some nested directories and files
-    async.apply(exec, 'mkdir -p .tests/fs/a/b/c/d'),
-    async.apply(exec, 'touch .tests/fs/a/bc'),
-    async.apply(exec, 'mkdir .tests/fs/a/cd'),
+    async.apply(exec, sprintf('mkdir -p .tests/fs/%s/b/c/d', rootName)),
+    async.apply(exec, sprintf('touch .tests/fs/%s/bc', rootName)),
+    async.apply(exec, sprintf('mkdir .tests/fs/%s/cd', rootName)),
+  ],
+
+  // Delete them all (with a relative path)
+  function(err) {
+    callback();
+  });
+};
+
+exports['test_rmtree_relative_path'] = function() {
+  async.series([
+    async.apply(createTestDirectories, 'a'),
 
     // Delete them all (with a relative path)
     function(callback) {
@@ -37,43 +49,47 @@ var assert = require('assert');
         assert.ifError(err);
         callback();
       });
-    },
+    }],
 
     // Make sure they're gone
-    function(callback) {
+    function(err) {
+      assert.ifError(err);
+
       fs.stat('.tests/fs/a', function(err, stats) {
         assert.ok(err);
-        callback();
       });
-    },
+    });
+};
 
-    // Create some nested directories and files
-    async.apply(exec, 'mkdir -p .tests/fs/a/b/c/d'),
-    async.apply(exec, 'touch .tests/fs/a/bc'),
-    async.apply(exec, 'mkdir .tests/fs/a/cd'),
+exports['test_rmtree_absolute_path'] = function() {
+  async.series([
+    async.apply(createTestDirectories, 'b'),
 
-    // Delete them all (with an absolute path)
+    // Delete them all (with a absolute path)
     function(callback) {
-      fsutil.rmtree(path.join(process.cwd(), '.tests/fs/a'), function(err) {
+      fsutil.rmtree(path.join(process.cwd(), '.tests/fs/b'), function(err) {
         assert.ifError(err);
         callback();
       });
-    },
+    }],
 
-    // Make sure they're gone
-    function(callback) {
-      fs.stat('.tests/fs/a', function(err, stats) {
+    function(err) {
+      assert.ifError(err);
+
+      fs.stat('.tests/fs/b', function(err, stats) {
         assert.ok(err);
-        callback();
       });
-    },
+    });
+};
 
+exports['test_rmtree_try_deleting_twice'] = function() {
+  async.series([
     // Create an empty directory
-    async.apply(exec, 'mkdir -p .tests/fsutil/a'),
+    async.apply(exec, 'mkdir -p .tests/fsutil/c'),
 
     // Delete it
     function(callback) {
-      fsutil.rmtree('.tests/fsutil/a', function(err) {
+      fsutil.rmtree('.tests/fsutil/c', function(err) {
         assert.ifError(err);
         callback();
       });
@@ -81,7 +97,7 @@ var assert = require('assert');
 
     // Make sure its gone
     function(callback) {
-      fs.stat('.tests/fsutil/a', function(err, stats) {
+      fs.stat('.tests/fsutil/c', function(err, stats) {
         assert.ok(err);
         callback();
       });
@@ -89,28 +105,21 @@ var assert = require('assert');
 
     // Try to delete it again (should fail)
     function(callback) {
-      fsutil.rmtree('.tests/fsutil/a', function (err) {
+      fsutil.rmtree('.tests/fsutil/c', function (err) {
         assert.ok(err);
         assert.match(err.message, /ENOENT/);
         callback();
       });
-    },
+    }],
 
-    // Try to delete no path at all (should fail)
-    function(callback) {
-      fsutil.rmtree('', function(err) {
-        assert.ok(err);
-        assert.match(err.message, /ENOENT/);
-        callback();
-      });
-    }
-  ],
-  function(err) {
-    assert.ifError(err);
-    completed = true;
-  });
+    function(err) {
+      assert.ifError(err);
+    });
+};
 
-  process.on('exit', function() {
-    assert.ok(completed, 'Tests completed.');
+exports['test_deleting_no_path_throws_error'] = function() {
+  fsutil.rmtree('', function(err) {
+    assert.ok(err);
+    assert.match(err.message, /ENOENT/);
   });
-})();
+};
