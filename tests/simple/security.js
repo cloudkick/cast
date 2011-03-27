@@ -33,7 +33,7 @@ require('util').debug('in')
       var hostname = 'testhostnamerare' + misc.randstr(5);
       var keypath = '.tests/certs/t.key';
       var crtpath = '.tests/certs/t.crt';
-      certgen.selfsigned(hostname, keypath, crtpath, function(err) {
+      certgen.genSelfSigned(hostname, keypath, crtpath, function(err) {
         assert.ifError(err);
         exec('openssl x509 -noout -subject -in .tests/certs/t.crt', function(err, stdout, stderr) {
           assert.ifError(err);
