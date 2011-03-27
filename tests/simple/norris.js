@@ -20,7 +20,6 @@ var async = require('extern/async');
 var assert = require('assert');
 
 exports['test_get_fact'] = function() {
-  var completed = false;
   norris.get(function(facts)  {
     // Check the hostname
     assert.ok(facts.hostname);
@@ -30,5 +29,16 @@ exports['test_get_fact'] = function() {
 
     // Check gnutar
     assert.ok(facts.gnutar);
+  });
+};
+
+exports['test_cache_expiration'] = function() {
+  norris.flushFactCache();
+  assert.eql(norris.getFactCache(), {});
+
+  norris.get(function(facts)  {
+    // Check the hostname
+    assert.ok(facts.hostname);
+    assert.ok(norris.getFactCache().hostname);
   });
 };
