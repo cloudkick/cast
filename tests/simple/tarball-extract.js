@@ -16,13 +16,13 @@
 */
 
 var path = require('path');
-var assert = require('assert');
 
 var async = require('extern/async');
 
 var tarball = require('util/tarball');
 
 var setUp = require('./../common').setUp;
+var assert = require('./../assert');
 
 exports['setUp'] = setUp;
 

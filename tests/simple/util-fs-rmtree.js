@@ -17,13 +17,13 @@
 
 var fs = require('fs');
 var path = require('path');
-var assert = require('assert');
 var exec = require('child_process').exec;
 
 var async = require('extern/async');
 var sprintf = require('extern/sprintf').sprintf;
 
 var fsutil = require('util/fs');
+var assert = require('./../assert');
 
 var createTestDirectories = function(rootName, callback) {
   // Create some nested directories and files

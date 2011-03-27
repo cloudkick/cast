@@ -24,7 +24,8 @@ var extract = require('util/tarball');
 
 var sprintf = require('extern/sprintf').sprintf;
 var async = require('extern/async');
-var assert = require('assert');
+
+var assert = require('./../assert');
 
 var cwd = process.cwd();
 var dataPath = path.join(cwd, 'data');

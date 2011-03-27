@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-var ps = require('util/pubsub');
 var sys = require('sys');
+
 var async = require('extern/async');
-var assert = require('assert');
+
+var ps = require('util/pubsub');
+var assert = require('./../assert');
 
 exports['test_basic_subscription'] = function() {
   var n = 0;

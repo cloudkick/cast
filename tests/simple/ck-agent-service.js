@@ -17,12 +17,12 @@
 var sys = require('sys');
 
 var sprintf = require('extern/sprintf').sprintf;
+var async = require('extern/async');
 
+var assert = require('./../assert');
 var test = require('util/test');
 var Agent = require('services/agent')._agent;
 var agentConstants = require('agent/constants');
-var async = require('extern/async');
-var assert = require('assert');
 
 // Dirty hack to make the tests run much faster
 agentConstants.PING_INTERVAL = 1000;

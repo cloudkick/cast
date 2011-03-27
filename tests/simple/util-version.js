@@ -16,7 +16,7 @@
  */
 
 var version = require('util/version');
-var assert = require('assert');
+var assert = require('./../assert');
 
 exports['test_version'] = function() {
   var orig = version.IS_DEV;

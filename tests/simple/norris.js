@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-var norris = require('norris');
 var async = require('extern/async');
-var assert = require('assert');
+
+var norris = require('norris');
+var assert = require('./../assert');
 
 exports['test_get_fact'] = function() {
   norris.get(function(facts)  {

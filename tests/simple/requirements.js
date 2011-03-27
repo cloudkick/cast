@@ -16,7 +16,7 @@
  */
 
 var req = require('util/requirements');
-var assert = require('assert');
+var assert = require('./../assert');
 
 exports['test_compareVersions_b_less_than_a'] = function() {
   var i, version;

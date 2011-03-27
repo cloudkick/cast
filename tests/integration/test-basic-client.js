@@ -30,10 +30,10 @@ var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
 var exec = require('child_process').exec;
-var assert = require('assert');
 
 var async = require('extern/async');
 var sprintf = require('extern/sprintf').sprintf;
+var assert = require('./../assert');
 
 var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 

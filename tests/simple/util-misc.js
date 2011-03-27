@@ -16,7 +16,7 @@
  */
 
 var misc = require('util/misc');
-var assert = require('assert');
+var assert = require('./../assert');
 
 exports['test_object_merge'] = function() {
   var a = {foo: 1};

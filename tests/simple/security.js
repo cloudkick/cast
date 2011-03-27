@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-var async = require('extern/async');
 var fs =  require('fs');
 var certgen = require('security/certgen');
 var exec = require('child_process').exec;
+
+var async = require('extern/async');
+
 var misc = require('util/misc');
-var assert = require('assert');
+var assert = require('./../assert');
 
 exports['test_openssl_cert_generation'] = function() {
   async.series([

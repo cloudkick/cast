@@ -16,10 +16,10 @@
  */
 
 var path = require('path');
-var assert = require('assert');
 
 var instances = require('deployment/instances');
 var hooks = require('deployment/hooks');
+var assert = require('./../assert');
 
 instance = new instances.Instance('test_instance');
 instance._bundleName = 'test_bundle';

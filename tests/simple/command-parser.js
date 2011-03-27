@@ -16,9 +16,11 @@
  */
 
 var path = require('path');
-var CommandParser = require('util/command_parser').CommandParser;
+
 var async = require('extern/async');
-var assert = require('assert');
+
+var CommandParser = require('util/command_parser').CommandParser;
+var assert = require('./../assert');
 
 var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 

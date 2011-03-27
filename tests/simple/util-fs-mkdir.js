@@ -17,9 +17,11 @@
 
 var fs = require('fs');
 var path = require('path');
-var fsutil = require('util/fs');
+
 var async = require('extern/async');
-var assert = require('assert');
+
+var fsutil = require('util/fs');
+var assert = require('./../assert');
 
 var PATH1 = '.tests/utilfs/foo';
 var PATH1_SUBDIR = '.tests/utilfs/foo/bar';

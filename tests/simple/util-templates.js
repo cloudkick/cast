@@ -22,7 +22,7 @@ var exec = require('child_process').exec;
 var async = require('extern/async');
 
 var templates = require('util/templates');
-var assert = require('assert');
+var assert = require('./../assert');
 
 var DATA_DIR = path.join(process.cwd(), 'data');
 var TEMPLATES_PATH = path.join(DATA_DIR, 'templates');

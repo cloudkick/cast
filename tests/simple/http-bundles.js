@@ -19,12 +19,12 @@ var sys = require('sys');
 var fs = require('fs');
 var crypto = require('crypto');
 var exec = require('child_process').exec;
-var assert = require('assert');
 
 var async = require('extern/async');
 
 var misc = require('util/misc');
 var http = require('services/http');
+var assert = require('./../assert');
 var getServer = http._serverOnly;
 
 var API_VERSION = '1.0'
