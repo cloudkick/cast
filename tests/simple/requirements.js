@@ -18,8 +18,7 @@
 var req = require('util/requirements');
 var assert = require('assert');
 
-// Test compare_versions ver_b < ver_a
-(function() {
+exports['test_compareVersions_b_less_than_a'] = function() {
   var i, version;
   var versionA = '0.2.1';
   var versionsB = [ '0.1.0', '0.1.9', '0.2.0', '0.0.0' ];
@@ -28,10 +27,10 @@ var assert = require('assert');
     version = versionsB[i];
     assert.equal(req.compareVersions(versionA, version), false);
   }
-})();
+};
 
 // Test compare_versions ver_b >= ver_a
-(function() {
+exports['test_compareVersions_b_more_than_or_equal_a'] = function() {
   var i, version;
   var versionA = '0.2.1';
   var versionsB = [ '0.2.1', '0.2.2', '0.2.3', '0.2.9', '0.3.0', '1.0.0' ];
@@ -40,10 +39,9 @@ var assert = require('assert');
     version = versionsB[i];
     assert.ok(req.compareVersions(versionA, version));
   }
-})();
+};
 
-// Test is_defined
-(function() {
+exports['test_isDefined'] = function() {
   var i, item;
   var assertTrue = [ '1', ['foo', 'bar'], 1, {}, { 'foo': 'bar'}, true ];
   var assertFalse = [ null, undefined, false ];
@@ -57,4 +55,4 @@ var assert = require('assert');
     item = assertFalse[i];
     assert.equal(req.isDefined(null, item), false);
   }
-})();
+};
