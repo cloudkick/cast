@@ -18,7 +18,7 @@
 var version = require('util/version');
 var assert = require('assert');
 
-(function() {
+exports['test_version'] = function() {
   var orig = version.IS_DEV;
   version.IS_DEV = false;
   var v = version.toString();
@@ -27,4 +27,4 @@ var assert = require('assert');
   v = version.toString();
   assert.match(v, /cast-(\d+)\.(\d+).(\d+)-dev$/);
   version.IS_DEV = orig;
-})();
+};
