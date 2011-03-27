@@ -17,14 +17,12 @@
 
 var async = require('extern/async');
 var fs =  require('fs');
-var test = require('util/test');
 var certgen = require('security/certgen');
 var exec = require('child_process').exec;
 var misc = require('util/misc');
 var assert = require('assert');
 
-(function() {
-  var completed = false;
+exports['test_openssl_cert_generation'] = function() {
   async.series([
     async.apply(fs.mkdir, '.tests/certs', 0700),
 
@@ -34,20 +32,16 @@ var assert = require('assert');
       var crtpath = '.tests/certs/t.crt';
       certgen.selfsigned(hostname, keypath, crtpath, function(err) {
         assert.ifError(err);
-        exec("openssl x509 -noout -subject -in .tests/certs/t.crt", function(err, stdout, stderr) {
+        exec('openssl x509 -noout -subject -in .tests/certs/t.crt', function(err, stdout, stderr) {
           assert.ifError(err);
-          assert.equal("subject= /CN=" + hostname, misc.trim(stdout));
+          assert.equal('subject= /CN=' + hostname, misc.trim(stdout));
           callback();
         });
       });
     }
   ],
+
   function(err) {
-    completed = true;
     assert.ifError(err);
   });
-
-  process.on('exit', function() {
-    assert.ok(completed, 'Tests completed');
-  });
-})();
+};
