@@ -18,8 +18,7 @@
 var misc = require('util/misc');
 var assert = require('assert');
 
-// object merge
-(function() {
+exports['test_object_merge'] = function() {
   var a = {foo: 1};
   var b = {bar: 2};
   var c = {foo: 1, bar: 2};
@@ -29,38 +28,33 @@ var assert = require('assert');
   assert.deepEqual(c, out);
   out = misc.merge({}, out);
   assert.deepEqual(c, out);
-})();
+};
 
-// empty merge
-(function() {
+exports['test_empty_object_merge'] = function() {
   var a = {};
   var b = {};
   var c = {};
   var out = misc.merge(a, b);
   assert.deepEqual(c, out);
-})();
+};
 
-// empty expanduser
-(function() {
+exports['test_empty_expanduser'] = function() {
   var out = misc.expanduser("/foo/bar");
   assert.equal("/foo/bar", out);
-})();
+};
 
-// expanduser on self
-(function() {
+exports['test_expanduser_on_self'] = function() {
   var out = misc.expanduser("~/foo/bar");
   assert.equal(process.env.HOME+"/foo/bar", out);
-})();
+};
 
-// expanduser on nothing
-(function() {
+exports['test_expanduser_on_nothing'] = function() {
   var path = require('path');
   var out = misc.expanduser("~");
   assert.equal(path.join(process.env.HOME, "/"), out);
-})();
+};
 
-// expanduser with HOME unset hack
-(function() {
+exports['test_expanduser_with_home_unset_hack'] = function() {
   var n = 0;
   var orig = process.env.HOME;
   delete process.env.HOME;
@@ -73,10 +67,9 @@ var assert = require('assert');
   }
   process.env.HOME = orig;
   assert.equal(1, n, 'Exceptions thrown');
-})();
+};
 
-// missing getpwnam for expanduser
-(function() {
+exports['test_expanduser_missing_getpwnam'] = function() {
   var n = 0;
   var out;
   try {
@@ -96,94 +89,25 @@ var assert = require('assert');
   }
 
   assert.equal(2, n, 'Exceptions thrown');
-})();
-
-// templating to a tree
-/*
-{
-  var n = 0;
-
-  var tmpl = {
-    afile: "simple file",
-    subdir: {
-      "subfile": "subfile contents"
-    }
-  };
-
-  misc.templateToTree(".tests/misc/template", tmpl, false, function(error) {
-    assert.equal(error, undefined);
-
-    fs.stat('.tests/misc/template', function(err, stats) {
-      assert.ifError(err);
-      assert.ok(stats.isDirectory());
-      n++;
-    });
-
-    fs.stat('.tests/misc/template/subdir', function(err, stats) {
-      assert.ifError(err);
-      assert.ok(stats.isDirectory());
-      n++;
-    });
-  });
-
-  beforeExit(function() {
-    assert.equal(2, n, 'Checks ran');
-  });
 };
 
-// templating to a tree throws exception on existing directory
-{
-  var n = 0;
-
-  var tmpl = {
-    afile: "simple file",
-    subdir: {
-      "subfile": "subfile contents"
-    }
-  };
-
-  misc.templateToTree(".tests/misc/template1", tmpl, false, function(error) {
-    n++;
-    assert.equal(error, undefined);
-
-    misc.templateToTree(".tests/misc/template1", tmpl, false, function(error) {
-      n++;
-      assert.equal(error.errno, 17);
-      assert.match(error.message, /eexist/i);
-
-      misc.templateToTree(".tests/misc/template1", tmpl, true, function(error) {
-        n++;
-        assert.equal(error, undefined);
-      });
-    });
-  });
-
-  beforeExit(function() {
-    assert.equal(3, n, 'Callbacks called');
-  });
-};
-*/
-
-// trimming whitespace
-(function() {
+exports['test_trim_whitespace'] = function() {
   assert.equal("foo", misc.trim("foo"));
   assert.equal("foo", misc.trim(" foo"));
   assert.equal("foo", misc.trim("foo "));
   assert.equal("foo", misc.trim(" foo "));
   assert.equal("fo o", misc.trim(" fo o "));
   assert.equal("foo", misc.trim(" foo\n"));
-})();
+};
 
-// in array
-(function() {
+exports['test_inArray_simple'] = function() {
   var haystack = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
   assert.equal(misc.inArray('item 2', haystack), true);
   assert.equal(misc.inArray('not in array', haystack), false);
-})();
+};
 
-// in array compare function
-(function() {
+exports['test_in_array_compare_function'] = function() {
   var haystack = [ ['item 1', 'a'], ['item 2', 'b'], ['item 3', 'c'], ['item 4', 'd'] ];
   var compareFunction = function(item, needle) {
     return item[1] === needle;
@@ -191,18 +115,16 @@ var assert = require('assert');
 
   assert.equal(misc.inArray('a', haystack, null, compareFunction), true);
   assert.equal(misc.inArray('not in array', haystack, null, compareFunction), false);
-})();
+};
 
-// array find
-(function() {
+exports['test_arrayFind'] = function() {
   var haystack = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
   assert.equal(misc.arrayFind('item 2', haystack), 1);
   assert.equal(misc.arrayFind('not in array', haystack), false);
-})();
+};
 
-// arrays contains same elements
-(function() {
+exports['test_arrayContaintsSameElements'] = function() {
   var array1 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
   var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
   var array3 = [ 'item 4', 'item 3', 'item 2', 'item 1' ];
@@ -212,10 +134,9 @@ var assert = require('assert');
   assert.equal(misc.arraysContainsSameElements(array1, array3, true), false);
   assert.equal(misc.arraysContainsSameElements(array1, array3, false), true);
   assert.equal(misc.arraysContainsSameElements(array1, array4), false);
-})();
+};
 
-// array is subset of
-(function() {
+exports['test_arrayisSubsetOf'] = function() {
   var array1 = [ 'item 1', 'item 2' ];
   var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
   var array3 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
@@ -228,19 +149,17 @@ var assert = require('assert');
   assert.equal(misc.arrayIsSubsetOf(array2, array3, false), true);
   assert.equal(misc.arrayIsSubsetOf(array3, array2, false), true);
   assert.equal(misc.arrayIsSubsetOf(array3, array2, true), false);
-})();
+};
 
-// array difference
-(function() {
+exports['test_difference'] = function() {
   var array1 = [ 'item 1', 'item 2' ];
   var array2 = [ 'item 1', 'item 2', 'item 3', 'item 4' ];
 
   assert.deepEqual(misc.arrayDifference(array1, array2), []);
   assert.deepEqual(misc.arrayDifference(array2, array1), [ 'item 3', 'item 4' ]);
-})();
+};
 
-// filter paths
-(function() {
+exports['test_filterRepeatedPaths'] = function() {
   var paths1 = [ 'foo/', 'bar/', 'foo.txt', 'bar/file.tar.gz', 'bar', 'foo/bar', 'foo/test.ini', 'dir/file.tar.gz' ];
   var paths2 = [ 'foo/1.txt', 'foo/', 'foo.txt', 'bar/file.tar.gz', 'bar', 'bar', 'bar/', 'foo/bar', 'foo/test.ini',
                 'dir/file.tar.gz', 'dir/file.tar.gz', 'foo/', 'foo/bar/1' ];
@@ -248,31 +167,19 @@ var assert = require('assert');
 
   assert.deepEqual(misc.filterRepeatedPaths(paths1), pathsFiltered);
   assert.deepEqual(misc.filterRepeatedPaths(paths2), pathsFiltered);
-})();
+};
 
-// get valid bundle name
-(function() {
+exports['test_getValidBundleName'] = function() {
   assert.equal(misc.getValidBundleName('ABC DEFG HIJ'), 'abc_defg_hij');
   assert.equal(misc.getValidBundleName('test-app-name 1.0'), 'test-app-name_10');
   assert.equal(misc.getValidBundleName('NodeJS Test app'), 'nodejs_test_app');
-})();
+};
 
-// is valid bundle version
-(function() {
+exports['test_isValidBundleVersion'] = function() {
   assert.equal(misc.isValidBundleVersion('1.0.1'), true);
   assert.equal(misc.isValidBundleVersion('20100810'), true);
   assert.equal(misc.isValidBundleVersion('20100912.d261151fad5b2ce95a2281a70fed2c6dab221731'), true);
   assert.equal(misc.isValidBundleVersion('1.0'), true);
   assert.equal(misc.isValidBundleVersion('a.b.c'), true);
   assert.equal(misc.isValidBundleVersion('a.b@c'), false);
-})();
-
-/*
-exports.setup = function(done) {
-  async.series([
-    async.apply(require('util/pubsub').ensure, "config"),
-    async.apply(fs.mkdir, '.tests/misc', 0700)
-  ],
-  done);
 };
-*/
