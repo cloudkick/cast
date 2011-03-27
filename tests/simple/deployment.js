@@ -16,17 +16,28 @@
  */
 
 var fs = require('fs');
-var exec = require('child_process').exec;
 var path = require('path');
+var exec = require('child_process').exec;
+var assert = require('assert');
+
 var async = require('extern/async');
+
 var tarball = require('util/tarball');
 var config = require('util/config');
-var assert = require('assert');
 var deployment = require('deployment');
+var setUp = require('./../common').setUp;
 
-var svcRootAvail = config.get()['service_dir_available'];
-var appRoot = config.get()['app_dir'];
-var extRoot = config.get()['extracted_dir'];
+var svcRootAvail;
+var appRoot;
+var extRoot;
+
+exports['setUp'] = function() {
+  setUp(function() {
+    svcRootAvail = config.get()['service_dir_available'];
+    appRoot = config.get()['app_dir'];
+    extRoot = config.get()['extracted_dir'];
+  });
+};
 
 function verifyInstance(name, bundle, version, versions, callback) {
   // TODO: More in-depth verification of data files, templated files
@@ -35,6 +46,7 @@ function verifyInstance(name, bundle, version, versions, callback) {
     callback = versions;
     versions = [ version ];
   }
+
   async.parallel([
     function(callback) {
       fs.readdir(path.join(appRoot, name, 'versions'), function(err, files) {
@@ -88,8 +100,7 @@ function verifyInstance(name, bundle, version, versions, callback) {
   });
 }
 
-(function() {
-  var completed = false;
+exports['test_deployment'] = function() {
   var curInstance;
 
   async.series([
@@ -326,12 +337,8 @@ function verifyInstance(name, bundle, version, versions, callback) {
       });
     }
   ],
+
   function(err) {
-    completed = true;
     assert.ifError(err);
   });
-
-  process.on('exit', function() {
-    assert.ok(completed, 'Tests completed');
-  });
-})();
+};
