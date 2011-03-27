@@ -51,157 +51,125 @@ var tarballPath6 = path.join(dataPath, tarballName6);
 var tarballName7 = 'foo-bar-1.0.7.tar.gz';
 var tarballPath7 = path.join(dataPath, tarballName7);
 
-(function() {
-  var completed = false;
+exports['test_invalid_source_path'] = function() {
+  extract.createTarball('/invalid/source/path/', dataPath, tarballName1, {deleteIfExists: false}, function(error) {
+    assert.ok(error);
+    assert.match(error.message, /source path does not exist/i);
+  });
+};
 
-  async.parallel([
-    // Test invalid source path
-    function(callback) {
-      extract.createTarball('/invalid/source/path/', dataPath, tarballName1, {deleteIfExists: false}, function(error) {
-        assert.ok(error);
-        assert.match(error.message, /source path does not exist/i);
-        callback();
-      });
-    },
+exports['test_invalid_target_path'] = function() {
+  extract.createTarball(bundlePath, '/invalid/path', tarballName1, {deleteIfExists: false}, function(error) {
+    assert.ok(error);
+    assert.match(error.message, /target path does not exist/i);
+  });
+};
 
-    // Test invalid target path
-    function(callback) {
-      extract.createTarball(bundlePath, '/invalid/path', tarballName1, {deleteIfExists: false}, function(error) {
-        assert.ok(error);
-        assert.match(error.message, /target path does not exist/i);
-        callback();
-      });
-    },
+exports['test_create_tarball_success'] = function() {
+  test.fileDelete(tarballPath1);
+  assert.equal(test.fileExists(tarballPath1), false);
 
-    // Test create tarball
-    function(callback) {
-      test.fileDelete(tarballPath1);
-      assert.equal(test.fileExists(tarballPath1), false);
+  extract.createTarball(bundlePath, dataPath, tarballName1, {deleteIfExists: false}, function(error) {
+    assert.ifError(error);
+    assert.equal(test.fileExists(tarballPath1), true);
+    test.fileDelete(tarballPath1);
+  });
+};
 
-      extract.createTarball(bundlePath, dataPath, tarballName1, {deleteIfExists: false}, function(error) {
-        assert.ifError(error);
-        assert.equal(test.fileExists(tarballPath1), true);
-        test.fileDelete(tarballPath1);
-        callback();
-      });
-    },
+exports['test_create_tarball_throws_error_upon_existing_file'] = function() {
+  test.fileDelete(tarballPath2);
+  assert.equal(test.fileExists(tarballPath2), false);
 
-    // Test create tarball throws error upon existing file
-    function(callback) {
+  extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(error) {
+    assert.ifError(error);
+    assert.equal(test.fileExists(tarballPath2), true);
+
+    extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(error) {
+      assert.match(error, /tarball already exists/i);
+      assert.equal(test.fileExists(tarballPath2), true);
       test.fileDelete(tarballPath2);
-      assert.equal(test.fileExists(tarballPath2), false);
+    });
+  });
+};
 
-      extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(error) {
-        assert.ifError(error);
-        assert.equal(test.fileExists(tarballPath2), true);
+exports['test_dele_if_exists_option'] = function() {
+  test.fileDelete(tarballPath3);
+  assert.equal(test.fileExists(tarballPath3), false);
 
-        extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(error) {
-          assert.match(error, /tarball already exists/i);
-          assert.equal(test.fileExists(tarballPath2), true);
-          test.fileDelete(tarballPath2);
-          callback();
-        });
-      });
-    },
+  extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: false}, function(error) {
+    assert.ifError(error);
+    assert.equal(test.fileExists(tarballPath3), true);
 
-    // Test create tarball delete_if_exists option
-    function(callback) {
+    extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: true}, function(error) {
+      assert.ifError(error);
+      assert.equal(test.fileExists(tarballPath3), true);
       test.fileDelete(tarballPath3);
-      assert.equal(test.fileExists(tarballPath3), false);
+    });
+  });
+};
 
-      extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: false}, function(error) {
-        assert.ifError(error);
-        assert.equal(test.fileExists(tarballPath3), true);
+exports['test_store_in_tarball_name_directory_is_false'] = function() {
+  test.fileDelete(tarballPath4);
+  assert.equal(test.fileExists(tarballPath4), false);
 
-        extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: true}, function(error) {
-          assert.ifError(error);
-          assert.equal(test.fileExists(tarballPath3), true);
-          test.fileDelete(tarballPath3);
-          callback();
-        });
-      });
-    },
+  extract.createTarball(bundlePath, dataPath, tarballName4, {storeInTarballNameDirectory: false}, function(error) {
+    assert.ifError(error);
+    assert.equal(test.fileExists(tarballPath4), true);
 
-    // Test store_in_tarball_name_directory=false
-    function(callback) {
+    extract.getTarballFileList(tarballPath4, function(error, fileList) {
+      assert.ifError(error);
+      assert.length(fileList, 16);
+      for (var i = 0; i < fileList.length; i++) {
+        assert.match(fileList[i], /\.\//);
+      }
       test.fileDelete(tarballPath4);
-      assert.equal(test.fileExists(tarballPath4), false);
+    });
+  });
+};
 
-      extract.createTarball(bundlePath, dataPath, tarballName4, {storeInTarballNameDirectory: false}, function(error) {
-        assert.ifError(error);
-        assert.equal(test.fileExists(tarballPath4), true);
+exports['test_store_in_tarball_name_directory_is_true'] = function() {
+  var rootDirectoryName = tarballName5.replace('.tar.gz', '');
+  test.fileDelete(tarballPath5);
+  assert.equal(test.fileExists(tarballPath5), false);
 
-        extract.getTarballFileList(tarballPath4, function(error, fileList) {
-          assert.ifError(error);
-          assert.length(fileList, 16);
-          for (var i = 0; i < fileList.length; i++) {
-            assert.match(fileList[i], /\.\//);
-          }
-          test.fileDelete(tarballPath4);
-          callback();
-        });
-      });
-    },
+  extract.createTarball(bundlePath, dataPath, tarballName5, {storeInTarballNameDirectory: true}, function(error) {
+    assert.ifError(error);
+    assert.equal(test.fileExists(tarballPath5), true);
 
-    // Test store_in_tarball_name_directory=true
-    function(callback) {
-      var rootDirectoryName = tarballName5.replace('.tar.gz', '');
+    extract.getTarballFileList(tarballPath5, function(error, fileList) {
+      var regexp = new RegExp(sprintf('%s/', rootDirectoryName));
+      assert.ifError(error);
+      assert.length(fileList, 16);
+      for (var i = 0; i < fileList.length; i++) {
+        assert.match(fileList[i], regexp);
+      }
       test.fileDelete(tarballPath5);
-      assert.equal(test.fileExists(tarballPath5), false);
+    });
+  });
+};
 
-      extract.createTarball(bundlePath, dataPath, tarballName5, {storeInTarballNameDirectory: true}, function(error) {
-        assert.ifError(error);
-        assert.equal(test.fileExists(tarballPath5), true);
+exports['test_exclude_pattern'] = function() {
+  test.fileDelete(tarballPath6);
+  assert.equal(test.fileExists(tarballPath6), false);
 
-        extract.getTarballFileList(tarballPath5, function(error, fileList) {
-          var regexp = new RegExp(sprintf('%s/', rootDirectoryName));
-          assert.ifError(error);
-          assert.length(fileList, 16);
-          for (var i = 0; i < fileList.length; i++) {
-            assert.match(fileList[i], regexp);
-          }
-          test.fileDelete(tarballPath5);
-          callback();
-        });
-      });
-    },
+  extract.createTarball(bundlePath, dataPath, tarballName6, {deleteIfExists: false, excludePattern: '*.sh'}, function(error) {
+    assert.ifError(error);
+    assert.equal(test.fileExists(tarballPath6), true);
 
-    // Test exclude_pattern
-    function(callback) {
+    extract.getTarballFileList(tarballPath6, function(error, fileList) {
+      assert.ifError(error);
+      assert.length(fileList, 14);
       test.fileDelete(tarballPath6);
-      assert.equal(test.fileExists(tarballPath6), false);
-
-      extract.createTarball(bundlePath, dataPath, tarballName6, {deleteIfExists: false, excludePattern: '*.sh'}, function(error) {
-        assert.ifError(error);
-        assert.equal(test.fileExists(tarballPath6), true);
-
-        extract.getTarballFileList(tarballPath6, function(error, fileList) {
-          assert.ifError(error);
-          assert.length(fileList, 14);
-          test.fileDelete(tarballPath6);
-          callback();
-        });
-      });
-    },
-
-    // Test ignore_file_changed_error
-    function(callback) {
-      test.fileDelete(tarballPath7);
-      assert.equal(test.fileExists(tarballPath7), false);
-      extract.createTarball(dataPath, dataPath, tarballName7, {deleteIfExists: false, ignoreFileChangedError: true}, function(error) {
-        assert.ifError(error);
-        assert.equal(test.fileExists(tarballPath7), true);
-        test.fileDelete(tarballPath7);
-        callback();
-      });
-    }
-  ],
-  function(err) {
-    completed = true;
-    assert.ifError(err);
+    });
   });
+};
 
-  process.on('exit', function() {
-    assert.ok(completed, 'Tests completed');
+exports['test_ignore_file_changed_error'] = function() {
+  test.fileDelete(tarballPath7);
+  assert.equal(test.fileExists(tarballPath7), false);
+  extract.createTarball(dataPath, dataPath, tarballName7, {deleteIfExists: false, ignoreFileChangedError: true}, function(error) {
+    assert.ifError(error);
+    assert.equal(test.fileExists(tarballPath7), true);
+    test.fileDelete(tarballPath7);
   });
-})();
+};
