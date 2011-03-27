@@ -16,15 +16,33 @@
 */
 
 var path = require('path');
+var exec = require('child_process').exec;
+
+var sprintf = require('extern/sprintf').sprintf;
 
 var config = require('util/config');
+
+var deleteAndCreateTestFolder = function(callback) {
+  var testFolderPath = path.join(__dirname, '.tests');
+
+  exec(sprintf('rm -rf "%s"', testFolderPath), function(err) {
+    exec(sprintf('mkdir "%s"', testFolderPath), function(err) {
+      config.setupAgent(callback);
+    });
+  });
+};
 
 var setUp = function(callback) {
   config.configFiles = [
     path.join(__dirname, 'test.conf')
   ];
 
-  config.setupAgent(callback);
+  var onComplete = function() {
+    config.setupAgent(callback);
+  };
+
+  deleteAndCreateTestFolder(onComplete);
 };
 
 exports.setUp = setUp;
+exports.deleteAndCreateTestFolder = deleteAndCreateTestFolder;

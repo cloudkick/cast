@@ -19,12 +19,6 @@ var path = require('path');
 var exec = require('child_process').exec;
 
 var sprintf = require('extern/sprintf').sprintf;
+var common = require('./../common');
 
-exports['init'] = function() {
-  var testFolderPath = path.join(__dirname, '.tests');
-
-  exec(sprintf('rm -rf "%s"', testFolderPath), function(err) {
-    exec(sprintf('mkdir "%s"', testFolderPath), function(err) {
-    });
-  });
-};
+exports['init'] = common.deleteAndCreateTestFolder;
