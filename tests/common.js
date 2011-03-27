@@ -19,12 +19,12 @@ var path = require('path');
 
 var config = require('util/config');
 
-var setUp = function() {
+var setUp = function(callback) {
   config.configFiles = [
     path.join(__dirname, 'test.conf')
   ];
 
-  config.setupAgent();
+  config.setupAgent(callback);
 };
 
 exports.setUp = setUp;
