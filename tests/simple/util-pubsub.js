@@ -20,74 +20,65 @@ var sys = require('sys');
 var async = require('extern/async');
 var assert = require('assert');
 
-(function() {
-  var completed = false;
-
-  async.parallel([
-    // Test basic subscription
-    function(callback) {
-      var n = 0;
-      ps.on('basic', function(value) {
-        assert.equal(n, value);
-        n++;
-      });
-
-      ps.emit('basic', n);
-      ps.emit('basic', n);
-
-      assert.equal(n, 2, 'Events Received');
-      callback();
-    },
-
-    // Test 'once' subscription
-    function(callback) {
-      var n = 0;
-      ps.once('once', function(value) {
-        assert.equal(n, value);
-        n++;
-      });
-
-      ps.emit('once', n);
-      ps.emit('once', n);
-      
-      assert.equal(n, 1, 'Events received');
-      callback();
-    },
-
-    // Bad parameters
-    function(callback) {
-      var n = 0;
-      try {
-        ps.once();
-      }
-      catch(e1) {
-        n++;
-        assert.match(e1, /pubsub/);
-      }
-      try {
-        ps.on();
-      }
-      catch(e2) {
-        n++;
-        assert.match(e2, /pubsub/);
-      }
-      try {
-        ps.emit();
-      }
-      catch(e3) {
-        n++;
-        assert.match(e3, /pubsub/);
-      }
-      assert.equal(3, n, 'Exceptions thrown');
-      callback();
-    }
-  ],
-  function(err) {
-    completed = true;
-    assert.ifError(err);
+exports['test_basic_subscription'] = function() {
+  var n = 0;
+  ps.on('basic', function(value) {
+    assert.equal(n, value);
+    n++;
   });
 
-  process.on('exit', function() {
-    assert.ok(completed, 'Tests completed');
+  ps.emit('basic', n);
+  ps.emit('basic', n);
+
+  assert.equal(n, 2, 'Events Received');
+};
+
+exports['test_once_subscription'] = function() {
+  var n = 0;
+  var m = 0;
+  ps.once('once', function(value) {
+    assert.equal(n, value);
+    n++;
   });
-})();
+
+  ps.once('once', function(value) {
+    assert.equal(m, value);
+    m++;
+  });
+
+  ps.emit('once', n);
+  ps.emit('once', n);
+  ps.emit('once', m);
+  ps.emit('once', m);
+
+  assert.equal(n, 1);
+  assert.equal(m, 1);
+};
+
+exports['test_bad_parameters'] = function() {
+  var n = 0;
+
+  try {
+    ps.once();
+  }
+  catch(e1) {
+    n++;
+    assert.match(e1, /pubsub/);
+  }
+  try {
+    ps.on();
+  }
+  catch(e2) {
+    n++;
+    assert.match(e2, /pubsub/);
+  }
+  try {
+    ps.emit();
+  }
+  catch(e3) {
+    n++;
+    assert.match(e3, /pubsub/);
+  }
+
+  assert.equal(3, n, 'Exceptions thrown');
+};
