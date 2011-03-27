@@ -20,11 +20,7 @@ var path = require('path');
 var async = require('extern/async');
 
 var tarball = require('util/tarball');
-
-var setUp = require('./../common').setUp;
 var assert = require('./../assert');
-
-exports['setUp'] = setUp;
 
 exports['test_extract_success'] = function() {
   var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');

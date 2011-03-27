@@ -118,7 +118,7 @@ else:
 
 chdir = pjoin(os.getcwd(), 'tests')
 init_file = pjoin(os.getcwd(), 'tests', 'init.js')
-testcmd = env.Command('.tests_run', [], "$NODE $WHISKEY --timeout 10000 --chdir '%s' --init-file '%s' --tests '%s'" %
+testcmd = env.Command('.tests_run', [], "$NODE $WHISKEY --timeout 10000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
                       (chdir, init_file, ' '.join(tests_to_run)))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)

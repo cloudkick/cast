@@ -24,15 +24,12 @@ var async = require('extern/async');
 
 var misc = require('util/misc');
 var http = require('services/http');
-var setUp = require('./../common').setUp;
 var assert = require('./../assert');
 
 var API_VERSION = '1.0';
 
 var getServer = http._serverOnly;
 var hello = 'Hello World';
-
-exports['setUp'] = setUp;
 
 function verifyResponseCode(url, code, method, data, callback) {
   if (!callback) {

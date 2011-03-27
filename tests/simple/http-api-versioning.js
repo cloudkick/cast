@@ -23,11 +23,8 @@ require.paths.unshift(path.join(root, '../'));
 var sprintf = require('extern/sprintf').sprintf;
 
 var assert = require('./../assert');
-var setUp = require('./../common').setUp;
 
 var http = require('services/http');
-
-exports['setUp'] = setUp;
 
 exports['test_route_function'] = function() {
   console.log(assert.eql)

@@ -25,18 +25,17 @@ var async = require('extern/async');
 var tarball = require('util/tarball');
 var config = require('util/config');
 var deployment = require('deployment');
-var setUp = require('./../common').setUp;
 
 var svcRootAvail;
 var appRoot;
 var extRoot;
 
-exports['setUp'] = function() {
-  setUp(function() {
-    svcRootAvail = config.get()['service_dir_available'];
-    appRoot = config.get()['app_dir'];
-    extRoot = config.get()['extracted_dir'];
-  });
+exports['setUp'] = function(callback) {
+  svcRootAvail = config.get()['service_dir_available'];
+  appRoot = config.get()['app_dir'];
+  extRoot = config.get()['extracted_dir'];
+
+  callback();
 };
 
 function verifyInstance(name, bundle, version, versions, callback) {

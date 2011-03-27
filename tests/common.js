@@ -22,8 +22,12 @@ var sprintf = require('extern/sprintf').sprintf;
 
 var config = require('util/config');
 
-var deleteAndCreateTestFolder = function(callback) {
+var setUp = function(callback) {
   var testFolderPath = path.join(__dirname, '.tests');
+
+  config.configFiles = [
+    path.join(__dirname, 'test.conf')
+  ];
 
   exec(sprintf('rm -rf "%s"', testFolderPath), function(err) {
     exec(sprintf('mkdir "%s"', testFolderPath), function(err) {
@@ -32,17 +36,4 @@ var deleteAndCreateTestFolder = function(callback) {
   });
 };
 
-var setUp = function(callback) {
-  config.configFiles = [
-    path.join(__dirname, 'test.conf')
-  ];
-
-  var onComplete = function() {
-    config.setupAgent(callback);
-  };
-
-  deleteAndCreateTestFolder(onComplete);
-};
-
 exports.setUp = setUp;
-exports.deleteAndCreateTestFolder = deleteAndCreateTestFolder;

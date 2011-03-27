@@ -19,6 +19,6 @@ var path = require('path');
 var exec = require('child_process').exec;
 
 var sprintf = require('extern/sprintf').sprintf;
-var common = require('./../common');
+var common = require('./common');
 
-exports['init'] = common.deleteAndCreateTestFolder;
+exports['init'] = common.setUp;

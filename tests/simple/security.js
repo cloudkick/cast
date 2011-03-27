@@ -25,6 +25,7 @@ var misc = require('util/misc');
 var assert = require('./../assert');
 
 exports['test_openssl_cert_generation'] = function() {
+require('util').debug('in')
   async.series([
     async.apply(fs.mkdir, '.tests/certs', 0700),
 
