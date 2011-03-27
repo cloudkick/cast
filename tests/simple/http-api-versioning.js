@@ -22,12 +22,15 @@ require.paths.unshift(path.join(root, '../'));
 
 var sprintf = require('extern/sprintf').sprintf;
 
-var assert = require('assert');
+var assert = require('./../assert');
+var setUp = require('./../common').setUp;
 
 var http = require('services/http');
 
-// test route function
-(function() {
+exports['setUp'] = setUp;
+
+exports['test_route_function'] = function() {
+  console.log(assert.eql)
   var i, expectedRoutes, expectedRoutesLen;
   var apiVersion, versionRoutes, versionRoutesLen;
   var func = function() {}
@@ -68,11 +71,9 @@ var http = require('services/http');
       assert.equal(versionRouteArgs[1], expectedRoutesArgs[1]);
     }
   }
-})();
+};
 
-// test URL routing
-(function() {
-  var n = 0;
+exports['test_url_routing'] = function() {
   var latestVersion = '2.0';
 
   assert.response(http._serverOnly('data/http_services/', [ 'test-service' ]), {
@@ -81,10 +82,8 @@ var http = require('services/http');
   },
 
   function(res) {
-    n++;
     assert.equal(res.statusCode, 200);
     var data = JSON.parse(res.body);
-    console.log(data)
     assert.equal(data.text, 'test 1.0');
   });
 
@@ -94,7 +93,6 @@ var http = require('services/http');
   },
 
   function(res) {
-    n++;
     assert.equal(res.statusCode, 202);
     var data = JSON.parse(res.body);
     assert.equal(data.text, 'test 2.0');
@@ -106,7 +104,6 @@ var http = require('services/http');
   },
 
   function(res) {
-    n++;
     assert.equal(res.statusCode, 404);
   });
 
@@ -117,14 +114,8 @@ var http = require('services/http');
   },
 
   function(res) {
-    n++;
     assert.equal(res.statusCode, 202);
     var data = JSON.parse(res.body);
-    console.log(data)
     assert.equal(data.text, sprintf('test %s', latestVersion));
   });
-
-  process.on('exit', function() {
-    assert.equal(n, 4, 'Callbacks called');
-  });
-})();
+};
