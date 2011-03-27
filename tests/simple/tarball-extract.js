@@ -28,7 +28,8 @@ exports['setUp'] = setUp;
 
 exports['test_extract_success'] = function() {
   var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');
-  var expath = path.join(process.cwd(), '.tests/fooserv');
+  var expath = path.join(process.cwd(), '.tests/fooserv1');
+
   tarball.extractTarball(tbpath, expath, 0755, function(err) {
     assert.ifError(err);
   });
@@ -36,9 +37,13 @@ exports['test_extract_success'] = function() {
 
 exports['test_extract_to_path_that_already_exists_throws_error'] = function() {
   var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');
-  var expath = path.join(process.cwd(), '.tests/fooserv');
+  var expath = path.join(process.cwd(), '.tests/fooserv2');
+
   tarball.extractTarball(tbpath, expath, 0755, function(err) {
-    assert.ok(err);
+    assert.ifError(err);
+    tarball.extractTarball(tbpath, expath, 0755, function(err) {
+      assert.ok(err);
+    });
   });
 };
 
