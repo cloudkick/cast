@@ -52,6 +52,7 @@ env['version_string'] = "%d.%d.%d"  % (env['version_major'], env['version_minor'
 
 conf = Configure(env, custom_tests = {})
 conf.env['NODE'] = os.environ['NODE_BIN_PATH'] if (os.environ.get('NODE_BIN_PATH', None)) else conf.env.WhereIs('node')
+conf.env['WHISKEY'] = os.environ['WHISKEY_BIN_PATH'] if (os.environ.get('WHISKEY_BIN_PATH', None)) else conf.env.WhereIs('whiskey')
 conf.env.AppendUnique(RPATH = conf.env.get('LIBPATH'))
 env = conf.Finish()
 
@@ -95,7 +96,7 @@ env.Alias('upload-docs', uploaddocscmd)
 env.Alias('build-docs', [ docscmd, uploaddocscmd ])
 env.Depends(uploaddocscmd, docscmd)
 
-IGNORED_TESTS = [ 'tests/run.js', 'tests/common.js', 'tests/data/' ]
+IGNORED_TESTS = [ 'tests/assert.js', 'tests/init.js', 'tests/common.js', 'tests/data/' ]
 tests = sorted(testsource)
 
 test_files = []
@@ -115,7 +116,10 @@ if tests_to_run:
 else:
   tests_to_run = test_files
 
-testcmd = env.Command('.tests_run', [], "$NODE tests/run.js --verbosity 2 --tests '%s'" % ' '.join(tests_to_run))
+chdir = pjoin(os.getcwd(), 'tests')
+init_file = pjoin(os.getcwd(), 'tests', 'init.js')
+testcmd = env.Command('.tests_run', [], "$NODE $WHISKEY --timeout 10000 --chdir '%s' --init-file '%s' --tests '%s'" %
+                      (chdir, init_file, ' '.join(tests_to_run)))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
