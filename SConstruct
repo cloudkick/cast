@@ -52,7 +52,10 @@ env['version_string'] = "%d.%d.%d"  % (env['version_major'], env['version_minor'
 
 conf = Configure(env, custom_tests = {})
 conf.env['NODE'] = os.environ['NODE_BIN_PATH'] if (os.environ.get('NODE_BIN_PATH', None)) else conf.env.WhereIs('node')
-conf.env['WHISKEY'] = os.environ['WHISKEY_BIN_PATH'] if (os.environ.get('WHISKEY_BIN_PATH', None)) else conf.env.WhereIs('whiskey')
+conf.env['CAST_ROOT'] = Dir('#').abspath
+conf.env['CAST_LIB'] = "${CAST_ROOT}/lib"
+conf.env['CAST_EXTERN'] = "${CAST_LIB}/extern"
+conf.env['WHISKEY'] = "NODE_PATH=${CAST_LIB} ${NODE} ${CAST_EXTERN}/whiskey/bin/whiskey"
 conf.env.AppendUnique(RPATH = conf.env.get('LIBPATH'))
 env = conf.Finish()
 
@@ -118,7 +121,7 @@ else:
 
 chdir = pjoin(os.getcwd(), 'tests')
 init_file = pjoin(os.getcwd(), 'tests', 'init.js')
-testcmd = env.Command('.tests_run', [], "$NODE $WHISKEY --timeout 10000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
+testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
                       (chdir, init_file, ' '.join(tests_to_run)))
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
