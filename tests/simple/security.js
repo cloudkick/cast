@@ -58,12 +58,19 @@ exports['test_openssl_key_generation'] = function() {
 
 exports['test_openssl_csr_generation'] = function() {
   var keypath = '.tests/certs/t3.key';
+  var csrpath = '.tests/certs/t3.csr';
+  var opts = {
+    hostname: 'foo.example.com'
+  };
   certgen.genKey(keypath, function(err) {
     assert.ifError(err);
-    certgen.getCSR(keypath, {hostname: 'foo.example.com'}, function(err, csr) {
+    certgen.genCSR(keypath, csrpath, opts, function(err) {
       assert.ifError(err);
-      assert.match(csr, /BEGIN CERTIFICATE REQUEST/);
-      assert.match(csr, /END CERTIFICATE REQUEST/);
+      fs.readFile(csrpath, 'utf8', function(err, csr) {
+        assert.ifError(err);
+        assert.match(csr, /BEGIN CERTIFICATE REQUEST/);
+        assert.match(csr, /END CERTIFICATE REQUEST/);
+      });
     });
   });
 };
@@ -97,11 +104,7 @@ exports['tests_openssl_ca_functionality'] = function() {
     async.apply(certgen.genKey, clientkey),
 
     // Genrate and save client CSR
-    function(callback) {
-      certgen.getCSR(clientkey, clientopts, function(err, csr) {
-        fs.writeFile(clientcsr, csr, callback);
-      });
-    },
+    async.apply(certgen.genCSR, clientkey, clientcsr, clientopts),
 
     // Sign client CSR
     async.apply(certgen.signCSR, clientcsr, cacert, cakey, casrl, clientcert),
