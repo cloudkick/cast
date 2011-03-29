@@ -56,22 +56,51 @@ exports['test_openssl_key_generation'] = function() {
   });
 };
 
-exports['test_openssl_csr_generation'] = function() {
+exports['test_openssl_csr_generation_verification'] = function() {
   var keypath = '.tests/certs/t3.key';
   var csrpath = '.tests/certs/t3.csr';
   var opts = {
     hostname: 'foo.example.com'
   };
-  certgen.genKey(keypath, function(err) {
-    assert.ifError(err);
-    certgen.genCSR(keypath, csrpath, opts, function(err) {
-      assert.ifError(err);
+  var csrTxt;
+  async.series([
+    async.apply(certgen.genKey, keypath),
+
+    async.apply(certgen.genCSR, keypath, csrpath, opts),
+
+    // Sanity check the CSR
+    function(callback) {
       fs.readFile(csrpath, 'utf8', function(err, csr) {
         assert.ifError(err);
         assert.match(csr, /BEGIN CERTIFICATE REQUEST/);
         assert.match(csr, /END CERTIFICATE REQUEST/);
+        csrTxt = csr;
+        callback();
       });
-    });
+    },
+
+    // Verify the CSR
+    async.apply(certgen.verifyCSR, csrpath),
+
+    // FUBAR the CSR
+    function(callback) {
+      // Increment the 100th character by 1 unicode value
+      var code = csrTxt.charCodeAt(100) + 1;
+      var newTxt = csrTxt.slice(0, 100) + String.fromCharCode(code) +
+                      csrTxt.slice(101);
+      fs.writeFile(csrpath, newTxt, callback);
+    },
+
+    // Ensure CSR verification now fails
+    function(callback) {
+      certgen.verifyCSR(csrpath, function(err) {
+        assert.ok(err);
+        callback();
+      });
+    }
+  ],
+  function(err) {
+    assert.ifError(err);
   });
 };
 
