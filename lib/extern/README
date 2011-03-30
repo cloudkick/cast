@@ -14,6 +14,11 @@ clutch 42373a7a518739 (July 4, 2010)
   License: MIT
   Library used to route URLs to handlers in HTTP server.
 
+jsdoc-toolkit v2.4.0 (December 13, 2010)
+   http://code.google.com/p/jsdoc-toolkit/
+   License: X11/MIT
+   A documentation generator for JavaScript.
+
 jspack 4753fb1a8de (May 22, 2010)
   http://github.com/pgriess/node-jspack
   License: MIT
