@@ -55,7 +55,7 @@ conf.env['NODE'] = os.environ['NODE_BIN_PATH'] if (os.environ.get('NODE_BIN_PATH
 conf.env['CAST_ROOT'] = Dir('#').abspath
 conf.env['CAST_LIB'] = "${CAST_ROOT}/lib"
 conf.env['CAST_EXTERN'] = "${CAST_LIB}/extern"
-conf.env['WHISKEY'] = "NODE_PATH=${CAST_LIB} ${NODE} ${CAST_EXTERN}/whiskey/bin/whiskey"
+conf.env['WHISKEY'] = "NODE_PATH='${CAST_LIB}' ${NODE} '${CAST_EXTERN}/whiskey/bin/whiskey'"
 conf.env.AppendUnique(RPATH = conf.env.get('LIBPATH'))
 env = conf.Finish()
 
