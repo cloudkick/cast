@@ -17,11 +17,6 @@ clutch 42373a7a518739 (July 4, 2010)
   License: MIT
   Library used to route URLs to handlers in HTTP server.
 
-expresso 8805504fbb05c292 (August 11, 2010)
-  http://github.com/visionmedia/expresso
-  License: MIT
-  Testing Framework for test cases
-
 uuid d0cad69cbf3e1bc31f3f (August 29, 2010)
   http://github.com/tlrobinson/narwhal/tree/master/lib/
   License: BSD
