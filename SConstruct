@@ -30,6 +30,15 @@ opts = Variables('build.py')
 opts.Add('node_tarball_url', default = '', help = 'URL to the Node tarball')
 opts.Add('runit_tarball_url', default = '', help = 'URL to the Runit tarball')
 
+AddOption(
+  '--docs-path',
+  dest = 'docs_path',
+  action = 'store',
+  nargs = 1,
+  metavar = 'PATH',
+  help = 'Path where the latest API docs will be moved to'
+)
+
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
                   tools = ['packaging', 'default'])
@@ -81,13 +90,20 @@ gjslint = lenv.Command(".gjslint", source, ["$GJSLINT "+ " ".join([x.get_path() 
 gfixjsstyle = lenv.Command(".gfixjsstyle", source, ["$GJSFIXSTYLE "+ " ".join([x.get_path() for x in source])])
 
 lenv.AlwaysBuild(gjslint)
-#lenv.AlwaysBuild(gfixjsstyle)
 lenv.Alias('gjslint', gjslint)
 lenv.Alias('gfixjsstyle', gfixjsstyle)
 
-env['JSDOC'] = "java -jar lib/extern/jsdoc-toolkit/jsrun.jar lib/extern/jsdoc-toolkit/app/run.js -a -t=lib/extern/jsdoc-toolkit/templates/codeview -D='title:Cast API Docs v%s' -d=%s/" % (tuple(2 * [env['version_string']]))
+# Generate API docs
+cast_version = 'v%s' % (env['version_string'])
+
+env['JSDOC'] = "java -jar lib/extern/jsdoc-toolkit/jsrun.jar lib/extern/jsdoc-toolkit/app/run.js -a -t=lib/extern/jsdoc-toolkit/templates/codeview -D='title:Cast API Docs %s' -d=%s/" % (tuple(2 * [cast_version]))
 docscmd = env.Command('.builddocs', allsource, "$JSDOC " + " ".join([x.get_path() for x in source]))
 env.Alias('docs', docscmd)
+
+# Move API docs
+docs_path = GetOption('docs_path')
+movecmd = env.Command('.movedocs', allsource, 'mv %s %s/' % (cast_version, docs_path))
+env.Alias('move-docs', movecmd)
 
 uploaddocscmd = env.Command('.uploaddocs', '',
                             'git checkout gh-pages; '+
