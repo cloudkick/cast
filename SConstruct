@@ -55,7 +55,7 @@ conf.env['NODE'] = os.environ['NODE_BIN_PATH'] if (os.environ.get('NODE_BIN_PATH
 conf.env['CAST_ROOT'] = Dir('#').abspath
 conf.env['CAST_LIB'] = "${CAST_ROOT}/lib"
 conf.env['CAST_EXTERN'] = "${CAST_LIB}/extern"
-conf.env['WHISKEY'] = "NODE_PATH='${CAST_LIB}' ${NODE} '${CAST_EXTERN}/whiskey/bin/whiskey'"
+conf.env['WHISKEY'] = "NODE_PATH='${CAST_LIB}' ${NODE} 'node_modules/whiskey/bin/whiskey'"
 conf.env.AppendUnique(RPATH = conf.env.get('LIBPATH'))
 env = conf.Finish()
 
@@ -85,7 +85,7 @@ lenv.AlwaysBuild(gjslint)
 lenv.Alias('gjslint', gjslint)
 lenv.Alias('gfixjsstyle', gfixjsstyle)
 
-env['JSDOC'] = "NODE_PATH=lib/extern lib/extern/nclosure/bin/ncdoc.js"
+env['JSDOC'] = "NODE_PATH=lib/extern node_modules/nclosure/nclosure/bin/ncdoc.js"
 docscmd = env.Command('.builddocs', allsource, "$JSDOC " + " ".join([x.get_path() for x in source]))
 env.Alias('docs', docscmd)
 
