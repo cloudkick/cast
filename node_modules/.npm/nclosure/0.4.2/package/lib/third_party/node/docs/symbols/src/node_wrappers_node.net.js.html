@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.net.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>/**
+ * @name node.net
+ * @namespace
+ * The &lt;code>net&lt;/code> module provides you with an asynchronous network wrapper. It contains
+ * methods for creating both servers and clients (called streams). You can include
+ * this module with &lt;code>require("net");&lt;/code>
+ */
+
+goog.provide("node.net");
+
+/**
+ * #### net.isIP(input)
+ *
+ * Tests if input is an IP address. Returns 0 for invalid strings,
+ * returns 4 for IP version 4 addresses, and returns 6 for IP version 6 addresses.
+ *
+ *
+ * #### net.isIPv4(input)
+ *
+ * Returns true if input is a version 4 IP address, otherwise returns false.
+ *
+ *
+ * #### net.isIPv6(input)
+ *
+ * Returns true if input is a version 6 IP address, otherwise returns false.
+ */
+node.net.isIP = function() {
+  return node.net.core_.isIP();
+};
+
+/**
+ * @param {string} input
+ */
+node.net.isIPv4 = function(input) {
+  return node.net.core_.isIPv4(input);
+};
+
+/**
+ * @param {string} input
+ */
+node.net.isIPv6 = function(input) {
+  return node.net.core_.isIPv6(input);
+};
+
+/**
+ * Construct a new socket object and opens a socket to the given location. When
+ * the socket is established the &lt;code>'connect'&lt;/code> event will be emitted.
+ *
+ * The arguments for this method change the type of connection:
+ *
+ * * &lt;code>net.createConnection(port, [host])&lt;/code>
+ *
+ *   Creates a TCP connection to &lt;code>port&lt;/code> on &lt;code>host&lt;/code>. If &lt;code>host&lt;/code> is omitted, &lt;code>localhost&lt;/code>
+ *   will be assumed.
+ *
+ * * &lt;code>net.createConnection(path)&lt;/code>
+ *
+ *   Creates unix socket connection to &lt;code>path&lt;/code>
+ *
+ * ---
+ * @param {string} port
+ * @param {string} host
+ */
+node.net.createConnection = function(port, host) {
+  return node.net.core_.createConnection(port, host);
+};
+
+/**
+ * Creates a new TCP server. The &lt;code>connectionListener&lt;/code> argument is
+ * automatically set as a listener for the &lt;code>'connection'&lt;/code> event.
+ */
+node.net.createServer = function() {
+  return node.net.core_.createServer();
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.net.core_ = require("net");</pre></body></html>

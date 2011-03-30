@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.https.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>/**
+ * @name node.https
+ * @namespace
+ * HTTPS is the HTTP protocol over TLS&#47;SSL. In Node this is implemented as a
+ * separate module.
+ */
+
+goog.provide("node.https");
+
+/**
+ * @param {string} opts
+ * @param {string} requestListener
+ */
+node.https.createServer = function(opts, requestListener) {
+  return node.https.core_.createServer(opts, requestListener);
+};
+
+/**
+ * @param {Object} options
+ */
+node.https.getAgent = function(options) {
+  return node.https.core_.getAgent(options);
+};
+
+/**
+ * @param {Object} options
+ * @param {string} cb
+ */
+node.https.request = function(options, cb) {
+  return node.https.core_.request(options, cb);
+};
+
+/**
+ * @param {Object} options
+ * @param {string} cb
+ */
+node.https.get = function(options, cb) {
+  return node.https.core_.get(options, cb);
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.https.core_ = require("https");</pre></body></html>

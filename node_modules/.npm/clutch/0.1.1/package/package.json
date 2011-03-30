@@ -1,0 +1,11 @@
+{
+    "name": "clutch",
+    "description": "no-frills web request routing",
+    "version": "0.1.1",
+    "author": "Clément Nodet <clement.nodet@gmail.com>",
+    "keywords": ["web", "routing", "router", "route"],
+    "directories": {"lib": "./lib"},
+    "main": "./lib/clutch.js",
+    "scripts": {"test": "node test.js"},
+    "engines": {"node": ">= 0.1.30"}
+}

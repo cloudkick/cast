@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.http.Client.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>
+goog.provide("node.http.Client");
+
+goog.require("node.buffer.Buffer");
+
+/**
+ * @constructor
+ */
+node.http.Client = function() {};
+
+/**
+ * @type {node.buffer.Buffer|null}
+ */
+node.http.Client.prototype.bufferSize = null;
+
+/**
+ * @type {string|null}
+ */
+node.http.Client.prototype.fd = null;
+
+/**
+ * @type {string|null}
+ */
+node.http.Client.prototype.type = null;
+
+/**
+ * @type {string|null}
+ */
+node.http.Client.prototype.allowHalfOpen = null;
+
+/**
+ *
+ */
+node.http.Client.prototype.ondrain = function() {
+  return node.http.Client.core_.ondrain();
+};
+
+/**
+ * @param {string} method
+ * @param {string} url
+ * @param {string} headers
+ */
+node.http.Client.prototype.request = function(method, url, headers) {
+  return node.http.Client.core_.request(method, url, headers);
+};
+
+/**
+ * @param {string} fd
+ * @param {string} type
+ */
+node.http.Client.prototype.open = function(fd, type) {
+  return node.http.Client.core_.open(fd, type);
+};
+
+/**
+ * @param {string} data
+ * @param {string} [fd]
+ * @param {string} [cb]
+ */
+node.http.Client.prototype.write = function(data, [fd], [cb]) {
+  return node.http.Client.core_.write(data, [fd], [cb]);
+};
+
+/**
+ *
+ */
+node.http.Client.prototype.flush = function() {
+  return node.http.Client.core_.flush();
+};
+
+/**
+ * @param {string} encoding
+ */
+node.http.Client.prototype.setEncoding = function(encoding) {
+  return node.http.Client.core_.setEncoding(encoding);
+};
+
+/**
+ *
+ */
+node.http.Client.prototype.connect = function() {
+  return node.http.Client.core_.connect();
+};
+
+/**
+ *
+ */
+node.http.Client.prototype.address = function() {
+  return node.http.Client.core_.address();
+};
+
+/**
+ * @param {string} v
+ */
+node.http.Client.prototype.setNoDelay = function(v) {
+  return node.http.Client.core_.setNoDelay(v);
+};
+
+/**
+ * @param {string} enable
+ * @param {string} time
+ */
+node.http.Client.prototype.setKeepAlive = function(enable, time) {
+  return node.http.Client.core_.setKeepAlive(enable, time);
+};
+
+/**
+ * @param {string} msecs
+ * @param {function(Error?,...[*]):undefined} callback
+ */
+node.http.Client.prototype.setTimeout = function(msecs, callback) {
+  return node.http.Client.core_.setTimeout(msecs, callback);
+};
+
+/**
+ *
+ */
+node.http.Client.prototype.pause = function() {
+  return node.http.Client.core_.pause();
+};
+
+/**
+ *
+ */
+node.http.Client.prototype.resume = function() {
+  return node.http.Client.core_.resume();
+};
+
+/**
+ *
+ */
+node.http.Client.prototype.destroySoon = function() {
+  return node.http.Client.core_.destroySoon();
+};
+
+/**
+ * @param {string} exception
+ */
+node.http.Client.prototype.destroy = function(exception) {
+  return node.http.Client.core_.destroy(exception);
+};
+
+/**
+ * @param {string} data
+ * @param {string} encoding
+ */
+node.http.Client.prototype.end = function(data, encoding) {
+  return node.http.Client.core_.end(data, encoding);
+};
+
+/**
+ * @param {string} dest
+ * @param {Object} options
+ */
+node.http.Client.prototype.pipe = function(dest, options) {
+  return node.http.Client.core_.pipe(dest, options);
+};
+
+/**
+ * @param {string} n
+ */
+node.http.Client.prototype.setMaxListeners = function(n) {
+  return node.http.Client.core_.setMaxListeners(n);
+};
+
+/**
+ * @param {string} type
+ */
+node.http.Client.prototype.emit = function(type) {
+  return node.http.Client.core_.emit(type);
+};
+
+/**
+ * @param {string} type
+ * @param {string} listener
+ */
+node.http.Client.prototype.addListener = function(type, listener) {
+  return node.http.Client.core_.addListener(type, listener);
+};
+
+/**
+ * @param {string} type
+ * @param {string} listener
+ */
+node.http.Client.prototype.on = function(type, listener) {
+  return node.http.Client.core_.on(type, listener);
+};
+
+/**
+ * @param {string} type
+ * @param {string} listener
+ */
+node.http.Client.prototype.once = function(type, listener) {
+  return node.http.Client.core_.once(type, listener);
+};
+
+/**
+ * @param {string} type
+ * @param {string} listener
+ */
+node.http.Client.prototype.removeListener = function(type, listener) {
+  return node.http.Client.core_.removeListener(type, listener);
+};
+
+/**
+ * @param {string} type
+ */
+node.http.Client.prototype.removeAllListeners = function(type) {
+  return node.http.Client.core_.removeAllListeners(type);
+};
+
+/**
+ * @param {string} type
+ */
+node.http.Client.prototype.listeners = function(type) {
+  return node.http.Client.core_.listeners(type);
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.http.Client.core_ = require("http").Client;</pre></body></html>

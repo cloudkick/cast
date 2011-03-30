@@ -1,0 +1,27 @@
+{
+  "name": "nodelint",
+  "description": "The nodelint command line tool allows you to check for problems using JSLint. You can specify your own --config file to use alternate JSLint options and your own --reporter file if you want to customise the generated output. See the GitHub repo for example custom reporters as well as for TextMate/Emacs integration with nodelint.",
+  "version": "0.4.0",
+  "homepage": "http://github.com/tav/nodelint",
+  "author": "tav <tav@espians.com> (http://tav.espians.com)",
+  "contributors": [
+    "Matthew Kitt <mk.kitt@gmail.com> (http://github.com/mkitt)",
+    "Oleg Efimov <efimovov@gmail.com> (http://github.com/Sannis)",
+    "Corey Hart <corey@codenothing.com> (http://www.codenothing.com)",
+    "Cliffano Subagio <cliffano@gmail.com> (http://blog.cliffano.com)",
+    "Mamading Ceesay <mamading@gmail.com> (http://github.com/evangineer)",
+    "Matt Ranney <mjr@ranney.com> (http://github.com/mranney)",
+    "Felix Geisendörfer (http://debuggable.com)",
+    "Nathan Landis (http://github.com/my8bird)"
+  ],
+  "bin": {
+    "nodelint": "./nodelint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/tav/nodelint.git"
+  },
+  "licenses": {
+    "type": "Public Domain"
+  }
+}

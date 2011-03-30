@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.crypto.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>/**
+ * @name node.crypto
+ * @namespace
+ * Use &lt;code>require('crypto')&lt;/code> to access this module.
+ *
+ * The crypto module requires OpenSSL to be available on the underlying platform.
+ * It offers a way of encapsulating secure credentials to be used as part
+ * of a secure HTTPS net or http connection.
+ *
+ * It also offers a set of wrappers for OpenSSL's hash, hmac, cipher, decipher, sign and verify methods.
+ */
+
+goog.provide("node.crypto");
+
+/**
+ * Creates a credentials object, with the optional details being a dictionary with keys:
+ *
+ * * &lt;code>key&lt;/code> : a string holding the PEM encoded private key
+ * * &lt;code>cert&lt;/code> : a string holding the PEM encoded certificate
+ * * &lt;code>ca&lt;/code> : either a string or list of strings of PEM encoded CA certificates to trust.
+ *
+ * If no 'ca' details are given, then node.js will use the default publicly trusted list of CAs as given in
+ * &lt;http:&#47;&#47;mxr.mozilla.org&#47;mozilla&#47;source&#47;security&#47;nss&#47;lib&#47;ckfw&#47;builtins&#47;certdata.txt>.
+ * @param {Object} options
+ */
+node.crypto.createCredentials = function(options) {
+  return node.crypto.core_.createCredentials(options);
+};
+
+/**
+ * Creates and returns a hash object, a cryptographic hash with the given algorithm
+ * which can be used to generate hash digests.
+ *
+ * &lt;code>algorithm&lt;/code> is dependent on the available algorithms supported by the version
+ * of OpenSSL on the platform. Examples are &lt;code>'sha1'&lt;/code>, &lt;code>'md5'&lt;/code>, &lt;code>'sha256'&lt;/code>, &lt;code>'sha512'&lt;/code>, etc.
+ * On recent releases, &lt;code>openssl list-message-digest-algorithms&lt;/code> will display the available digest algorithms.
+ * @param {string} hash
+ */
+node.crypto.createHash = function(hash) {
+  return node.crypto.core_.createHash(hash);
+};
+
+/**
+ * Creates and returns a hmac object, a cryptographic hmac with the given algorithm and key.
+ *
+ * &lt;code>algorithm&lt;/code> is dependent on the available algorithms supported by OpenSSL - see createHash above.
+ * &lt;code>key&lt;/code> is the hmac key to be used.
+ * @param {string} hmac
+ * @param {string} key
+ */
+node.crypto.createHmac = function(hmac, key) {
+  return node.crypto.core_.createHmac(hmac, key);
+};
+
+/**
+ * Creates and returns a cipher object, with the given algorithm and key.
+ *
+ * &lt;code>algorithm&lt;/code> is dependent on OpenSSL, examples are &lt;code>'aes192'&lt;/code>, etc.
+ * On recent releases, &lt;code>openssl list-cipher-algorithms&lt;/code> will display the available cipher algorithms.
+ * @param {string} cipher
+ * @param {string} key
+ */
+node.crypto.createCipher = function(cipher, key) {
+  return node.crypto.core_.createCipher(cipher, key);
+};
+
+/**
+ * @param {string} cipher
+ * @param {string} key
+ * @param {string} iv
+ */
+node.crypto.createCipheriv = function(cipher, key, iv) {
+  return node.crypto.core_.createCipheriv(cipher, key, iv);
+};
+
+/**
+ * Creates and returns a decipher object, with the given algorithm and key.
+ * This is the mirror of the cipher object above.
+ * @param {string} cipher
+ * @param {string} key
+ */
+node.crypto.createDecipher = function(cipher, key) {
+  return node.crypto.core_.createDecipher(cipher, key);
+};
+
+/**
+ * @param {string} cipher
+ * @param {string} key
+ * @param {string} iv
+ */
+node.crypto.createDecipheriv = function(cipher, key, iv) {
+  return node.crypto.core_.createDecipheriv(cipher, key, iv);
+};
+
+/**
+ * Creates and returns a signing object, with the given algorithm.
+ * On recent OpenSSL releases, &lt;code>openssl list-public-key-algorithms&lt;/code> will display
+ * the available signing algorithms. Examples are &lt;code>'RSA-SHA256'&lt;/code>.
+ * @param {string} algorithm
+ */
+node.crypto.createSign = function(algorithm) {
+  return node.crypto.core_.createSign(algorithm);
+};
+
+/**
+ * Creates and returns a verification object, with the given algorithm.
+ * This is the mirror of the signing object above.
+ * @param {string} algorithm
+ */
+node.crypto.createVerify = function(algorithm) {
+  return node.crypto.core_.createVerify(algorithm);
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.crypto.core_ = require("crypto");</pre></body></html>

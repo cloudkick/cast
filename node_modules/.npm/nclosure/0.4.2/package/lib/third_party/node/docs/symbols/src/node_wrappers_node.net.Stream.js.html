@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.net.Stream.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>
+goog.provide("node.net.Stream");
+
+goog.require("node.buffer.Buffer");
+
+/**
+ * @constructor
+ */
+node.net.Stream = function() {};
+
+/**
+ * @type {node.buffer.Buffer|null}
+ */
+node.net.Stream.prototype.bufferSize = null;
+
+/**
+ * @type {string|null}
+ */
+node.net.Stream.prototype.fd = null;
+
+/**
+ * @type {string|null}
+ */
+node.net.Stream.prototype.type = null;
+
+/**
+ * @type {string|null}
+ */
+node.net.Stream.prototype.allowHalfOpen = null;
+
+/**
+ * @param {string} fd
+ * @param {string} type
+ */
+node.net.Stream.prototype.open = function(fd, type) {
+  return node.net.Stream.core_.open(fd, type);
+};
+
+/**
+ * @param {string} data
+ * @param {string} [fd]
+ * @param {string} [cb]
+ */
+node.net.Stream.prototype.write = function(data, [fd], [cb]) {
+  return node.net.Stream.core_.write(data, [fd], [cb]);
+};
+
+/**
+ *
+ */
+node.net.Stream.prototype.flush = function() {
+  return node.net.Stream.core_.flush();
+};
+
+/**
+ * @param {string} encoding
+ */
+node.net.Stream.prototype.setEncoding = function(encoding) {
+  return node.net.Stream.core_.setEncoding(encoding);
+};
+
+/**
+ *
+ */
+node.net.Stream.prototype.connect = function() {
+  return node.net.Stream.core_.connect();
+};
+
+/**
+ *
+ */
+node.net.Stream.prototype.address = function() {
+  return node.net.Stream.core_.address();
+};
+
+/**
+ * @param {string} v
+ */
+node.net.Stream.prototype.setNoDelay = function(v) {
+  return node.net.Stream.core_.setNoDelay(v);
+};
+
+/**
+ * @param {string} enable
+ * @param {string} time
+ */
+node.net.Stream.prototype.setKeepAlive = function(enable, time) {
+  return node.net.Stream.core_.setKeepAlive(enable, time);
+};
+
+/**
+ * @param {string} msecs
+ * @param {function(Error?,...[*]):undefined} callback
+ */
+node.net.Stream.prototype.setTimeout = function(msecs, callback) {
+  return node.net.Stream.core_.setTimeout(msecs, callback);
+};
+
+/**
+ *
+ */
+node.net.Stream.prototype.pause = function() {
+  return node.net.Stream.core_.pause();
+};
+
+/**
+ *
+ */
+node.net.Stream.prototype.resume = function() {
+  return node.net.Stream.core_.resume();
+};
+
+/**
+ *
+ */
+node.net.Stream.prototype.destroySoon = function() {
+  return node.net.Stream.core_.destroySoon();
+};
+
+/**
+ * @param {string} exception
+ */
+node.net.Stream.prototype.destroy = function(exception) {
+  return node.net.Stream.core_.destroy(exception);
+};
+
+/**
+ * @param {string} data
+ * @param {string} encoding
+ */
+node.net.Stream.prototype.end = function(data, encoding) {
+  return node.net.Stream.core_.end(data, encoding);
+};
+
+/**
+ * @param {string} dest
+ * @param {Object} options
+ */
+node.net.Stream.prototype.pipe = function(dest, options) {
+  return node.net.Stream.core_.pipe(dest, options);
+};
+
+/**
+ * @param {string} n
+ */
+node.net.Stream.prototype.setMaxListeners = function(n) {
+  return node.net.Stream.core_.setMaxListeners(n);
+};
+
+/**
+ * @param {string} type
+ */
+node.net.Stream.prototype.emit = function(type) {
+  return node.net.Stream.core_.emit(type);
+};
+
+/**
+ * @param {string} type
+ * @param {string} listener
+ */
+node.net.Stream.prototype.addListener = function(type, listener) {
+  return node.net.Stream.core_.addListener(type, listener);
+};
+
+/**
+ * @param {string} type
+ * @param {string} listener
+ */
+node.net.Stream.prototype.on = function(type, listener) {
+  return node.net.Stream.core_.on(type, listener);
+};
+
+/**
+ * @param {string} type
+ * @param {string} listener
+ */
+node.net.Stream.prototype.once = function(type, listener) {
+  return node.net.Stream.core_.once(type, listener);
+};
+
+/**
+ * @param {string} type
+ * @param {string} listener
+ */
+node.net.Stream.prototype.removeListener = function(type, listener) {
+  return node.net.Stream.core_.removeListener(type, listener);
+};
+
+/**
+ * @param {string} type
+ */
+node.net.Stream.prototype.removeAllListeners = function(type) {
+  return node.net.Stream.core_.removeAllListeners(type);
+};
+
+/**
+ * @param {string} type
+ */
+node.net.Stream.prototype.listeners = function(type) {
+  return node.net.Stream.core_.listeners(type);
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.net.Stream.core_ = require("net").Stream;</pre></body></html>

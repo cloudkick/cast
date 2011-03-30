@@ -1,0 +1,132 @@
+
+goog.provide("node.crypto.Decipher");
+
+/**
+ * @constructor
+ */
+node.crypto.Decipher = function() {};
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.global = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.process = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.GLOBAL = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.root = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.console = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.nclosure = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.COMPILED = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.goog = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.top = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.window = null;
+
+/**
+ * @type {string|null}
+ */
+node.crypto.Decipher.prototype.ncnode = null;
+
+/**
+ *
+ */
+node.crypto.Decipher.prototype.DTRACE_NET_SERVER_CONNECTION = function() {
+  return node.crypto.Decipher.core_.DTRACE_NET_SERVER_CONNECTION();
+};
+
+/**
+ *
+ */
+node.crypto.Decipher.prototype.DTRACE_NET_STREAM_END = function() {
+  return node.crypto.Decipher.core_.DTRACE_NET_STREAM_END();
+};
+
+/**
+ *
+ */
+node.crypto.Decipher.prototype.DTRACE_HTTP_SERVER_REQUEST = function() {
+  return node.crypto.Decipher.core_.DTRACE_HTTP_SERVER_REQUEST();
+};
+
+/**
+ *
+ */
+node.crypto.Decipher.prototype.DTRACE_HTTP_SERVER_RESPONSE = function() {
+  return node.crypto.Decipher.core_.DTRACE_HTTP_SERVER_RESPONSE();
+};
+
+/**
+ *
+ */
+node.crypto.Decipher.prototype.setTimeout = function() {
+  return node.crypto.Decipher.core_.setTimeout();
+};
+
+/**
+ *
+ */
+node.crypto.Decipher.prototype.setInterval = function() {
+  return node.crypto.Decipher.core_.setInterval();
+};
+
+/**
+ *
+ */
+node.crypto.Decipher.prototype.clearTimeout = function() {
+  return node.crypto.Decipher.core_.clearTimeout();
+};
+
+/**
+ *
+ */
+node.crypto.Decipher.prototype.clearInterval = function() {
+  return node.crypto.Decipher.core_.clearInterval();
+};
+
+/**
+ * @param {string} path
+ */
+node.crypto.Decipher.prototype.require = function(path) {
+  return node.crypto.Decipher.core_.require(path);
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.crypto.Decipher.core_ = require("crypto").Decipher;

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.http.ClientRequest.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>
+goog.provide("node.http.ClientRequest");
+
+/**
+ * This object is created internally and returned from &lt;code>http.request()&lt;/code>.  It
+ * represents an &lt;em>in-progress&lt;/em> request whose header has already been sent.
+ *
+ * To get the response, add a listener for &lt;code>'response'&lt;/code> to the request object.
+ * &lt;code>'response'&lt;/code> will be emitted from the request object when the response
+ * headers have been received.  The &lt;code>'response'&lt;/code> event is executed with one
+ * argument which is an instance of &lt;code>http.ClientResponse&lt;/code>.
+ *
+ * During the &lt;code>'response'&lt;/code> event, one can add listeners to the
+ * response object; particularly to listen for the &lt;code>'data'&lt;/code> event. Note that
+ * the &lt;code>'response'&lt;/code> event is called before any part of the response body is received,
+ * so there is no need to worry about racing to catch the first part of the
+ * body. As long as a listener for &lt;code>'data'&lt;/code> is added during the &lt;code>'response'&lt;/code>
+ * event, the entire body will be caught.
+ *
+ * &lt;pre>
+ *     &#47;&#47; Good
+ *     request.on('response', function (response) {
+ *       response.on('data', function (chunk) {
+ *         console.log('BODY: ' + chunk);
+ *       });
+ *     });
+ *
+ *     &#47;&#47; Bad - misses all or part of the body
+ *     request.on('response', function (response) {
+ *       setTimeout(function () {
+ *         response.on('data', function (chunk) {
+ *           console.log('BODY: ' + chunk);
+ *         });
+ *       }, 10);
+ *     });
+ * &lt;/pre>
+ * This is a &lt;code>Writable Stream&lt;/code>.
+ *
+ * This is an &lt;code>EventEmitter&lt;/code> with the following events:
+ * @constructor
+ */
+node.http.ClientRequest = function() {};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.http.ClientRequest.core_ = require("http").ClientRequest;</pre></body></html>

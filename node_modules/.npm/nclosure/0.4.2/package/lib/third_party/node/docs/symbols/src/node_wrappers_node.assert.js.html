@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.assert.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>/**
+ * @name node.assert
+ * @namespace
+ * This module is used for writing unit tests for your applications, you can
+ * access it with &lt;code>require('assert')&lt;/code>.
+ */
+
+goog.provide("node.assert");
+
+/**
+ * Tests if &lt;code>actual&lt;/code> is equal to &lt;code>expected&lt;/code> using the operator provided.
+ * @param {*} actual
+ * @param {*} expected
+ * @param {string} message
+ * @param {function(*,*):boolean} operator
+ * @param {string} stackStartFunction
+ */
+node.assert.fail = function(actual, expected, message, operator, stackStartFunction) {
+  return node.assert.core_.fail(actual, expected, message, operator, stackStartFunction);
+};
+
+/**
+ * Tests if value is a &lt;code>true&lt;/code> value, it is equivalent to &lt;code>assert.equal(true, value, message);&lt;/code>
+ * @param {string} value
+ * @param {string} message
+ */
+node.assert.ok = function(value, message) {
+  return node.assert.core_.ok(value, message);
+};
+
+/**
+ * Tests shallow, coercive equality with the equal comparison operator ( &lt;code>==&lt;/code> ).
+ * @param {*} actual
+ * @param {*} expected
+ * @param {string} message
+ */
+node.assert.equal = function(actual, expected, message) {
+  return node.assert.core_.equal(actual, expected, message);
+};
+
+/**
+ * Tests shallow, coercive non-equality with the not equal comparison operator ( &lt;code>!=&lt;/code> ).
+ * @param {*} actual
+ * @param {*} expected
+ * @param {string} message
+ */
+node.assert.notEqual = function(actual, expected, message) {
+  return node.assert.core_.notEqual(actual, expected, message);
+};
+
+/**
+ * Tests for deep equality.
+ * @param {*} actual
+ * @param {*} expected
+ * @param {string} message
+ */
+node.assert.deepEqual = function(actual, expected, message) {
+  return node.assert.core_.deepEqual(actual, expected, message);
+};
+
+/**
+ * Tests for any deep inequality.
+ * @param {*} actual
+ * @param {*} expected
+ * @param {string} message
+ */
+node.assert.notDeepEqual = function(actual, expected, message) {
+  return node.assert.core_.notDeepEqual(actual, expected, message);
+};
+
+/**
+ * Tests strict equality, as determined by the strict equality operator ( &lt;code>===&lt;/code> )
+ * @param {*} actual
+ * @param {*} expected
+ * @param {string} message
+ */
+node.assert.strictEqual = function(actual, expected, message) {
+  return node.assert.core_.strictEqual(actual, expected, message);
+};
+
+/**
+ * Tests strict non-equality, as determined by the strict not equal operator ( &lt;code>!==&lt;/code> )
+ * @param {*} actual
+ * @param {*} expected
+ * @param {string} message
+ */
+node.assert.notStrictEqual = function(actual, expected, message) {
+  return node.assert.core_.notStrictEqual(actual, expected, message);
+};
+
+/**
+ * Expects &lt;code>block&lt;/code> not to throw an error, see assert.throws for details.
+ * @param {string} block
+ * @param {string=} error
+ * @param {string=} message
+ */
+node.assert.doesNotThrow = function(block, error, message) {
+  return node.assert.core_.doesNotThrow(block, error, message);
+};
+
+/**
+ * Tests if value is not a false value, throws if it is a true value. Useful when
+ * testing the first argument, &lt;code>error&lt;/code> in callbacks.
+ * @param {Error} err
+ */
+node.assert.ifError = function(err) {
+  return node.assert.core_.ifError(err);
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.assert.core_ = require("assert");</pre></body></html>

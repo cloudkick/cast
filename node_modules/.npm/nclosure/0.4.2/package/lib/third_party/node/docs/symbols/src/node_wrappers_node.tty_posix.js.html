@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.tty_posix.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>/**
+ * @name node.tty_posix
+ * @namespace
+ */
+
+goog.provide("node.tty_posix");
+
+/**
+ * @param {string} path
+ * @param {Array.&lt;*>} args
+ */
+node.tty_posix.open = function(path, args) {
+  return node.tty_posix.core_.open(path, args);
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.tty_posix.core_ = require("tty_posix");</pre></body></html>
