@@ -16,8 +16,8 @@
  */
 var sys = require('sys');
 
-var sprintf = require('extern/sprintf').sprintf;
-var async = require('extern/async');
+var sprintf = require('sprintf').sprintf;
+var async = require('async');
 
 var assert = require('./../assert');
 var test = require('util/test');

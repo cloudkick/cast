@@ -17,7 +17,7 @@
 
 var sys = require('sys');
 
-var async = require('extern/async');
+var async = require('async');
 
 var ps = require('util/pubsub');
 var assert = require('./../assert');

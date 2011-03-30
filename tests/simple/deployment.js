@@ -20,7 +20,7 @@ var path = require('path');
 var exec = require('child_process').exec;
 var assert = require('assert');
 
-var async = require('extern/async');
+var async = require('async');
 
 var tarball = require('util/tarball');
 var config = require('util/config');

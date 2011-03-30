@@ -18,7 +18,7 @@
 var path = require('path');
 var fs = require('fs');
 
-var sprintf = require('extern/sprintf').sprintf;
+var sprintf = require('sprintf').sprintf;
 
 var config = require('util/config');
 var fsUtil = require('util/fs');

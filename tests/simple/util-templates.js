@@ -19,7 +19,7 @@ var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
 
-var async = require('extern/async');
+var async = require('async');
 
 var templates = require('util/templates');
 var assert = require('./../assert');

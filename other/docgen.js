@@ -36,7 +36,7 @@ var sys = require('sys');
 var path = require('path');
 var fs = require('fs');
 
-var sprintf = require('extern/sprintf').sprintf;
+var sprintf = require('sprintf').sprintf;
 
 var fsutil = require('util/fs');
 var term = require('util/terminal');

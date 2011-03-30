@@ -19,7 +19,7 @@ var fs =  require('fs');
 var certgen = require('security/certgen');
 var exec = require('child_process').exec;
 
-var async = require('extern/async');
+var async = require('async');
 
 var misc = require('util/misc');
 var assert = require('./../assert');

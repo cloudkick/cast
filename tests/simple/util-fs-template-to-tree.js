@@ -18,7 +18,7 @@
 var fs = require('fs');
 var fsutil = require('util/fs');
 
-var async = require('extern/async');
+var async = require('async');
 
 var assert = require('./../assert');
 

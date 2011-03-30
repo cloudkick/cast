@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-var async = require('extern/async');
+var async = require('async');
 
 var norris = require('norris');
 var assert = require('./../assert');
