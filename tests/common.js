@@ -16,11 +16,12 @@
 */
 
 var path = require('path');
-var exec = require('child_process').exec;
+var fs = require('fs');
 
 var sprintf = require('extern/sprintf').sprintf;
 
 var config = require('util/config');
+var fsUtil = require('util/fs');
 
 var setUp = function(callback) {
   var testFolderPath = path.join(__dirname, '.tests');
@@ -29,8 +30,8 @@ var setUp = function(callback) {
     path.join(__dirname, 'test.conf')
   ];
 
-  exec(sprintf('rm -rf "%s"', testFolderPath), function(err) {
-    exec(sprintf('mkdir "%s"', testFolderPath), function(err) {
+  fsUtil.rmtree(testFolderPath, function(err) {
+    fs.mkdir(testFolderPath, 0775, function(err) {
       config.setupAgent(callback);
     });
   });
