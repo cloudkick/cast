@@ -76,5 +76,3 @@ worker-pool 0.1.0
   https://github.com/kami/node-worker-pool
   License: MIT
   Node worker library with worker pool support.
-
-
