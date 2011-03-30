@@ -19,8 +19,8 @@ var fs =  require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
 
-var async = require('extern/async');
-var sprintf = require('extern/sprintf').sprintf;
+var async = require('async');
+var sprintf = require('sprintf').sprintf;
 
 var ca = require('security/ca');
 var certgen = require('security/certgen');
@@ -71,9 +71,12 @@ exports['test_ca_basic_use'] = function(callback) {
 
     // Add Request to CA
     function(callback) {
-      testCA.addRequest(reqHost, reqText, function(err, cert) {
+      testCA.addRequest(reqHost, reqText, function(err, reqStatus) {
         assert.ifError(err);
-        assert.equal(cert, null);
+        assert.ok(reqStatus);
+        assert.equal(reqStatus.hostname, reqHost);
+        assert.equal(reqStatus.signed, false);
+        assert.equal(reqStatus.cert, null);
         callback();
       });
     },
@@ -129,10 +132,13 @@ exports['test_ca_basic_use'] = function(callback) {
 
     // Re-add the request to get the certificate text, save it
     function(callback) {
-      testCA.addRequest(reqHost, reqText, function(err, cert) {
+      testCA.addRequest(reqHost, reqText, function(err, reqStatus) {
         assert.ifError(err);
-        assert.ok(cert);
-        fs.writeFile(certPath, cert, callback);
+        assert.ok(reqStatus);
+        assert.equal(reqStatus.hostname, reqHost);
+        assert.equal(reqStatus.signed, true);
+        assert.ok(reqStatus.cert);
+        fs.writeFile(certPath, reqStatus.cert, callback);
       });
     },
 
