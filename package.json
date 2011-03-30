@@ -25,10 +25,10 @@
     "sprintf": "= 0.1.1",
     "whiskey": "= 0.2.2",
     "nodelint": "= 0.4.0",
-    "nclosure": "= 0.4.2".
+    "nclosure": "= 0.4.2",
     "worker-pool": "= 0.1.0",
-    "magic-template": "= 0.1.0",
-    "uuid": "= 0.0.2"
+    "magic-templates": "= 0.1.0",
+    "node-uuid": "= 1.1.0"
   },
   "engines": {
     "node": ">= 0.4.0"
