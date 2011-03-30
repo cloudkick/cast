@@ -127,6 +127,12 @@ env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
 
+# Update NPM dependencies
+update_dependencies_cmd = env.Command('.update_dependencies', [], "npm bundle")
+env.AlwaysBuild(update_dependencies_cmd)
+env.Alias('update-dependencies', update_dependencies_cmd)
+env.Alias('update-deps', 'update-dependencies')
+
 # Create a distribution tarball
 dependencies = [
   [ env['node_tarball_url'], 'dist/deps/node.tar.gz' ],
