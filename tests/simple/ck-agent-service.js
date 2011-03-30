@@ -25,7 +25,7 @@ var Agent = require('services/agent')._agent;
 var agentConstants = require('agent/constants');
 
 // Dirty hack to make the tests run much faster
-agentConstants.PING_INTERVAL = 1000;
+agentConstants.PING_INTERVAL = 300;
 
 var responseDictionary = {
   'hello (\\d) (.*?) ([a-zA-Z0-9]+) ([a-zA-Z0-9]+)': {
@@ -75,15 +75,16 @@ exports['test_agent_connection'] = function() {
 // Test agent connection
   var port = test.getPort();
   var agent = new AgentTest();
+
   test.runTestTcpServer('127.0.0.1', port, {}, false, function() {
     var self = this;
     agent.start(port, '127.0.0.1');
 
     setTimeout(function() {
-      assert.ok(agent._connected);
       agent.stop();
       self.close();
-    }, 500);
+      assert.ok(agent._connected);
+    }, 200);
   });
 };
 
@@ -98,17 +99,17 @@ exports['test_agent_hello_and_ping'] = function() {
     setTimeout(function() {
       n++;
       assert.ok(agent._connected);
-    }, 500);
+    }, 200);
 
     var intervalId = setInterval(function() {
       if (agent._pongGotCount >= 2) {
         clearInterval(intervalId);
-        assert.equal(n, 1);
-        assert.equal(agent._pingSentCount, agent._pongGotCount);
         agent.stop();
         self.close();
+        assert.equal(n, 1);
+        assert.equal(agent._pingSentCount, agent._pongGotCount);
       }
-    }, 500);
+    }, 200);
   });
 };
 
@@ -128,7 +129,7 @@ exports['test_command_queuing'] = function() {
       assert.ok(!agent._connected);
 
       agent.sendCommand('run_check', {});
-    }, 500);
+    }, 200);
 
     setTimeout(function() {
       n++;
@@ -136,13 +137,13 @@ exports['test_command_queuing'] = function() {
 
       assert.ok(pendingCommands.length > 0);
       assert.equal(pendingCommands[0][0], 'run_check');
-    }, 2000);
+    }, 800);
 
     setTimeout(function() {
       agent.stop();
       self.close();
       assert.equal(n, 2);
-    }, 4000);
+    }, 900);
   });
 };
 
@@ -164,13 +165,13 @@ exports['test_incoming_error_command'] = function() {
 
       stream = self._streams[0];
       stream.write('error Test error reason.\n');
-    }, 500);
+    }, 300);
 
     setTimeout(function() {
-      assert.equal(n, 1);
       agent.stop();
       self.close();
-    }, 3000);
+      assert.equal(n, 1);
+    }, 400);
   });
 };
 
@@ -192,12 +193,12 @@ exports['test_incoming_restart_command'] = function() {
 
       stream = self._streams[0];
       stream.write('restart\n');
-    }, 500);
+    }, 300);
 
     setTimeout(function() {
-      assert.equal(n, 1);
       agent.stop();
       self.close();
-    }, 2500);
+      assert.equal(n, 1);
+    }, 700);
   });
 };
