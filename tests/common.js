@@ -17,6 +17,7 @@
 
 var path = require('path');
 var fs = require('fs');
+var exec = require('child_process').exec;
 
 var sprintf = require('sprintf').sprintf;
 
