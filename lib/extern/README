@@ -42,11 +42,6 @@ node-worker 693f3fb2c3cf9fa2a22a (December 13, 2010)
   License: MIT
   An implementation of the WebWorker API for node.js.
 
-outline-jsdoc-toolkit-template v0.1 (December 13, 2010)
-  http://code.google.com/p/jproton/
-  License: MIT
-  jsdoc-toolkit template.
-
 optparse cae3b09d324223 (June 28, 2010)
   http://github.com/jfd/optparse-js
   License: "MIT-style license"
