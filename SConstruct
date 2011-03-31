@@ -84,8 +84,8 @@ env.Alias('jslint', jslint)
 lenv = env.Clone()
 
 lenv["ENV"]["PYTHONPATH"] = lenv.Dir('lib/extern/closure-linter').get_path() + ":" + lenv["ENV"].get("PYTHONPATH", "")
-lenv["GJSLINT"] = "python -m closure_linter.gjslint"
-lenv["GJSFIXSTYLE"] = "python -m closure_linter.fixjsstyle"
+lenv["GJSLINT"] = "python -m closure_linter.gjslint --strict"
+lenv["GJSFIXSTYLE"] = "python -m closure_linter.fixjsstyle --strict"
 gjslint = lenv.Command(".gjslint", source, ["$GJSLINT "+ " ".join([x.get_path() for x in source])])
 gfixjsstyle = lenv.Command(".gfixjsstyle", source, ["$GJSFIXSTYLE "+ " ".join([x.get_path() for x in source])])
 
