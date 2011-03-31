@@ -29,7 +29,7 @@ var instance_version_path = path.join(instance.root, 'versions/test_bundle@1.0')
 var hooks_path = path.join(instance_version_path, '.cast-project/hooks');
 
 exports['test_success'] = function() {
-  var callback = function(err, killed, stdout, stderr) {
+  function callback(err, killed, stdout, stderr) {
     assert.ifError(err);
     assert.ok(!killed);
 
@@ -48,7 +48,7 @@ exports['test_success'] = function() {
 };
 
 exports['test_failure'] = function() {
-  var callback = function(err, killed, stdout, stderr) {
+  function callback(err, killed, stdout, stderr) {
     assert.ok(err);
     assert.ok(!killed);
 
@@ -67,7 +67,7 @@ exports['test_failure'] = function() {
 };
 
 exports['test_hook_args'] = function() {
-  var callback = function(err, killed, stdout, stderr) {
+  function callback(err, killed, stdout, stderr) {
     assert.ifError(err);
     assert.ok(!killed);
 
@@ -86,7 +86,7 @@ exports['test_hook_args'] = function() {
 };
 
 exports['test_timeout'] = function() {
-  var callback = function(err, killed, stdout, stderr) {
+  function callback(err, killed, stdout, stderr) {
     assert.ok(err);
     assert.match(err, /timeout/);
     assert.ok(killed);
@@ -103,7 +103,7 @@ exports['test_timeout'] = function() {
 };
 
 exports['test_failure_hook_is_not_executable'] = function() {
-  var callback = function(err, killed, stdout, stderr) {
+  function callback(err, killed, stdout, stderr) {
     assert.ok(err);
     assert.match(err, /status 127/);
     assert.ok(!killed);
@@ -120,12 +120,12 @@ exports['test_failure_hook_is_not_executable'] = function() {
 };
 
 exports['test_failure_hook_does_not_exist'] = function() {
-  var callback1 = function(err, killed, stdout, stderr) {
+  function callback1(err, killed, stdout, stderr) {
     assert.ok(!err);
     assert.ok(!killed);
   };
 
-  var callback2 = function(err, killed, stdout, stderr) {
+  function callback2(err, killed, stdout, stderr) {
     assert.ok(err);
     assert.match(err, /does not exist/);
     assert.ok(!killed);

@@ -24,7 +24,7 @@ var sprintf = require('sprintf').sprintf;
 var config = require('util/config');
 var fsUtil = require('util/fs');
 
-var setUp = function(callback) {
+function setUp(callback) {
   var testFolderPath = path.join(__dirname, '.tests');
   var testDataRoot = path.join(testFolderPath, 'data_root');
 
@@ -37,6 +37,6 @@ var setUp = function(callback) {
       config.setupAgent(callback);
     });
   });
-};
+}
 
 exports.setUp = setUp;

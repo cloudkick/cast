@@ -109,7 +109,7 @@ exports['test_inArray_simple'] = function() {
 
 exports['test_in_array_compare_function'] = function() {
   var haystack = [ ['item 1', 'a'], ['item 2', 'b'], ['item 3', 'c'], ['item 4', 'd'] ];
-  var compareFunction = function(item, needle) {
+  function compareFunction(item, needle) {
     return item[1] === needle;
   };
 

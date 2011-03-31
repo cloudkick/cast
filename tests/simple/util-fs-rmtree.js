@@ -25,7 +25,7 @@ var sprintf = require('sprintf').sprintf;
 var fsutil = require('util/fs');
 var assert = require('./../assert');
 
-var createTestDirectories = function(rootName, callback) {
+function createTestDirectories(rootName, callback) {
   // Create some nested directories and files
   async.series([
     async.apply(exec, sprintf('mkdir -p .tests/fs/%s/b/c/d', rootName)),

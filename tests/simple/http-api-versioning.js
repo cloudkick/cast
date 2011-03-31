@@ -30,7 +30,7 @@ exports['test_route_function'] = function() {
   console.log(assert.eql)
   var i, expectedRoutes, expectedRoutesLen;
   var apiVersion, versionRoutes, versionRoutesLen;
-  var func = function() {}
+  function func() {}
 
   var routes = [
     ['PUT /foo/bar/$', '1.0', func],

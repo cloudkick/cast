@@ -51,7 +51,7 @@ exports['test_command_additional_and_removal'] = function() {
 
 exports['test_exception_is_thrown_on_append_with_no_value'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -74,7 +74,7 @@ exports['test_exception_is_thrown_on_append_with_no_value'] = function() {
 
 exports['test_exception_is_thrown_when_store_true_is_given_key_value'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -96,7 +96,7 @@ exports['test_exception_is_thrown_when_store_true_is_given_key_value'] = functio
 
 exports['test_exception_is_thrown_upon_invalid_command_name'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -130,7 +130,7 @@ exports['test_exception_is_thrown_upon_invalid_command_name'] = function() {
 
 exports['test_exception_is_thrown_upon_invalid_argument_or_type'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -159,7 +159,7 @@ exports['test_exception_is_thrown_upon_invalid_argument_or_type'] = function() {
 
 exports['test_exception_is_thrown_on_invalid_command'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -181,7 +181,7 @@ exports['test_exception_is_thrown_on_invalid_command'] = function() {
 
 exports['test_exception_is_thrown_on_too_many_arguments'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -203,7 +203,7 @@ exports['test_exception_is_thrown_on_too_many_arguments'] = function() {
 
 exports['test_exception_is_thrown_on_missing_required_argument'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -225,7 +225,7 @@ exports['test_exception_is_thrown_on_missing_required_argument'] = function() {
 
 exports['test_global_help'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -239,7 +239,7 @@ exports['test_global_help'] = function() {
 
 exports['test_command_help'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -253,7 +253,7 @@ exports['test_command_help'] = function() {
 
 exports['test_sub_command_help'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -267,7 +267,7 @@ exports['test_sub_command_help'] = function() {
 
 exports['test_global_command'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -281,7 +281,7 @@ exports['test_global_command'] = function() {
 
 exports['test_command_services_list'] = function() {
   var stdoutData = [];
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
@@ -297,7 +297,7 @@ exports['test_command_services_list'] = function() {
 
 exports['test_command_services_list'] = function() {
   var stdoutData = [], value, m;
-  var captureWrite = function (string) {
+  function captureWrite (string) {
     stdoutData.push(string);
   };
 
