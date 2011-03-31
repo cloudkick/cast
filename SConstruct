@@ -102,8 +102,8 @@ env.Alias('docs', docscmd)
 
 # Move API docs
 docs_path = GetOption('docs_path')
-movecmd = env.Command('.movedocs', allsource, 'mv %s %s/' % (cast_version, docs_path))
-env.Alias('move-docs', movecmd)
+copycmd = env.Command('.movedocs', allsource, 'cp -r %s/ %s/' % (cast_version, docs_path))
+env.Alias('copy-docs', copycmd)
 
 uploaddocscmd = env.Command('.uploaddocs', '',
                             'git checkout gh-pages; '+
