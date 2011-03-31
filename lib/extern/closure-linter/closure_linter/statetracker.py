@@ -50,7 +50,6 @@ class DocFlag(object):
   # Please keep these lists alphabetized.
 
   # The list of standard jsdoc tags is from
-  
   STANDARD_DOC = frozenset([
       'author',
       'bug',
@@ -66,18 +65,21 @@ class DocFlag(object):
       'implements',
       'implicitCast',
       'interface',
+      'lends',
       'license',
+      'noalias',
+      'nocompile',
+      'nosideeffects',
       'override',
       'owner',
-      'noalias',
-      'nosideeffects',
       'param',
-      'private',
       'preserve',
+      'private',
       'return',
-      'this',
       'see',
       'supported',
+      'template',
+      'this',
       'type',
       'typedef',
       ])
@@ -86,7 +88,26 @@ class DocFlag(object):
 
   LEGAL_DOC = STANDARD_DOC | ANNOTATION
 
-  SUPPRESS_TYPES = frozenset(['duplicate', 'underscore', 'with'])
+  # Includes all Closure Compiler @suppress types.
+  # Not all of these annotations are interpreted by Closure Linter.
+  SUPPRESS_TYPES = frozenset([
+      'accessControls',
+      'checkRegExp',
+      'checkTypes',
+      'checkVars',
+      'deprecated',
+      'duplicate',
+      'fileoverviewTags',
+      'invalidCasts',
+      'missingProperties',
+      'nonStandardJsDocs',
+      'strictModuleDepCheck',
+      'undefinedVars',
+      'underscore',
+      'unknownDefines',
+      'uselessCode',
+      'visibility',
+      'with'])
 
   HAS_DESCRIPTION = frozenset([
     'define', 'deprecated', 'desc', 'fileoverview', 'license', 'param',

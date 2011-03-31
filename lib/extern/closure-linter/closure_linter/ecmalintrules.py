@@ -68,7 +68,7 @@ class EcmaScriptLintRules(checkerbase.LintRulesBase):
   """
 
   # Static constants.
-  MAX_LINE_LENGTH = 120
+  MAX_LINE_LENGTH = 80
 
   MISSING_PARAMETER_SPACE = re.compile(r',\S')
 
@@ -220,9 +220,13 @@ class EcmaScriptLintRules(checkerbase.LintRulesBase):
     if token.string == ',' or token.metadata.IsUnaryPostOperator():
       return False
 
+    # Colons should appear in labels, object literals, the case of a switch
+    # statement, and ternary operator. Only want a space in the case of the
+    # ternary operator.
     if (token.string == ':' and
         token.metadata.context.type in (Context.LITERAL_ELEMENT,
-                                        Context.CASE_BLOCK)):
+                                        Context.CASE_BLOCK,
+                                        Context.STATEMENT)):
       return False
 
     if token.metadata.IsUnaryOperator() and token.IsFirstInLine():
@@ -538,21 +542,13 @@ class EcmaScriptLintRules(checkerbase.LintRulesBase):
               end_string.endswith('!')):
             # Find the position for the missing punctuation, inside of any html
             # tags.
-            end_position = None
             desc_str = end_token.string.rstrip()
-            if end_string == desc_str:
-              end_position = Position(len(desc_str), 0)
-
-            else:
-              while not end_position and desc_str != '':
-                start_tag_index = desc_str.rfind('<')
-                end_tag_index = desc_str.rfind('>')
-                endchar_index = desc_str.rfind(end_string[-1])
-                if (endchar_index > end_tag_index
-                    or endchar_index < start_tag_index):
-                  end_position = Position(endchar_index + 1, 0)
-                else:
-                  desc_str = desc_str[:start_tag_index].rstrip()
+            while desc_str.endswith('>'):
+              start_tag_index = desc_str.rfind('<')
+              if start_tag_index < 0:
+                break
+              desc_str = desc_str[:start_tag_index].rstrip()
+            end_position = Position(len(desc_str), 0)
 
             self._HandleError(
                 errors.JSDOC_TAG_DESCRIPTION_ENDS_WITH_INVALID_CHARACTER,
@@ -593,7 +589,6 @@ class EcmaScriptLintRules(checkerbase.LintRulesBase):
           if (not state.InConstructor() and
               identifier.find('.') != -1 and not
               identifier.endswith('.prototype') and not
-              identifier.startswith('exports.') and not
               self._limited_doc_checks):
             comment = state.GetLastComment()
             if not (comment and comment.lower().count('jsdoc inherited')):
@@ -608,7 +603,9 @@ class EcmaScriptLintRules(checkerbase.LintRulesBase):
               self._HandleError(errors.INVALID_OVERRIDE_PRIVATE,
                   '%s should not override a private member.' % identifier,
                   jsdoc.GetFlag('override').flag_token)
-            if jsdoc.HasFlag('inheritDoc'):
+            # Can have a private class which inherits documentation from a
+            # public superclass.
+            if jsdoc.HasFlag('inheritDoc') and not jsdoc.HasFlag('constructor'):
               self._HandleError(errors.INVALID_INHERIT_DOC_PRIVATE,
                   '%s should not inherit from a private member.' % identifier,
                   jsdoc.GetFlag('inheritDoc').flag_token)
@@ -680,7 +677,8 @@ class EcmaScriptLintRules(checkerbase.LintRulesBase):
               # Languages that don't allow variables to by typed such as
               # JavaScript care but languages such as ActionScript or Java
               # that allow variables to be typed don't care.
-              self.HandleMissingParameterDoc(token, params_iter.next())
+              if not self._limited_doc_checks:
+                self.HandleMissingParameterDoc(token, params_iter.next())
 
             elif op == 'D':
               # Deletion
@@ -689,9 +687,10 @@ class EcmaScriptLintRules(checkerbase.LintRulesBase):
                   docs_iter.next(), token)
             elif op == 'S':
               # Substitution
-              self._HandleError(errors.WRONG_PARAMETER_DOCUMENTATION,
-                  'Parameter mismatch: got "%s", expected "%s"' %
-                  (params_iter.next(), docs_iter.next()), token)
+              if not self._limited_doc_checks:
+                self._HandleError(errors.WRONG_PARAMETER_DOCUMENTATION,
+                    'Parameter mismatch: got "%s", expected "%s"' %
+                    (params_iter.next(), docs_iter.next()), token)
 
             else:
               # Equality - just advance the iterators
