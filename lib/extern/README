@@ -4,7 +4,7 @@ Please keep it up to date, and in alphabetical order.
 
 Libraries in lib/extern/:
 
-closure-linter r4 (September 2, 2010)
+closure-linter 2.2.7 (September 2, 2010)
   http://code.google.com/p/closure-linter/
   License: Apache 2.0
   Checks code style
