@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.http.ServerResponse.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>
+goog.provide("node.http.ServerResponse");
+
+/**
+ * This object is created internally by a HTTP server--not by the user. It is
+ * passed as the second parameter to the &lt;code>'request'&lt;/code> event. It is a &lt;code>Writable Stream&lt;/code>.
+ * @constructor
+ */
+node.http.ServerResponse = function() {};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.http.ServerResponse.core_ = require("http").ServerResponse;</pre></body></html>

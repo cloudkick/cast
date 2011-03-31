@@ -20,7 +20,7 @@ var path = require('path');
 var root = path.dirname(__filename);
 require.paths.unshift(path.join(root, '../'));
 
-var sprintf = require('extern/sprintf').sprintf;
+var sprintf = require('sprintf').sprintf;
 
 var assert = require('./../assert');
 

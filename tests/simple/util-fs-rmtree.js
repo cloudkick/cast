@@ -19,8 +19,8 @@ var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
 
-var async = require('extern/async');
-var sprintf = require('extern/sprintf').sprintf;
+var async = require('async');
+var sprintf = require('sprintf').sprintf;
 
 var fsutil = require('util/fs');
 var assert = require('./../assert');

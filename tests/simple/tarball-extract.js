@@ -17,7 +17,7 @@
 
 var path = require('path');
 
-var async = require('extern/async');
+var async = require('async');
 
 var tarball = require('util/tarball');
 var assert = require('./../assert');

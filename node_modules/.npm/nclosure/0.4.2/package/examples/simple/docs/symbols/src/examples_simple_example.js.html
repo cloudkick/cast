@@ -1,0 +1,149 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="TOKN">#</span><span class="PUNC">!</span><span class="REGX">/usr/</span><span class="NAME">local</span><span class="PUNC">/</span><span class="NAME">bin</span><span class="PUNC">/</span><span class="NAME">node</span><span class="WHIT">
+<span class='line'>  2</span> 
+<span class='line'>  3</span> </span><span class="COMM">/**
+<span class='line'>  4</span>  * @fileoverview  To get started with nclosure you will need to do the
+<span class='line'>  5</span>  *  following:
+<span class='line'>  6</span>  * &lt;ul>
+<span class='line'>  7</span>  *  &lt;li>Load nclosure through Node's standard mechanism
+<span class='line'>  8</span>  *    &lt;p>i.e. [var nclosure = require('nclosure')].&lt;/p>
+<span class='line'>  9</span>  *  &lt;/li>&lt;li>Initialise nclosure:
+<span class='line'> 10</span>  *    &lt;p>i.e. [require('nclosure').nclosure(options)]&lt;/p>
+<span class='line'> 11</span>  *    &lt;p>
+<span class='line'> 12</span>  *    &lt;strong>Note: &lt;/strong>Before initialisation no closure librarues can be
+<span class='line'> 13</span>  *      used.
+<span class='line'> 14</span>  *    &lt;/p>&lt;p>
+<span class='line'> 15</span>  *    The nclosure() method takes in an optional options object with the
+<span class='line'> 16</span>  *    following properties:
+<span class='line'> 17</span>  *    &lt;/p>
+<span class='line'> 18</span>  *    &lt;pre>
+<span class='line'> 19</span>  *    {
+<span class='line'> 20</span>  *       // Location of the closure-library directory
+<span class='line'> 21</span>  *       closureBasePath:{string},
+<span class='line'> 22</span>  *       // Any additional dependency files required to run your code.  These
+<span class='line'> 23</span>  *       // files generally point to other closure libraries.  Note these deps
+<span class='line'> 24</span>  *       // files must have paths relative to the same closureBasePath as
+<span class='line'> 25</span>  *       // specified above
+<span class='line'> 26</span>  *       additionalDeps:{Array.&lt;string>},
+<span class='line'> 27</span>  *       // Path to the compiler jar you want to use.  Default: 'compiler.jar'.
+<span class='line'> 28</span>  *       compiler_jar: {string},
+<span class='line'> 29</span>  *       // Additional compiler options, e.g: --jscomp_warning=newWarningType
+<span class='line'> 30</span>  *       additionalCompileOptions: {Array.&lt;string>},
+<span class='line'> 31</span>  *       // These are directories containing source code that needs to be
+<span class='line'> 32</span>  *       // included in the compilation.  If this is not included then
+<span class='line'> 33</span>  *       // additionalDeps is used to try to guess any additional roots
+<span class='line'> 34</span>  *       // required (assumes that the deps.js file is in the root folder of
+<span class='line'> 35</span>  *       // the source directory).
+<span class='line'> 36</span>  *       additionalCompileRoots: {Array.&lt;string>}
+<span class='line'> 37</span>  *    }
+<span class='line'> 38</span>  *    &lt;/pre>
+<span class='line'> 39</span>  *  &lt;/li>&lt;li>
+<span class='line'> 40</span>  *    You can also place a closure.json file in the root directory of your
+<span class='line'> 41</span>  *    source code that will allow you to call the init method with no
+<span class='line'> 42</span>  *    parameters.  Using a closure.json is highly recommended as this will
+<span class='line'> 43</span>  *    allow you to use other tools such as jsdoc-toolkit and give you more
+<span class='line'> 44</span>  *    configuration over other settings.  See the example closure.json file
+<span class='line'> 45</span>  *    included in this directory.
+<span class='line'> 46</span>  *  &lt;/li>&lt;li>Use closure library depenencies as required
+<span class='line'> 47</span>  *    &lt;p>i.e. [goog.require( 'goog.async.Delay' )].&lt;/p>
+<span class='line'> 48</span>  * &lt;/li>&lt;/ul>
+<span class='line'> 49</span>  * @see closure.json
+<span class='line'> 50</span>  */</span><span class="WHIT">
+<span class='line'> 51</span> 
+<span class='line'> 52</span> </span><span class="COMM">/*
+<span class='line'> 53</span>  * Does not require an opts parameter as we are providing all the options in
+<span class='line'> 54</span>  * the closure.json file in this directory;
+<span class='line'> 55</span>  */</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'nclosure'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">nclosure</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 57</span> 
+<span class='line'> 58</span> </span><span class="COMM">/*
+<span class='line'> 59</span>  * Now that the nclosure is initialised you can use any base.js functionality
+<span class='line'> 60</span>  * such as goog.require / goog.provide
+<span class='line'> 61</span>  */</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="NAME">goog.require</span><span class="PUNC">(</span><span class="STRN">'goog.async.Delay'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="NAME">goog.require</span><span class="PUNC">(</span><span class="STRN">'goog.structs.Trie'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="NAME">goog.require</span><span class="PUNC">(</span><span class="STRN">'nclosure.external.Utils'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 65</span> 
+<span class='line'> 66</span> </span><span class="COMM">// At least one namespace must be provided for compilation purposes</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="NAME">goog.provide</span><span class="PUNC">(</span><span class="STRN">'nclosure.examples.simple.Example'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 68</span> 
+<span class='line'> 69</span> 
+<span class='line'> 70</span> 
+<span class='line'> 71</span> </span><span class="COMM">/**
+<span class='line'> 72</span>  * Example of how to use nclosure project.  The nclosure project allows you
+<span class='line'> 73</span>  * to levarage google's closure compiler and libraries to provide you with a
+<span class='line'> 74</span>  * rich set of tools and type-safety not found in any other JavaScript stack.
+<span class='line'> 75</span>  * This example aims to demonstrate how to use the nclosure tool not teach
+<span class='line'> 76</span>  * you the basics of google closure.  For more information on google closure
+<span class='line'> 77</span>  * tools see the Closure Tools project documentation.
+<span class='line'> 78</span>  *
+<span class='line'> 79</span>  * @see &lt;a href="http://code.google.com/closure/">Closure Tools&lt;/a>.
+<span class='line'> 80</span>  * @constructor
+<span class='line'> 81</span>  */</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="NAME">nclosure.examples.simple.Example</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 84</span>    * Wether the timer is finnished
+<span class='line'> 85</span>    * @type {boolean}
+<span class='line'> 86</span>    */</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">  </span><span class="NAME">this.completed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 88</span> 
+<span class='line'> 89</span> </span><span class="WHIT">  </span><span class="NAME">this.createDelay_</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">  </span><span class="NAME">this.testTrie_</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">  </span><span class="NAME">this.testExternalLib_</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 93</span> 
+<span class='line'> 94</span> 
+<span class='line'> 95</span> </span><span class="COMM">/**
+<span class='line'> 96</span>  * Create a delayed function which will be executed in 1.5 seconds.
+<span class='line'> 97</span>  *
+<span class='line'> 98</span>  * @private
+<span class='line'> 99</span>  */</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="NAME">nclosure.examples.simple.Example.prototype.createDelay_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">  </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">goog.async.Delay</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">    </span><span class="NAME">console.info</span><span class="PUNC">(</span><span class="STRN">'Bye!'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">    </span><span class="NAME">this.completed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">300</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">start</span><span class="PUNC">(</span><span class="NUMB">300</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>106</span> 
+<span class='line'>107</span> 
+<span class='line'>108</span> </span><span class="COMM">/**
+<span class='line'>109</span>  * Create a trie and insert some data. A trie finds the associated data of all
+<span class='line'>110</span>  * prefixes (of 'examples' in this case) in O(L), where L is the length of
+<span class='line'>111</span>  * the key:
+<span class='line'>112</span>  *
+<span class='line'>113</span>  * @private
+<span class='line'>114</span>  */</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="NAME">nclosure.examples.simple.Example.prototype.testTrie_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">trie</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">goog.structs.Trie</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">  </span><span class="NAME">trie.add</span><span class="PUNC">(</span><span class="STRN">'demo'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'nclosure'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">  </span><span class="NAME">trie.add</span><span class="PUNC">(</span><span class="STRN">'ex'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="STRN">'girlfriend'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'parrot'</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">  </span><span class="NAME">trie.add</span><span class="PUNC">(</span><span class="STRN">'example'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="STRN">'hello'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'world'</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>120</span> 
+<span class='line'>121</span> </span><span class="WHIT">  </span><span class="NAME">console.info</span><span class="PUNC">(</span><span class="NAME">trie.getKeyAndPrefixes</span><span class="PUNC">(</span><span class="STRN">'examples'</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>123</span> 
+<span class='line'>124</span> 
+<span class='line'>125</span> </span><span class="COMM">/**
+<span class='line'>126</span>  * Tests link to an external library (using additionalDeps option)
+<span class='line'>127</span>  *
+<span class='line'>128</span>  * @private
+<span class='line'>129</span>  */</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="NAME">nclosure.examples.simple.Example.prototype.testExternalLib_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">  </span><span class="NAME">console.info</span><span class="PUNC">(</span><span class="STRN">'Using nclosure.external.Utils.echo("hello world"): '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">      </span><span class="NAME">nclosure.external.Utils.echo</span><span class="PUNC">(</span><span class="STRN">'hello world'</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>134</span> 
+<span class='line'>135</span> 
+<span class='line'>136</span> </span><span class="COMM">/**
+<span class='line'>137</span>  * A reference to the running example for testing purposes
+<span class='line'>138</span>  * @type {nclosure.examples.simple.Example}
+<span class='line'>139</span>  * @private
+<span class='line'>140</span>  */</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">example_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">nclosure.examples.simple.Example</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>142</span> </span></pre></body></html>

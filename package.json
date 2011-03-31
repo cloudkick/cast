@@ -1,0 +1,39 @@
+{
+  "name": "cast",
+  "description": "A framework for deploying, managing and running applications and services.",
+  "version": "0.1.0",
+  "author": "Cloudkick, Inc. http://www.cloudkick.com",
+  "keywords": [ "cast", "deployment", "deploying", "hosting", "service management" ],
+  "homepage": "http://www.cast-project.org",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cloudkick/cast.git"
+  },
+  "modules": {
+  },
+  "directories": {
+    "lib": "./lib",
+    "bin": "./bin"
+  },
+  "scripts": {
+    "test": "scons test"
+  },
+  "dependencies": {
+    "async": "= 0.1.4",
+    "optparse": "= 1.0.1",
+    "sprintf": "= 0.1.1",
+    "whiskey": "= 0.2.2",
+    "nodelint": "= 0.4.0",
+    "worker-pool": "= 0.1.0",
+    "magic-templates": "= 0.1.0",
+    "node-uuid": "= 1.1.0"
+  },
+  "engines": {
+    "node": ">= 0.4.0"
+  },
+  "main": "./index",
+  "bin": {
+    "cast": "./bin/cast",
+    "cast-agent": "./bin/cast-agent"
+  }
+}

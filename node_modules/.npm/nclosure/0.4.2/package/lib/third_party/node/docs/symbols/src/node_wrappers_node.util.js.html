@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.util.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>/**
+ * @name node.util
+ * @namespace
+ * These functions are in the module &lt;code>'util'&lt;/code>. Use &lt;code>require('util')&lt;/code> to access
+ * them.
+ */
+
+goog.provide("node.util");
+
+goog.require("node.stream.Stream");
+
+/**
+ *
+ */
+node.util.print = function() {
+  return node.util.core_.print();
+};
+
+/**
+ *
+ */
+node.util.puts = function() {
+  return node.util.core_.puts();
+};
+
+/**
+ * A synchronous output function. Will block the process and
+ * output &lt;code>string&lt;/code> immediately to &lt;code>stderr&lt;/code>.
+ * &lt;pre>
+ *     require('util').debug('message on stderr');
+ * &lt;/pre>
+ * @param {string} x
+ */
+node.util.debug = function(x) {
+  return node.util.core_.debug(x);
+};
+
+/**
+ * @param {string} x
+ */
+node.util.error = function(x) {
+  return node.util.core_.error(x);
+};
+
+/**
+ * Return a string representation of &lt;code>object&lt;/code>, which is useful for debugging.
+ *
+ * If &lt;code>showHidden&lt;/code> is &lt;code>true&lt;/code>, then the object's non-enumerable properties will be
+ * shown too.
+ *
+ * If &lt;code>depth&lt;/code> is provided, it tells &lt;code>inspect&lt;/code> how many times to recurse while
+ * formatting the object. This is useful for inspecting large complicated objects.
+ *
+ * The default is to only recurse twice.  To make it recurse indefinitely, pass
+ * in &lt;code>null&lt;/code> for &lt;code>depth&lt;/code>.
+ *
+ * Example of inspecting all properties of the &lt;code>util&lt;/code> object:
+ * &lt;pre>
+ *     var util = require('util');
+ *
+ *     console.log(util.inspect(util, true, null));
+ * &lt;/pre>
+ * @param {Object} obj
+ * @param {string} showHidden
+ * @param {number} depth
+ * @param {string} colors
+ */
+node.util.inspect = function(obj, showHidden, depth, colors) {
+  return node.util.core_.inspect(obj, showHidden, depth, colors);
+};
+
+/**
+ *
+ */
+node.util.p = function() {
+  return node.util.core_.p();
+};
+
+/**
+ * Output with timestamp on &lt;code>stdout&lt;/code>.
+ * &lt;pre>
+ *     require('util').log('Timestmaped message.');
+ * &lt;/pre>
+ * @param {string} msg
+ */
+node.util.log = function(msg) {
+  return node.util.core_.log(msg);
+};
+
+/**
+ *
+ */
+node.util.exec = function() {
+  return node.util.core_.exec();
+};
+
+/**
+ * Experimental
+ *
+ * Read the data from &lt;code>readableStream&lt;/code> and send it to the &lt;code>writableStream&lt;/code>.
+ * When &lt;code>writableStream.write(data)&lt;/code> returns &lt;code>false&lt;/code> &lt;code>readableStream&lt;/code> will be
+ * paused until the &lt;code>drain&lt;/code> event occurs on the &lt;code>writableStream&lt;/code>. &lt;code>callback&lt;/code> gets
+ * an error as its only argument and is called when &lt;code>writableStream&lt;/code> is closed or
+ * when an error occurs.
+ * @param {node.stream.Stream} readStream
+ * @param {node.stream.Stream} writeStream
+ * @param {function(Error?,...[*]):undefined} callback
+ */
+node.util.pump = function(readStream, writeStream, callback) {
+  return node.util.core_.pump(readStream, writeStream, callback);
+};
+
+/**
+ * Inherit the prototype methods from one
+ * &lt;a href="node.https:&#47;&#47;developer.mozilla.org&#47;en&#47;JavaScript&#47;Reference&#47;Global&lt;em>Objects&#47;Object&#47;constructor">constructor&lt;/a>
+ * into another.  The prototype of &lt;code>constructor&lt;/code> will be set to a new
+ * object created from &lt;code>superConstructor&lt;/code>.
+ *
+ * As an additional convenience, &lt;code>superConstructor&lt;/code> will be accessible
+ * through the &lt;code>constructor.super&lt;/em>&lt;/code> property.
+ * &lt;pre>
+ *     var util = require("util");
+ *     var events = require("events");
+ *
+ *     function MyStream() {
+ *         events.EventEmitter.call(this);
+ *     }
+ *
+ *     util.inherits(MyStream, events.EventEmitter);
+ *
+ *     MyStream.prototype.write = function(data) {
+ *         this.emit("data", data);
+ *     }
+ *
+ *     var stream = new MyStream();
+ *
+ *     console.log(stream instanceof events.EventEmitter); &#47;&#47; true
+ *     console.log(MyStream.super_ === events.EventEmitter); &#47;&#47; true
+ *
+ *     stream.on("data", function(data) {
+ *         console.log('Received data: "' + data + '"');
+ *     })
+ *     stream.write("It works!"); &#47;&#47; Received data: "It works!"
+ * @param {Function} ctor
+ * @param {Function} superCtor
+ */
+node.util.inherits = function(ctor, superCtor) {
+  return node.util.core_.inherits(ctor, superCtor);
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.util.core_ = require("util");</pre></body></html>

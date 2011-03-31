@@ -1,0 +1,28 @@
+node.fs#chmod:path=string The path to change mode on
+node.fs#chmod:mode=string= mode defaults to 0666
+node.fs#chmod:callback=function(Error=)= The callback gets one argument (err). Which is undefined if no error occurred.
+node.fs#chmodSync:path=string The path to change mode on
+node.fs#chmodSync:mode=string mode defaults to 0666
+node.fs#chown:path=string The path to change owners on
+node.fs#chown:uid=string The user id
+node.fs#chown:gid=string The group id
+node.fs#chown:callback=function(Error=) The callback gets one argument (err). Which is undefined if no error occurred.
+node.fs#chownSync:path=string
+node.fs#chownSync:uid=string
+node.fs#chownSync:gid=string
+node.fs#close:fd=string
+node.fs#close:callback=function(Error=) The callback gets one argument (err). Which is undefined if no error occurred.
+node.fs#closeSync:fd=string
+node.fs#createReadStream:path=string
+node.fs#createReadStream:options={flags:string,encoding:string,mode:string,bufferSize:number}=
+node.fs#createReadStream:returns=node.fs.ReadStream
+node.fs#createWriteStream:path=string
+node.fs#createWriteStream:options={flags:string,encoding:string,mode:string,bufferSize:number}=
+node.fs#createWriteStream:returns=node.fs.WriteStream
+node.fs#fstat:fs=string
+node.fs#fstat:callback=function(Error?,node.fs.Stats)=
+node.fs#fstatSync:fs=string
+node.fs#fstatSync:returns=node.fs.Stats
+node.http#createServer:requestListener=function(node.http.ClientRequest,node.http.ServerResponse):undefined
+node.http#createServer:returns=node.http.Server
+node.http.server#listen:port=number

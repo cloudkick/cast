@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.fs.Stats.Buffer.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>
+goog.provide("node.fs.Stats.Buffer");
+
+/**
+ * @constructor
+ */
+node.fs.Stats.Buffer = function() {};
+
+/**
+ * @type {number|null}
+ */
+node.fs.Stats.Buffer.prototype.poolSize = null;
+
+/**
+ * @param {string} b
+ */
+node.fs.Stats.Buffer.prototype.isBuffer = function(b) {
+  return node.fs.Stats.Buffer.core_.isBuffer(b);
+};
+
+/**
+ *
+ */
+node.fs.Stats.Buffer.prototype.byteLength = function() {
+  return node.fs.Stats.Buffer.core_.byteLength();
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.fs.Stats.Buffer.core_ = require("fs").Stats.Buffer;</pre></body></html>

@@ -2,10 +2,7 @@ This directory contains Third Party code and libraries used by cast.
 
 Please keep it up to date, and in alphabetical order.
 
-async b57390563ddb3786e (August 16, 2010)
-  http://github.com/caolan/async
-  License: MIT
-  Common patterns for asynchronous code in node
+Libraries in lib/extern/:
 
 closure-linter r4 (September 2, 2010)
   http://code.google.com/p/closure-linter/
@@ -17,24 +14,15 @@ clutch 42373a7a518739 (July 4, 2010)
   License: MIT
   Library used to route URLs to handlers in HTTP server.
 
-expresso 8805504fbb05c292 (August 11, 2010)
-  http://github.com/visionmedia/expresso
-  License: MIT
-  Testing Framework for test cases
-
-uuid d0cad69cbf3e1bc31f3f (August 29, 2010)
-  http://github.com/tlrobinson/narwhal/tree/master/lib/
-  License: BSD
-  Library for generating random UUIDs (taken from narwal).
+jsdoc-toolkit v2.4.0 (December 13, 2010)
+   http://code.google.com/p/jsdoc-toolkit/
+   License: X11/MIT
+   A documentation generator for JavaScript.
 
 jspack 4753fb1a8de (May 22, 2010)
   http://github.com/pgriess/node-jspack
   License: MIT
   Packing and Unpacking of binary data structures
-
-nclosure 110533de7074935032d6 (March 1, 2011)
-  License: Apache 2.0
-  Server-side Google Closure with Node.js
 
 node-jscoverage 0d4608a6b4275b (May 25, 2010)
   License: GPL v2
@@ -42,47 +30,54 @@ node-jscoverage 0d4608a6b4275b (May 25, 2010)
   Note: Due to GPL v2 license, we should remove this from release tarballs,
   it is a utility for developers, not something we are 'based on'.
 
-node-worker 693f3fb2c3cf9fa2a22a (December 13, 2010)
-  https://github.com/Kami/node-worker (forked from https://github.com/cramforce/node-worker/)
-  License: MIT
-  An implementation of the WebWorker API for node.js.
-
-outline-jsdoc-toolkit-template v0.1 (December 13, 2010)
-  http://code.google.com/p/jproton/
-  License: MIT
-  jsdoc-toolkit template.
-
-optparse cae3b09d324223 (June 28, 2010)
-  http://github.com/jfd/optparse-js
-  License: "MIT-style license"
-  Command Line argument parsing.
-
-restler 95540ac028260 (May 28, 2010)
-  http://github.com/danwrong/restler
-  License: MIT
-  Higher level HTTP Client.
-
-sprintf 0.6
-  http://www.diveintojavascript.com/projects/sprintf-for-javascript
-  License: BSD
-  String formatting utility function.
-
 stacktrace fe9d84729c5 (May 29, 2010)
   http://github.com/emwendelin/javascript-stacktrace
   License: BSD
   Utility function to make a stack trace. Slightly modified to use CommonJS style exports.
-
-strobe-templates ba66628009c0ed4145ba (September 10, 2010)
-  http://github.com/Kami/strobe-templates (forked from https://github.com/skid/strobe-templates)
-  License: MIT
-  A clone of django templates in node.js
 
 Nodelint 789a23a1a83af4c81c0d (November 11, 2010)
   https://github.com/codenothing/Nodelint
   License: MIT
   Nodelint is a tool that uses the power of JSLINT to parse your js files for errors.
 
+Libraries installed via NPM:
+
+async 0.1.4 (August 16, 2010)
+  http://github.com/caolan/async
+  License: MIT
+  Common patterns for asynchronous code in node
+
+magic-templates 0.1.0
+  https://github.com/kami/magic-templates
+  License: MIT
+  A clone of django templates in node.js
+
+nclosure 0.4.2
+  https://github.com/gatapia/nclosure
+  License: Apache 2.0
+  Server-side Google Closure with Node.js
+
+optparse 1.0.1
+  http://github.com/jfd/optparse-js
+  License: "MIT-style license"
+  Command Line argument parsing.
+
+sprintf 0.1.1
+  http://www.diveintojavascript.com/projects/sprintf-for-javascript
+  License: BSD
+  String formatting utility function.
+
+uuid 0.0.2 (March 30, 2010)
+  https://bitbucket.org/nikhilm/uuidjs
+  License: MIT
+  Library for generating random UUIDs.
+
 whiskey  0.2.1
   https://github.com/cloudkick/whiskey
   License: Apache 2.0
   Test runner.
+
+worker-pool 0.1.0
+  https://github.com/kami/node-worker-pool
+  License: MIT
+  Node worker library with worker pool support.

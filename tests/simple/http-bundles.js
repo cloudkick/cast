@@ -20,7 +20,7 @@ var fs = require('fs');
 var crypto = require('crypto');
 var exec = require('child_process').exec;
 
-var async = require('extern/async');
+var async = require('async');
 
 var misc = require('util/misc');
 var http = require('services/http');

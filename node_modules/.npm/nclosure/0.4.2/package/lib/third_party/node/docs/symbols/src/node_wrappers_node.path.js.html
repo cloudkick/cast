@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.path.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>/**
+ * @name node.path
+ * @namespace
+ * This module contains utilities for dealing with file paths.  Use
+ * &lt;code>require('path')&lt;/code> to use it.  It provides the following methods:
+ */
+
+goog.provide("node.path");
+
+/**
+ * Resolves &lt;code>to&lt;/code> to an absolute path.
+ *
+ * If &lt;code>to&lt;/code> isn't already absolute &lt;code>from&lt;/code> arguments are prepended in right to left
+ * order, until an absolute path is found. If after using all &lt;code>from&lt;/code> paths still
+ * no absolute path is found, the current working directory is used as well. The
+ * resulting path is normalized, and trailing slashes are removed unless the path
+ * gets resolved to the root directory.
+ *
+ * Another way to think of it is as a sequence of &lt;code>cd&lt;/code> commands in a shell.
+ * &lt;pre>
+ *     path.resolve('foo&#47;bar', '&#47;tmp&#47;file&#47;', '..', 'a&#47;..&#47;subfile')
+ * &lt;/pre>
+ * Is similar to:
+ * &lt;pre>
+ *     cd foo&#47;bar
+ *     cd &#47;tmp&#47;file&#47;
+ *     cd ..
+ *     cd a&#47;..&#47;subfile
+ *     pwd
+ * &lt;/pre>
+ * The difference is that the different paths don't need to exist and may also be
+ * files.
+ *
+ * Examples:
+ * &lt;pre>
+ *     path.resolve('&#47;foo&#47;bar', '.&#47;baz')
+ *     &#47;&#47; returns
+ *     '&#47;foo&#47;bar&#47;baz'
+ *
+ *     path.resolve('&#47;foo&#47;bar', '&#47;tmp&#47;file&#47;')
+ *     &#47;&#47; returns
+ *     '&#47;tmp&#47;file'
+ *
+ *     path.resolve('wwwroot', 'static&lt;em>files&#47;png&#47;', '..&#47;gif&#47;image.gif')
+ *     &#47;&#47; if currently in &#47;home&#47;myself&#47;node, it returns
+ *     '&#47;home&#47;myself&#47;node&#47;wwwroot&#47;static&lt;/em>files&#47;gif&#47;image.gif'
+ * &lt;/pre>
+ */
+node.path.resolve = function() {
+  return node.path.core_.resolve();
+};
+
+/**
+ * Normalize a string path, taking care of &lt;code>'..'&lt;/code> and &lt;code>'.'&lt;/code> parts.
+ *
+ * When multiple slashes are found, they're replaces by a single one;
+ * when the path contains a trailing slash, it is preserved.
+ * On windows backslashes are used.
+ *
+ * Example:
+ * &lt;pre>
+ *     path.normalize('&#47;foo&#47;bar&#47;&#47;baz&#47;asdf&#47;quux&#47;..')
+ *     &#47;&#47; returns
+ *     '&#47;foo&#47;bar&#47;baz&#47;asdf'
+ * &lt;/pre>
+ * @param {string} path
+ */
+node.path.normalize = function(path) {
+  return node.path.core_.normalize(path);
+};
+
+/**
+ * Join all arguments together and normalize the resulting path.
+ *
+ * Example:
+ * &lt;pre>
+ *     node> require('path').join(
+ *     ...   '&#47;foo', 'bar', 'baz&#47;asdf', 'quux', '..')
+ *     '&#47;foo&#47;bar&#47;baz&#47;asdf'
+ * &lt;/pre>
+ */
+node.path.join = function() {
+  return node.path.core_.join();
+};
+
+/**
+ * Return the directory name of a path.  Similar to the Unix &lt;code>dirname&lt;/code> command.
+ *
+ * Example:
+ * &lt;pre>
+ *     path.dirname('&#47;foo&#47;bar&#47;baz&#47;asdf&#47;quux')
+ *     &#47;&#47; returns
+ *     '&#47;foo&#47;bar&#47;baz&#47;asdf'
+ * &lt;/pre>
+ * @param {string} path
+ */
+node.path.dirname = function(path) {
+  return node.path.core_.dirname(path);
+};
+
+/**
+ * Return the last portion of a path.  Similar to the Unix &lt;code>basename&lt;/code> command.
+ *
+ * Example:
+ * &lt;pre>
+ *     path.basename('&#47;foo&#47;bar&#47;baz&#47;asdf&#47;quux.html')
+ *     &#47;&#47; returns
+ *     'quux.html'
+ *
+ *     path.basename('&#47;foo&#47;bar&#47;baz&#47;asdf&#47;quux.html', '.html')
+ *     &#47;&#47; returns
+ *     'quux'
+ * &lt;/pre>
+ * @param {string} path
+ * @param {string} ext
+ */
+node.path.basename = function(path, ext) {
+  return node.path.core_.basename(path, ext);
+};
+
+/**
+ * Return the extension of the path.  Everything after the last '.' in the last portion
+ * of the path.  If there is no '.' in the last portion of the path or the only '.' is
+ * the first character, then it returns an empty string.  Examples:
+ * &lt;pre>
+ *     path.extname('index.html')
+ *     &#47;&#47; returns
+ *     '.html'
+ *
+ *     path.extname('index')
+ *     &#47;&#47; returns
+ *     ''
+ * &lt;/pre>
+ * @param {string} path
+ */
+node.path.extname = function(path) {
+  return node.path.core_.extname(path);
+};
+
+/**
+ * Test whether or not the given path exists.  Then, call the &lt;code>callback&lt;/code> argument
+ * with either true or false. Example:
+ * &lt;pre>
+ *     path.exists('&#47;etc&#47;passwd', function (exists) {
+ *       util.debug(exists ? "it's there" : "no passwd!");
+ *     });
+ * @param {string} path
+ * @param {function(Error?,...[*]):undefined} callback
+ */
+node.path.exists = function(path, callback) {
+  return node.path.core_.exists(path, callback);
+};
+
+/**
+ * @param {string} path
+ */
+node.path.existsSync = function(path) {
+  return node.path.core_.existsSync(path);
+};
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.path.core_ = require("path");</pre></body></html>

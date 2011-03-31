@@ -17,7 +17,7 @@
 
 var path = require('path');
 
-var async = require('extern/async');
+var async = require('async');
 
 var CommandParser = require('util/command_parser').CommandParser;
 var assert = require('./../assert');

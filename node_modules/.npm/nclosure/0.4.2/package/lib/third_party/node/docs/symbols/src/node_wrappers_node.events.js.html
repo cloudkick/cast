@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_wrappers_node.events.js</title>
+<link rel="stylesheet" href="../../css/prettify_wynn.css" media="all"></link>
+<link rel="stylesheet" href="../../css/all.css" media="all"></link>
+<script src="../../javascript/all.js"></script>
+<script src="../../javascript/prettify.js"></script>
+</head><body onload="prePrettyPrint();"><pre>/**
+ * @name node.events
+ * @namespace
+ * Many objects in Node emit events: a &lt;code>net.Server&lt;/code> emits an event each time
+ * a peer connects to it, a &lt;code>fs.readStream&lt;/code> emits an event when the file is
+ * opened. All objects which emit events are instances of &lt;code>events.EventEmitter&lt;/code>.
+ * You can access this module by doing: &lt;code>require("events");&lt;/code>
+ *
+ * Typically, event names are represented by a camel-cased string, however,
+ * there aren't any strict restrictions on that, as any string will be accepted.
+ *
+ * Functions can then be attached to objects, to be executed when an event
+ * is emitted. These functions are called &lt;em>listeners&lt;/em>.
+ */
+
+goog.provide("node.events");
+
+
+/**
+ * @private
+ * @type {*}
+ */
+node.events.core_ = require("events");</pre></body></html>

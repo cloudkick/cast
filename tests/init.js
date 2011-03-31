@@ -18,7 +18,7 @@
 var path = require('path');
 var exec = require('child_process').exec;
 
-var sprintf = require('extern/sprintf').sprintf;
+var sprintf = require('sprintf').sprintf;
 var common = require('./common');
 
 exports['init'] = common.setUp;
