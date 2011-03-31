@@ -593,6 +593,7 @@ class EcmaScriptLintRules(checkerbase.LintRulesBase):
           if (not state.InConstructor() and
               identifier.find('.') != -1 and not
               identifier.endswith('.prototype') and not
+              identifier.startswith('exports.') and not
               self._limited_doc_checks):
             comment = state.GetLastComment()
             if not (comment and comment.lower().count('jsdoc inherited')):
