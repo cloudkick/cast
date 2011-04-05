@@ -17,8 +17,8 @@
 
 var assert = require('assert');
 
+var misc = require('util/misc');
 var rateLimiter = require('util/rate-limiter');
-var limiter;
 
 exports['test_add_new_limit_success'] = function() {
   var limiter = new rateLimiter.RateLimiter();
@@ -98,6 +98,44 @@ exports['test_remove_limit_does_not_exist'] = function() {
   assert.ok(false, 'exception was not thrown');
 };
 
+exports['test_resetIpAddressAccessCounter_success'] = function() {
+  var key;
+  var path = '/test-path/';
+  var method = 'GET';
+  var ipAddress = '127.0.0.4';
+
+  var limiter = new rateLimiter.RateLimiter();
+  limiter.addLimit(path, method, 2, 500);
+
+  key = limiter._getKeyForLimit(path, method);
+
+  limiter._limitsData[key][ipAddress] = {
+    'access_count': 5,
+    'expire': misc.getUnixTimestamp() + 100
+  };
+
+  assert.equal(limiter._limitsData[key][ipAddress]['access_count'], 5);
+  limiter.resetIpAddressAccessCounter(path, method, ipAddress);
+  assert.equal(limiter._limitsData[key][ipAddress]['access_count'], 0);
+};
+
+exports['test_resetIpAddressAccessCounter_no_recorded_data'] = function() {
+  var path = '/test-path/';
+  var method = 'GET';
+  var ipAddress = '127.0.0.4';
+
+  var limiter = new rateLimiter.RateLimiter();
+  limiter.addLimit(path, method, 2, 500);
+
+  try {
+    limiter.resetIpAddressAccessCounter(path, method, ipAddress);
+  } catch(err) {
+    assert.match(err.message, /no recorded data/i);
+    return;
+  }
+
+  assert.ok(false, 'exception was not thrown');
+};
 exports['test_processLimit_no_drop'] = function() {
   var mockRequest = {
     'url': '/test',
