@@ -68,6 +68,7 @@ exports['test_new_limit_invalid_method'] = function() {
 
   assert.ok(false, 'exception was not thrown');
 }
+};
 
 exports['test_remove_limit_succcess'] = function() {
   var limiter = new rateLimiter.RateLimiter();
