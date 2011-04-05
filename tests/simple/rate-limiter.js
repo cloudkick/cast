@@ -67,7 +67,6 @@ exports['test_new_limit_invalid_method'] = function() {
   }
 
   assert.ok(false, 'exception was not thrown');
-}
 };
 
 exports['test_remove_limit_succcess'] = function() {
@@ -136,13 +135,116 @@ exports['test_resetIpAddressAccessCounter_no_recorded_data'] = function() {
 
   assert.ok(false, 'exception was not thrown');
 };
+
 exports['test_processLimit_no_drop'] = function() {
+  var wroteHeaders = [];
+  var wroteResponses = [];
+  var callbackCalled = false;
+  var key;
+
+  var limiter = new rateLimiter.RateLimiter();
+
   var mockRequest = {
     'url': '/test',
     'method': 'GET',
     'socket': { 'remoteAddress': '127.0.0.2' }
   };
 
+  function writeHead(code, headers) {
+    wroteHeaders.push([code, headers]);
+  }
+
+ function end(body) {
+   wroteResponses.push(body);
+ }
+
+ function callback() {
+   callbackCalled = true;
+ }
+
   var mockResponse = {
+    'writeHead': writeHead,
+    'end': end
   };
+
+  key = limiter._getKeyForLimit('/test', 'GET');
+
+  limiter.processRequest(mockRequest, mockResponse, callback);
+  assert.ok(callbackCalled);
+};
+
+exports['test_processLimit_request_dropped'] = function() {
+  var wroteHeaders = [];
+  var wroteResponses = [];
+  var callbackCalledCount = 0;
+  var key1, key2;
+  var now;
+
+  var limiter = new rateLimiter.RateLimiter();
+  limiter.addLimit('/test-path/', 'GET', 2, 500);
+
+  var mockRequest1 = {
+    'url': '/test-path/',
+    'method': 'GET',
+    'socket': { 'remoteAddress': '127.0.0.2' }
+  };
+
+  var mockRequest2 = {
+    'url': '/test-path/',
+    'method': 'POST',
+    'socket': { 'remoteAddress': '127.0.0.3' }
+  };
+
+  function writeHead(code, headers) {
+    wroteHeaders.push([code, headers]);
+  }
+
+ function end(body) {
+   wroteResponses.push(body);
+ }
+
+ function callback() {
+   callbackCalledCount++;
+ }
+
+  var mockResponse = {
+    'writeHead': writeHead,
+    'end': end
+  };
+
+  key1 = limiter._getKeyForLimit('/test-path/', 'GET');
+  key2 = limiter._getKeyForLimit('/test-path/', 'POST');
+
+  assert.equal(Object.keys(limiter._limitsData[key1]).length, 0);
+  for (var i = 0; i < 5; i++) {
+    limiter.processRequest(mockRequest1, mockResponse, callback);
+
+    assert.equal(limiter._limitsData[key1]['127.0.0.2']['access_count'], i + 1);
+    if (i < 2) {
+      assert.equal(callbackCalledCount, i + 1);
+      assert.equal(Object.keys(limiter._limitsData[key1]).length, 1);
+    }
+    else {
+      assert.equal(callbackCalledCount, 2);
+    }
+  }
+
+  assert.equal(wroteHeaders.length, 3);
+  assert.equal(wroteHeaders[0][0], 403);
+  assert.equal(wroteResponses.length, 3);
+
+  assert.equal(callbackCalledCount, 2);
+  limiter.processRequest(mockRequest2, mockResponse, callback);
+  assert.equal(Object.keys(limiter._limitsData[key1]).length, 2);
+  assert.equal(callbackCalledCount, 3);
+
+  now = misc.getUnixTimestamp();
+  assert.ok((limiter._limitsData[key1]['127.0.0.2']['expire'] - now) > 50);
+
+  limiter.processRequest(mockRequest1, mockResponse, callback);
+  assert.equal(callbackCalledCount, 3);
+
+  limiter.resetIpAddressAccessCounter('/test-path/', 'GET', '127.0.0.2');
+  limiter.processRequest(mockRequest1, mockResponse, callback);
+  assert.equal(callbackCalledCount, 4);
 };
