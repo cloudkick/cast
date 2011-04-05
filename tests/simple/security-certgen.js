@@ -176,3 +176,20 @@ exports['tests_openssl_ca_functionality'] = function() {
     assert.ifError(err);
   });
 };
+
+exports['test_openssl_certificate_fingerprint'] = function() {
+  var certPath = path.join(process.cwd(), 'data', 'test.crt');
+  var badPath = path.join(process.cwd(), 'data', 'nonexistant.crt');
+
+  // Known fingerprint of the test cert
+  var EXPECTED = '16:CE:B3:43:3E:CC:C2:AA:D3:43:37:CA:52:B4:3E:37:3A:23:59:B0';
+
+  certgen.getCertFingerprint(certPath, function(err, fingerprint) {
+    assert.ifError(err);
+    assert.equal(fingerprint, EXPECTED);
+  });
+
+  certgen.getCertFingerprint(badPath, function(err, fingerprint) {
+    assert.ok(err);
+  });
+}
