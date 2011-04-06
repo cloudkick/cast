@@ -195,6 +195,12 @@ exports['test_processLimit_request_dropped'] = function() {
     'socket': { 'remoteAddress': '127.0.0.3' }
   };
 
+  var mockRequest3 = {
+    'url': '/test-path/',
+    'method': 'POST',
+    'socket': { 'remoteAddress': '127.0.0.2' }
+  };
+
   function writeHead(code, headers) {
     wroteHeaders.push([code, headers]);
   }
@@ -233,18 +239,23 @@ exports['test_processLimit_request_dropped'] = function() {
   assert.equal(wroteHeaders[0][0], 403);
   assert.equal(wroteResponses.length, 3);
 
+  // Verify that method is checked correctly
   assert.equal(callbackCalledCount, 2);
+  limiter.processRequest(mockRequest3, mockResponse, callback);
+  assert.equal(callbackCalledCount, 3);
+
+  assert.equal(callbackCalledCount, 3);
   limiter.processRequest(mockRequest2, mockResponse, callback);
   assert.equal(Object.keys(limiter._limitsData[key1]).length, 2);
-  assert.equal(callbackCalledCount, 3);
+  assert.equal(callbackCalledCount, 4);
 
   now = misc.getUnixTimestamp();
   assert.ok((limiter._limitsData[key1]['127.0.0.2']['expire'] - now) > 50);
 
   limiter.processRequest(mockRequest1, mockResponse, callback);
-  assert.equal(callbackCalledCount, 3);
+  assert.equal(callbackCalledCount, 4);
 
   limiter.resetIpAddressAccessCounter('/test-path/', 'GET', '127.0.0.2');
   limiter.processRequest(mockRequest1, mockResponse, callback);
-  assert.equal(callbackCalledCount, 4);
+  assert.equal(callbackCalledCount, 5);
 };
