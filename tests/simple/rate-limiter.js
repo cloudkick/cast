@@ -99,6 +99,26 @@ exports['test_remove_limit_does_not_exist'] = function() {
   assert.ok(false, 'exception was not thrown');
 };
 
+exports['test_addLimit_throws_exception_on_invalid_limit_values'] = function() {
+  var limiter = new rateLimiter.RateLimiter();
+
+  try {
+    limiter.addLimit(/test/, 'get', -1, 1, false);
+  } catch(err) {
+    assert.match(err.message, /must be bigger or equal to 1/);
+    return;
+  }
+
+  try {
+    limiter.addLimit(/test/, 'get', 1, -1, false);
+  } catch(err2) {
+    assert.match(err2.message, /must be bigger or equal to 1/);
+    return;
+  }
+
+  assert.ok(false, 'exception was not thrown');
+};
+
 exports['test_resetIpAddressAccessCounter_success'] = function() {
   var key;
   var path = '/test-path/';
