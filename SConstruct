@@ -39,6 +39,15 @@ AddOption(
   help = 'Path where the latest API docs will be moved to'
 )
 
+AddOption(
+  '--files',
+  dest = 'js_files',
+  action = 'store',
+  nargs = 1,
+  metavar = 'FILES',
+  help = 'A list of JavaScript files'
+)
+
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
                   tools = ['packaging', 'default'])
@@ -75,8 +84,14 @@ testsource = env.Glob("tests/*.js") + env.Glob("tests/*/*.js")
 
 allsource = testsource + source
 
+js_files = GetOption('js_files')
+if js_files:
+  js_files = js_files.split(' ')
+
+files_to_check = js_files or source
+
 env["JSLINT"] = "NODE_PATH=lib/extern/ $NODE lib/extern/Nodelint/bin/jslint"
-jslint = env.Command(".xjslint", source, ["$JSLINT "+ " ".join([str(x) for x in source])])
+jslint = env.Command(".xjslint", files_to_check, ["$JSLINT "+ " ".join([str(x) for x in files_to_check])])
 
 env.AlwaysBuild(jslint)
 env.Alias('jslint', jslint)
