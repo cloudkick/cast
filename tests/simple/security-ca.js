@@ -155,7 +155,7 @@ exports['test_ca_basic_use'] = function(callback) {
 
     // Delete a non-existant request
     function(callback) {
-      testCA.removeRequest('bogushost.example.com', function(err) {
+      testCA.removeRequest('bogushost.example.com', true, function(err) {
         assert.ok(err);
         callback();
       });
@@ -163,7 +163,7 @@ exports['test_ca_basic_use'] = function(callback) {
 
     // Delete the real request
     function(callback) {
-      testCA.removeRequest(reqHost, callback);
+      testCA.removeRequest(reqHost, true, callback);
     },
 
     // List requests (should be none)
