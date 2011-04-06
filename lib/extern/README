@@ -52,11 +52,6 @@ magic-templates 0.1.0
   License: MIT
   A clone of django templates in node.js
 
-nclosure 0.4.2
-  https://github.com/gatapia/nclosure
-  License: Apache 2.0
-  Server-side Google Closure with Node.js
-
 optparse 1.0.1
   http://github.com/jfd/optparse-js
   License: "MIT-style license"
