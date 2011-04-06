@@ -92,7 +92,7 @@ exports['test_remove_limit_does_not_exist'] = function() {
   try {
     limiter.removeLimit(/test-inexistent-path/, 'get', 10, 100, false);
   } catch(err) {
-    assert.ok(true);
+    assert.match(err, /does not exist/);
     return;
   }
 
