@@ -87,6 +87,8 @@ exports['test_remove_limit_succcess'] = function() {
 };
 
 exports['test_remove_limit_does_not_exist'] = function() {
+  var limiter = new rateLimiter.RateLimiter();
+
   try {
     limiter.removeLimit(/test-inexistent-path/, 'get', 10, 100, false);
   } catch(err) {
@@ -178,10 +180,11 @@ exports['test_processLimit_request_dropped'] = function() {
   var wroteResponses = [];
   var callbackCalledCount = 0;
   var key1, key2;
-  var now;
+  var now, methods, methodsLen, method;
 
   var limiter = new rateLimiter.RateLimiter();
   limiter.addLimit('/test-path/', 'GET', 2, 500);
+  limiter.addLimit('/test-path-all/', 'all', 2, 500);
 
   var mockRequest1 = {
     'url': '/test-path/',
@@ -198,6 +201,12 @@ exports['test_processLimit_request_dropped'] = function() {
   var mockRequest3 = {
     'url': '/test-path/',
     'method': 'POST',
+    'socket': { 'remoteAddress': '127.0.0.2' }
+  };
+
+  var mockRequest4 = {
+    'url': '/test-path-all/',
+    'method': null,
     'socket': { 'remoteAddress': '127.0.0.2' }
   };
 
@@ -218,8 +227,10 @@ exports['test_processLimit_request_dropped'] = function() {
     'end': end
   };
 
+  var methods = ['head', 'post', 'delete', 'get', 'put'];
+
   key1 = limiter._getKeyForLimit('/test-path/', 'GET');
-  key2 = limiter._getKeyForLimit('/test-path/', 'POST');
+  key2 = limiter._getKeyForLimit('/test-path-all/', 'all');
 
   assert.equal(Object.keys(limiter._limitsData[key1]).length, 0);
   for (var i = 0; i < 5; i++) {
@@ -258,4 +269,13 @@ exports['test_processLimit_request_dropped'] = function() {
   limiter.resetIpAddressAccessCounter('/test-path/', 'GET', '127.0.0.2');
   limiter.processRequest(mockRequest1, mockResponse, callback);
   assert.equal(callbackCalledCount, 5);
+
+  // Verify that 'all' matches all the HTTP methods
+  methodsLen = methods.length;
+  for (i = 0; i < methodsLen; i++) {
+    method = methods[i];
+    mockRequest4['method'] = method;
+    limiter.processRequest(mockRequest4, mockResponse, callback);
+    assert.equal(limiter._limitsData[key2]['127.0.0.2']['access_count'], i + 1);
+  }
 };
