@@ -206,7 +206,8 @@ exports['test_deployment'] = function() {
 
     // Check Instance.get_bundle_version
     function(callback) {
-      curInstance.getBundleVersion(function(version) {
+      curInstance.getBundleVersion(function(err, version) {
+        assert.ifError(err);
         assert.equal(version, 'v1.0');
         callback();
       });
