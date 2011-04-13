@@ -28,7 +28,6 @@ cwd = os.getcwd()
 opts = Variables('build.py')
 
 opts.Add('node_tarball_url', default = '', help = 'URL to the Node tarball')
-opts.Add('runit_tarball_url', default = '', help = 'URL to the Runit tarball')
 
 AddOption(
   '--docs-path',
@@ -167,7 +166,6 @@ env.Alias('update-deps', 'update-dependencies')
 # Create a distribution tarball
 dependencies = [
   [ env['node_tarball_url'], 'dist/deps/node.tar.gz' ],
-  [ env['runit_tarball_url'], 'dist/deps/runit.tar.gz' ]
 ]
 
 download_dependencies  = []
@@ -175,10 +173,13 @@ for dependency in dependencies:
   download_dependencies.append((env.Command('.%s' % (dependency[1]), '', download_file(dependency[0], dependency[1]))))
 
 paths_to_include = [ 'bin', 'lib', 'other' ]
-paths_to_skip = [ 'lib/extern/expresso', 'lib/extern/whiskey', 'lib/extern/Nodelint',
+paths_to_skip = [ 'lib/extern/expresso', 'lib/extern/whiskey',
+                  'lib/extern/Nodelint',
                   'lib/extern/jsdoc-toolkit', 'lib/extern/closure-linter',
                   'lib/extern/node-jscoverage',
-                  'lib/SConscript', 'lib/README', 'other/SConstruct', 'other/site_scons' ]
+                  'lib/SConscript', 'lib/README', 'other/SConstruct',
+                  'other/site_scons',
+                  'other/docgen.js']
 files_to_pack = get_file_list(cwd, paths_to_include, paths_to_skip)
 
 package = env.Package(

@@ -39,12 +39,10 @@ opts.Update(env)
 
 # Variables
 node_tarball = 'deps/node.tar.gz'
-runit_tarball = 'deps/runit.tar.gz'
 
 prefix = env['PREFIX']
 base_install_prefix = '%s/' % (prefix)
 node_install_prefix = '%s/node/' % (prefix)
-runit_install_prefix = '%s/runit/' % (prefix)
 cast_install_prefix = '%s/cast/' % (prefix)
 cast_data_prefix = '%s/cast/data/' % (prefix)
 
@@ -101,27 +99,6 @@ def populate_cast_config(target, source, env):
 
   return None
 
-# Install runit
-extract_runit = env.Command('.extract_runit', '',
-                            'mkdir -p build/runit/; tar -xzvf %s -C build/runit/' %
-                            (runit_tarball))
-build_runit = env.Command('.build_runit', '', 'package/install',
-                            chdir = 'build/runit/admin/%s/' %
-                            get_runit_directory_name(pjoin(cwd,
-                            'build/runit/admin/')))
-runit_binaries = env.Glob('build/runit/admin/%s/command/*' % get_runit_directory_name(pjoin(cwd,
-                                                                                       'build/runit/admin/')))
-runit_binaries = [str(file) for file in runit_binaries]
-runit_binaries_targets = [pjoin(runit_install_prefix, 'bin', os.path.basename(str(binary))) for binary in runit_binaries]
-runit_binaries_path = pjoin(runit_install_prefix, 'bin')
-copy_binaries_to_prefix = env.Command(runit_binaries_targets, runit_binaries, [
-                                        Mkdir(runit_binaries_path),
-                                        copy_files
-                                     ])
-Depends(build_runit, extract_runit)
-Depends(copy_binaries_to_prefix, build_runit)
-install_runit = [ extract_runit, build_runit, copy_binaries_to_prefix ]
-
 # Install node
 extract_node = env.Command('.extract_node', '', 'mkdir -p build/node/; tar -xzvf %s -C build/node/ --strip-components=1' % (node_tarball))
 configure_node = env.Command('.configure_node', '', './configure --prefix=%s' % (node_install_prefix), chdir = 'build/node/')
@@ -154,10 +131,10 @@ install_cast = [ copy_cast_files, replace_cast_lines, populate_cast_config,
 cleanup = env.Command('.build', 'build', 'rm -rf $SOURCE')
 
 # Uninstall (delete base path and remove symlinks)
-paths_to_delete = [ cast_client_bin_path, cast_agent_bin_path, base_install_prefix ];
+paths_to_delete = [ cast_client_bin_path, cast_agent_bin_path, base_install_prefix ]
 uninstall = env.Command('.uninstall', paths_to_delete, delete_paths)
 
-install = install_node + install_runit + install_cast
+install = install_node + install_cast
 
 # Aliases
 env.Alias('install', install)
