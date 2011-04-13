@@ -172,7 +172,7 @@ download_dependencies  = []
 for dependency in dependencies:
   download_dependencies.append((env.Command('.%s' % (dependency[1]), '', download_file(dependency[0], dependency[1]))))
 
-paths_to_include = [ 'bin', 'lib', 'other' ]
+paths_to_include = [ 'bin', 'lib', 'node_modules', 'other' ]
 paths_to_skip = [ 'lib/extern/expresso', 'lib/extern/whiskey',
                   'lib/extern/Nodelint',
                   'lib/extern/jsdoc-toolkit', 'lib/extern/closure-linter',
