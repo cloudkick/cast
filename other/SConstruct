@@ -25,7 +25,6 @@ from os.path import join as pjoin
 import SCons
 import utils
 from site_scons.utils import copy_tree, copy_files, symlink, delete_paths
-from site_scons.utils import get_runit_directory_name
 
 cwd = os.getcwd()
 
@@ -47,11 +46,11 @@ cast_install_prefix = '%s/cast/' % (prefix)
 cast_data_prefix = '%s/cast/data/' % (prefix)
 
 cast_config_path = pjoin(os.path.expanduser('~'), '.cast/config.json')
-runit_binaries_path = pjoin(runit_install_prefix, 'bin')
-cast_paths = [ 'lib/', 'bin/' ]
+cast_paths = [ 'lib/', 'bin/', 'node_modules/' ]
 
 default_config = """{
-  "service_dir_enabled": "%s"
+  "data_root": "%(data_root)s"
+  "service_dir_enabled": "%(service_dir_enabled)s"
 }
 """
 
@@ -92,7 +91,9 @@ def populate_cast_config(target, source, env):
   """
   target_path = str(target[0])
 
-  config = default_config % (pjoin(runit_install_prefix, 'enabled'))
+  config = default_config % { 'data_root': base_install_prefix,
+                              'service_dir_enabled': pjoin(base_install_prefix, 'services-enabled')
+                            }
   fp = open(target_path, 'w')
   fp.write(config)
   fp.close()
