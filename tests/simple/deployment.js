@@ -139,7 +139,7 @@ exports['test_deployment'] = function() {
 
     // Create an instance from that bundle
     function(callback) {
-      deployment.createInstance('foo0', 'fooapp', 'v1.0', function(err) {
+      deployment.createInstance('foo0', 'fooapp', 'v1.0', false, function(err) {
         assert.ifError(err);
         callback();
       });
@@ -148,9 +148,9 @@ exports['test_deployment'] = function() {
     // Verify the instance
     async.apply(verifyInstance, 'foo0', 'fooapp', 'v1.0'),
 
-    // Create another instance
+    // Create another instance, but this time with enable=true
     function(callback) {
-      deployment.createInstance('foo1', 'fooapp', 'v1.0', function(err) {
+      deployment.createInstance('foo1', 'fooapp', 'v1.0', true, function(err) {
         assert.ifError(err);
         callback();
       });
@@ -159,9 +159,19 @@ exports['test_deployment'] = function() {
     // Verify that one too
     async.apply(verifyInstance, 'foo1', 'fooapp', 'v1.0'),
 
+    function (callback) {
+      // Verify that the instance has been enabled
+      var serviceEnabledPath = path.join(process.cwd(),
+                                         '.tests/data_root/services-enabled/foo1');
+      path.exists(serviceEnabledPath, function(exists) {
+        callback();
+        assert.ok(exists, 'Service is not enabled');
+      });
+    },
+
     // Try to create an instance that already exists
     function(callback) {
-      deployment.createInstance('foo1', 'fooapp', 'v1.0', function(err) {
+      deployment.createInstance('foo1', 'fooapp', 'v1.0', false, function(err) {
         assert.ok(err);
         callback();
       });
