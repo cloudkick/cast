@@ -29,6 +29,7 @@ var constants = require('deployment/constants');
 
 var deployment = require('deployment');
 var deployFiles = require('deployment/files');
+var helpers = require('../helpers');
 
 // Decrease the delay so the tests run faster
 constants.RUNIT_DELAY = 0;
@@ -395,49 +396,43 @@ exports['test_resolveDataFiles'] = function() {
     },
 
     function(callback) {
-      // test1/ - does not exist and directory so a directory should be created in
-      // the data directory
-      var statOrig1, lstatOrig1, statSymlink1, lstatSymlink1;
-      statOrig1 = fs.statSync('.tests/data_tmp/test1');
-      lstatOrig1 = fs.lstatSync('.tests/data_tmp/test1');
-      statSymlink1 = fs.statSync('.tests/data_root2/applications/app1/test1');
-      lstatSymlink1 = fs.lstatSync('.tests/data_root2/applications/app1/test1');
+      // A directory should have been created in the data directory and a
+      // symlink to it created in the instance directory
+      helpers.checkPath({
+        path: '.tests/data_root2/applications/app1/test1',
+        type: 'symlink.directory',
+        target: '.tests/data_tmp/test1'
+      });
 
-      assert.ok(statOrig1.isDirectory());
-      assert.ok(!lstatOrig1.isSymbolicLink());
-      assert.ok(lstatSymlink1.isSymbolicLink());
-      assert.equal(statOrig1.ino, statSymlink1.ino);
+      // A directory should have been created in the data directory and a
+      // symlink to it created in the instance directory
+      helpers.checkPath({
+        path: '.tests/data_root2/applications/app1/test2',
+        type: 'symlink.directory',
+        target: '.tests/data_tmp/test2'
+      });
 
-      // test2. - same as test1/
-      var statOrig2, lstatOrig2, statSymlink2, lstatSymlink2;
-      statOrig2 = fs.statSync('.tests/data_tmp/test2');
-      lstatOrig2 = fs.lstatSync('.tests/data_tmp/test2');
-      statSymlink2 = fs.statSync('.tests/data_root2/applications/app1/test2');
-      lstatSymlink2 = fs.lstatSync('.tests/data_root2/applications/app1/test2');
+      // The 'test3' directory should have been created in both the data root
+      // and the instance root, and a symlink should have been created from
+      // 'test3/foo.txt' in the instance root to 'test3/foo.txt' in the data
+      // root. However, the latter path should not actually exist (creating the
+      // data file is up to the application) so the symlink should be broken at
+      // this point.
+      helpers.checkPath({
+        path: '.tests/data_tmp/test3',
+        type: 'directory'
+      });
 
-      assert.ok(statOrig2.isDirectory());
-      assert.ok(!lstatOrig2.isSymbolicLink());
-      assert.ok(lstatSymlink2.isSymbolicLink());
-      assert.equal(statOrig2.ino, statSymlink2.ino);
+      helpers.checkPath({
+        path: '.tests/data_root2/applications/app1/test3',
+        type: 'directory'
+      });
 
-      console.log(fs.statSync('.tests/data_tmp/test2'));
-      console.log(fs.statSync('.tests/data_root2/applications/app1/test2'));
-
-      // test3/foo.txt
-      var statOrig3, lstatOrig3, statSymlink3, lstatSymlink3, lstatFile3, file3Path;
-      file3Path = '.tests/data_tmp/test3/foo.txt';
-      statOrig3 = fs.statSync('.tests/data_tmp/test3');
-      lstatOrig3 = fs.lstatSync('.tests/data_tmp/test3');
-      statSymlink3 = fs.statSync('.tests/data_root2/applications/app1/test3');
-      lstatSymlink3 = fs.lstatSync('.tests/data_root2/applications/app1/test3');
-      lstatFile3 = fs.lstatSync('.tests/data_root2/applications/app1/test3/foo.txt');
-
-      assert.ok(statOrig3.isDirectory());
-      assert.ok(!lstatOrig3.isSymbolicLink());
-      assert.ok(!path.existsSync(file3Path));
-      assert.ok(lstatSymlink3.isDirectory());
-      assert.ok(!lstatSymlink3.isSymbolicLink());
-      assert.ok(lstatFile3.isSymbolicLink());
+      helpers.checkPath({
+        path: '.tests/data_root2/applications/app1/test3/foo.txt',
+        type: 'symlink.null',
+        target: '.tests/data_tmp/test3/foo.txt'
+      });
 
       callback();
     }
