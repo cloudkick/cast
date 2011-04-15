@@ -21,6 +21,7 @@ var exec = require('child_process').exec;
 var assert = require('assert');
 
 var async = require('async');
+var sprintf = require('sprintf').sprintf;
 
 var tarball = require('util/tarball');
 var config = require('util/config');
@@ -38,11 +39,15 @@ exports['setUp'] = function(callback) {
   callback();
 };
 
-function verifyInstance(name, bundle, version, versions, callback) {
+function verifyInstance(name, bundle, version, versions, verifyServiceExists,
+                        callback) {
   // TODO: More in-depth verification of data files, templated files
   // and templated services
   if (!callback) {
     callback = versions;
+    versions = [ version ];
+  }
+  else if (!versions) {
     versions = [ version ];
   }
 
@@ -86,7 +91,13 @@ function verifyInstance(name, bundle, version, versions, callback) {
     },
 
     function(callback) {
-      fs.stat(path.join(svcRootAvail, name), function(err, stats) {
+      if (!verifyServiceExists) {
+        callback();
+        return;
+      }
+
+      var serviceName = sprintf('%s@%s', name, version);
+      fs.stat(path.join(svcRootAvail, serviceName), function(err, stats) {
         assert.ifError(err);
         assert.ok(stats.isDirectory());
         callback();
@@ -146,7 +157,7 @@ exports['test_deployment'] = function() {
     },
 
     // Verify the instance
-    async.apply(verifyInstance, 'foo0', 'fooapp', 'v1.0'),
+    async.apply(verifyInstance, 'foo0', 'fooapp', 'v1.0', null, true),
 
     // Create another instance, but this time with enable=true
     function(callback) {
@@ -157,12 +168,13 @@ exports['test_deployment'] = function() {
     },
 
     // Verify that one too
-    async.apply(verifyInstance, 'foo1', 'fooapp', 'v1.0'),
+    async.apply(verifyInstance, 'foo1', 'fooapp', 'v1.0', null, true),
 
     function (callback) {
       // Verify that the instance has been enabled
+      var serviceName = sprintf('%s@%s', 'foo1', 'v1.0');
       var serviceEnabledPath = path.join(process.cwd(),
-                                         '.tests/data_root/services-enabled/foo1');
+          sprintf('.tests/data_root/services-enabled/%s', serviceName));
       path.exists(serviceEnabledPath, function(exists) {
         callback();
         assert.ok(exists, 'Service is not enabled');
@@ -269,7 +281,7 @@ exports['test_deployment'] = function() {
 
     // Verify nothing broke
     function(callback) {
-      verifyInstance(curInstance.name, 'fooapp', 'v1.0', callback);
+      verifyInstance(curInstance.name, 'fooapp', 'v1.0', null, true, callback);
     },
 
     // Check Instance.activate_version on an existing but unprepared version
@@ -282,7 +294,7 @@ exports['test_deployment'] = function() {
 
     // Verify nothing broke
     function(callback) {
-      verifyInstance(curInstance.name, 'fooapp', 'v1.0', callback);
+      verifyInstance(curInstance.name, 'fooapp', 'v1.0', null, true, callback);
     },
 
     // Check Instance.prepare_version with an existing version
@@ -296,7 +308,7 @@ exports['test_deployment'] = function() {
     // Verify the new version was prepared
     function(callback) {
       var versions = ['v1.0', 'v1.5'];
-      verifyInstance(curInstance.name, 'fooapp', 'v1.0', versions, callback);
+      verifyInstance(curInstance.name, 'fooapp', 'v1.0', versions, true, callback);
     },
 
     // Check Instance.activate_version on a prepared version
@@ -310,7 +322,7 @@ exports['test_deployment'] = function() {
     // Verify the new version was activated
     function(callback) {
       var versions = ['v1.0', 'v1.5'];
-      verifyInstance(curInstance.name, 'fooapp', 'v1.5', versions, callback);
+      verifyInstance(curInstance.name, 'fooapp', 'v1.5', versions, false, callback);
     },
 
     // Get a list of instances
