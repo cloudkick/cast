@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
-var instances = require('deployment/instances');
+var assert = require('assert');
 
-exports.createInstance = instances.createInstance;
-exports.upgradeInstance = instances.upgradeInstance;
-exports.getInstance = instances.getInstance;
-exports.getInstanceList = instances.getInstanceList;
+var serviceManagement = require('service_management');
+
+var manager = serviceManagement.getManager('runit').getManager();
+
+exports['test_run_action_invalid_action'] = function() {
+  manager.runAction('service1', 'invalidAction', function(err) {
+    assert.ok(err);
+    assert.match(err.message, /invalid action/i);
+  });
+};
