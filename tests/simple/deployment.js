@@ -28,11 +28,13 @@ var config = require('util/config');
 var constants = require('deployment/constants');
 
 var deployment = require('deployment');
+var deployFiles = require('deployment/files');
 
 // Decrease the delay so the tests run faster
 constants.RUNIT_DELAY = 0;
 
 var svcRootAvail, appRoot, extRoot;
+var cwd = process.cwd();
 
 exports['setUp'] = function(callback) {
   svcRootAvail = config.get()['service_dir_available'];
@@ -360,6 +362,84 @@ exports['test_deployment'] = function() {
         assert.ok(!exists);
         callback();
       });
+    }
+  ],
+
+  function(err) {
+    assert.ifError(err);
+  });
+};
+
+exports['test_resolveDataFiles'] = function() {
+  // Expected:
+  // test1/ (does not exist and directory)
+  // test2/ (does not exist and directory)
+  // test3/foo.txt (does not exist and directory)
+  var dataFiles1 = [ 'test1/', 'test2/', 'test3/foo.txt' ];
+
+  async.series([
+    // Prepare data root layout
+    async.apply(exec, 'mkdir -p .tests/data_tmp'),
+    async.apply(exec, 'mkdir -p .tests/data_root2/applications/app1'),
+    async.apply(exec, 'mkdir -p .tests/data_root2/applications/app1'),
+    async.apply(exec, 'mkdir -p .tests/data_root2/services'),
+    async.apply(exec, 'mkdir -p .tests/data_root2/services-enabled'),
+    async.apply(exec, 'mkdir -p .tests/data_root2/extracted/fooapp1'),
+
+    function(callback) {
+      deployFiles.resolveDataFiles(path.join(cwd, '.tests/data_root2/extracted/app1'),
+                                   path.join(cwd, '.tests/data_tmp'),
+                                   path.join(cwd, '.tests/data_root2/applications/app1'),
+                                   dataFiles1,
+                                   callback);
+    },
+
+    function(callback) {
+      // test1/ - does not exist and directory so a directory should be created in
+      // the data directory
+      var statOrig1, lstatOrig1, statSymlink1, lstatSymlink1;
+      statOrig1 = fs.statSync('.tests/data_tmp/test1');
+      lstatOrig1 = fs.lstatSync('.tests/data_tmp/test1');
+      statSymlink1 = fs.statSync('.tests/data_root2/applications/app1/test1');
+      lstatSymlink1 = fs.lstatSync('.tests/data_root2/applications/app1/test1');
+
+      assert.ok(statOrig1.isDirectory());
+      assert.ok(!lstatOrig1.isSymbolicLink());
+      assert.ok(lstatSymlink1.isSymbolicLink());
+      assert.equal(statOrig1.ino, statSymlink1.ino);
+
+      // test2. - same as test1/
+      var statOrig2, lstatOrig2, statSymlink2, lstatSymlink2;
+      statOrig2 = fs.statSync('.tests/data_tmp/test2');
+      lstatOrig2 = fs.lstatSync('.tests/data_tmp/test2');
+      statSymlink2 = fs.statSync('.tests/data_root2/applications/app1/test2');
+      lstatSymlink2 = fs.lstatSync('.tests/data_root2/applications/app1/test2');
+
+      assert.ok(statOrig2.isDirectory());
+      assert.ok(!lstatOrig2.isSymbolicLink());
+      assert.ok(lstatSymlink2.isSymbolicLink());
+      assert.equal(statOrig2.ino, statSymlink2.ino);
+
+      console.log(fs.statSync('.tests/data_tmp/test2'));
+      console.log(fs.statSync('.tests/data_root2/applications/app1/test2'));
+
+      // test3/foo.txt
+      var statOrig3, lstatOrig3, statSymlink3, lstatSymlink3, lstatFile3, file3Path;
+      file3Path = '.tests/data_tmp/test3/foo.txt';
+      statOrig3 = fs.statSync('.tests/data_tmp/test3');
+      lstatOrig3 = fs.lstatSync('.tests/data_tmp/test3');
+      statSymlink3 = fs.statSync('.tests/data_root2/applications/app1/test3');
+      lstatSymlink3 = fs.lstatSync('.tests/data_root2/applications/app1/test3');
+      lstatFile3 = fs.lstatSync('.tests/data_root2/applications/app1/test3/foo.txt');
+
+      assert.ok(statOrig3.isDirectory());
+      assert.ok(!lstatOrig3.isSymbolicLink());
+      assert.ok(!path.existsSync(file3Path));
+      assert.ok(lstatSymlink3.isDirectory());
+      assert.ok(!lstatSymlink3.isSymbolicLink());
+      assert.ok(lstatFile3.isSymbolicLink());
+
+      callback();
     }
   ],
 
