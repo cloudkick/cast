@@ -129,7 +129,7 @@ env.Alias('upload-docs', uploaddocscmd)
 env.Alias('build-docs', [ docscmd, uploaddocscmd ])
 env.Depends(uploaddocscmd, docscmd)
 
-IGNORED_TESTS = [ 'tests/assert.js', 'tests/init.js', 'tests/common.js', 'tests/data/' ]
+IGNORED_TESTS = [ 'tests/assert.js', 'tests/init.js', 'tests/common.js', 'tests/helpers.js', 'tests/data/' ]
 tests = sorted(testsource)
 
 test_files = []
