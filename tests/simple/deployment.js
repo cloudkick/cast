@@ -25,11 +25,14 @@ var sprintf = require('sprintf').sprintf;
 
 var tarball = require('util/tarball');
 var config = require('util/config');
+var constants = require('deployment/constants');
+
 var deployment = require('deployment');
 
-var svcRootAvail;
-var appRoot;
-var extRoot;
+// Decrease the delay so the tests run faster
+constants.RUNIT_DELAY = 0;
+
+var svcRootAvail, appRoot, extRoot;
 
 exports['setUp'] = function(callback) {
   svcRootAvail = config.get()['service_dir_available'];
