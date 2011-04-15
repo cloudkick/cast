@@ -18,6 +18,7 @@
 var assert = require('assert');
 
 var serviceManagement = require('service_management');
+var runitTemplates = require('service_management/runit/templates/base');
 
 var manager = serviceManagement.getManager('runit').getManager();
 
@@ -26,4 +27,14 @@ exports['test_run_action_invalid_action'] = function() {
     assert.ok(err);
     assert.match(err.message, /invalid action/i);
   });
+};
+
+exports['test_runit_buildRunFile'] = function() {
+  var result1 = runitTemplates.buildRunFile('/usr/bin/node server.js', '/opt/test', true);
+  var result2 = runitTemplates.buildRunFile('/usr/bin/node server.js', '/opt/test', false);
+  var result3 = runitTemplates.buildRunFile('/usr/bin/node server.js', null, false);
+
+  assert.equal(result1, '#!/bin/bash\ncd "/opt/test" ; exec /usr/bin/node server.js 2>&1');
+  assert.equal(result2, '#!/bin/bash\ncd "/opt/test" ; exec /usr/bin/node server.js');
+  assert.equal(result3, '#!/bin/bash\nexec /usr/bin/node server.js');
 };
