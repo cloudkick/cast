@@ -372,10 +372,6 @@ exports['test_deployment'] = function() {
 };
 
 exports['test_resolveDataFiles'] = function() {
-  // Expected:
-  // test1/ (does not exist and directory)
-  // test2/ (does not exist and directory)
-  // test3/foo.txt (does not exist and directory)
   var dataFiles1 = [ 'test1/', 'test2/', 'test3/foo.txt' ];
 
   async.series([
@@ -383,9 +379,7 @@ exports['test_resolveDataFiles'] = function() {
     async.apply(exec, 'mkdir -p .tests/data_tmp'),
     async.apply(exec, 'mkdir -p .tests/data_root2/applications/app1'),
     async.apply(exec, 'mkdir -p .tests/data_root2/applications/app1'),
-    async.apply(exec, 'mkdir -p .tests/data_root2/services'),
-    async.apply(exec, 'mkdir -p .tests/data_root2/services-enabled'),
-    async.apply(exec, 'mkdir -p .tests/data_root2/extracted/fooapp1'),
+    async.apply(exec, 'mkdir -p .tests/data_root2/extracted/app1'),
 
     function(callback) {
       deployFiles.resolveDataFiles(path.join(cwd, '.tests/data_root2/extracted/app1'),
