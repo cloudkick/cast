@@ -25,6 +25,7 @@ var sprintf = require('sprintf').sprintf;
 
 var tarball = require('util/tarball');
 var config = require('util/config');
+var fsUtil = require('util/fs');
 var constants = require('deployment/constants');
 
 var deployment = require('deployment');
@@ -373,6 +374,8 @@ exports['test_deployment'] = function() {
 
 exports['test_resolveDataFiles'] = function() {
   var dataFiles1 = [ 'test1/', 'test2/', 'test3/foo.txt' ];
+  var dataFiles2 = [ 'data/archive.tar.gz', 'data/README', 'data/file3.txt',
+                     'dbdata/' ];
 
   async.series([
     // Prepare data root layout
@@ -381,6 +384,7 @@ exports['test_resolveDataFiles'] = function() {
     async.apply(exec, 'mkdir -p .tests/data_root2/applications/app1'),
     async.apply(exec, 'mkdir -p .tests/data_root2/extracted/app1'),
 
+    // Do a first level of assertions - simple resolving, no files already exist
     function(callback) {
       deployFiles.resolveDataFiles(path.join(cwd, '.tests/data_root2/extracted/app1'),
                                    path.join(cwd, '.tests/data_tmp'),
@@ -429,6 +433,42 @@ exports['test_resolveDataFiles'] = function() {
       });
 
       callback();
+    },
+
+    // Do a second level of assertions - this time the data files already exist
+    // and we verify that they were copied correctly.
+    async.apply(fsUtil.copyTree, path.join(cwd, 'data/data_root'),
+                path.join(cwd, '.tests/data_root3')),
+
+    async.apply(deployFiles.resolveDataFiles, path.join(cwd, '.tests/data_root3/extracted/app1'),
+                path.join(cwd, '.tests/data_tmp2'),
+                path.join(cwd, '.tests/data_root3/applications/app1'),
+                dataFiles2),
+
+    function(callback){
+      helpers.checkPath({
+        path: '.tests/data_root3/applications/app1/data/archive.tar.gz',
+        type: 'symlink.file',
+        target: '.tests/data_tmp2/data/archive.tar.gz'
+      });
+
+      helpers.checkPath({
+        path: '.tests/data_root3/applications/app1/data/README',
+        type: 'symlink.file',
+        target: '.tests/data_tmp2/data/README'
+      });
+
+      helpers.checkPath({
+        path: '.tests/data_root3/applications/app1/data/file3.txt',
+        type: 'symlink.file',
+        target: '.tests/data_tmp2/data/file3.txt'
+      });
+
+      helpers.checkPath({
+        path: '.tests/data_root3/applications/app1/dbdata',
+        type: 'symlink.directory',
+        target: '.tests/data_tmp2/dbdata'
+      });
     }
   ],
 
