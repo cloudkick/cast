@@ -19,13 +19,15 @@ var path = require('path');
 var crypto = require('crypto');
 var fs = require('fs');
 
-var test = require('util/test');
-var extract = require('util/tarball');
-
 var sprintf = require('sprintf').sprintf;
 var async = require('async');
 
+var test = require('util/test');
+var extract = require('util/tarball');
+var misc = require('util/misc');
+
 var assert = require('./../assert');
+
 
 var cwd = process.cwd();
 var dataPath = path.join(cwd, 'data');
@@ -51,6 +53,9 @@ var tarballPath6 = path.join(dataPath, tarballName6);
 
 var tarballName7 = 'foo-bar-1.0.7.tar.gz';
 var tarballPath7 = path.join(dataPath, tarballName7);
+
+var tarballName8 = 'foo-bar-1.0.8.tar.gz';
+var tarballPath8 = path.join(dataPath, tarballName8);
 
 exports['test_invalid_source_path'] = function() {
   extract.createTarball('/invalid/source/path/', dataPath, tarballName1, {deleteIfExists: false}, function(error) {
@@ -173,4 +178,25 @@ exports['test_ignore_file_changed_error'] = function() {
     assert.equal(test.fileExists(tarballPath7), true);
     test.fileDelete(tarballPath7);
   });
+};
+
+exports['test_excludeFile'] = function() {
+  test.fileDelete(tarballPath8);
+  assert.equal(test.fileExists(tarballPath8), false);
+
+  extract.createTarball(bundlePath, dataPath, tarballName8, {deleteIfExists: false,
+                                                             ignoreFileChangedError: true,
+                                                             excludeFile: 'data/exclude_file'}, function(error) {
+    assert.ifError(error);
+    assert.equal(test.fileExists(tarballPath8), true);
+
+    extract.getTarballFileList(tarballPath8, function(error, fileList) {
+      assert.ifError(error);
+      assert.length(fileList, 3);
+      assert.ok(misc.inArray('foo-bar-1.0.8/', fileList));
+      assert.ok(misc.inArray('foo-bar-1.0.8/osx-pkg-dmg-create.sh', fileList));
+      assert.ok(misc.inArray('foo-bar-1.0.8/updateAuthors.awk', fileList));
+      test.fileDelete(tarballPath8);
+    });
+ });
 };
