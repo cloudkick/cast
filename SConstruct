@@ -158,7 +158,7 @@ env.Alias('test', testcmd)
 env.Alias('tests', 'test')
 
 # Update NPM dependencies
-update_dependencies_cmd = env.Command('.update_dependencies', [], "npm bundle")
+update_dependencies_cmd = env.Command('.update_dependencies', [], "rm -rf node_modules ; npm install")
 env.AlwaysBuild(update_dependencies_cmd)
 env.Alias('update-dependencies', update_dependencies_cmd)
 env.Alias('update-deps', 'update-dependencies')
