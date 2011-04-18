@@ -19,13 +19,15 @@ var path = require('path');
 var crypto = require('crypto');
 var fs = require('fs');
 
-var test = require('util/test');
-var extract = require('util/tarball');
-
 var sprintf = require('sprintf').sprintf;
 var async = require('async');
 
+var test = require('util/test');
+var extract = require('util/tarball');
+var misc = require('util/misc');
+
 var assert = require('./../assert');
+
 
 var cwd = process.cwd();
 var dataPath = path.join(cwd, 'data');
@@ -52,17 +54,20 @@ var tarballPath6 = path.join(dataPath, tarballName6);
 var tarballName7 = 'foo-bar-1.0.7.tar.gz';
 var tarballPath7 = path.join(dataPath, tarballName7);
 
+var tarballName8 = 'foo-bar-1.0.8.tar.gz';
+var tarballPath8 = path.join(dataPath, tarballName8);
+
 exports['test_invalid_source_path'] = function() {
-  extract.createTarball('/invalid/source/path/', dataPath, tarballName1, {deleteIfExists: false}, function(error) {
-    assert.ok(error);
-    assert.match(error.message, /source path does not exist/i);
+  extract.createTarball('/invalid/source/path/', dataPath, tarballName1, {deleteIfExists: false}, function(err) {
+    assert.ok(err);
+    assert.match(err.message, /source path does not exist/i);
   });
 };
 
 exports['test_invalid_target_path'] = function() {
-  extract.createTarball(bundlePath, '/invalid/path', tarballName1, {deleteIfExists: false}, function(error) {
-    assert.ok(error);
-    assert.match(error.message, /target path does not exist/i);
+  extract.createTarball(bundlePath, '/invalid/path', tarballName1, {deleteIfExists: false}, function(err) {
+    assert.ok(err);
+    assert.match(err.message, /target path does not exist/i);
   });
 };
 
@@ -70,23 +75,23 @@ exports['test_create_tarball_success'] = function() {
   test.fileDelete(tarballPath1);
   assert.equal(test.fileExists(tarballPath1), false);
 
-  extract.createTarball(bundlePath, dataPath, tarballName1, {deleteIfExists: false}, function(error) {
-    assert.ifError(error);
+  extract.createTarball(bundlePath, dataPath, tarballName1, {deleteIfExists: false}, function(err) {
+    assert.ifError(err);
     assert.equal(test.fileExists(tarballPath1), true);
     test.fileDelete(tarballPath1);
   });
 };
 
-exports['test_create_tarball_throws_error_upon_existing_file'] = function() {
+exports['test_create_tarball_throws_err_upon_existing_file'] = function() {
   test.fileDelete(tarballPath2);
   assert.equal(test.fileExists(tarballPath2), false);
 
-  extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(error) {
-    assert.ifError(error);
+  extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(err) {
+    assert.ifError(err);
     assert.equal(test.fileExists(tarballPath2), true);
 
-    extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(error) {
-      assert.match(error, /tarball already exists/i);
+    extract.createTarball(bundlePath, dataPath, tarballName2, {deleteIfExists: false}, function(err) {
+      assert.match(err, /tarball already exists/i);
       assert.equal(test.fileExists(tarballPath2), true);
       test.fileDelete(tarballPath2);
     });
@@ -97,12 +102,12 @@ exports['test_dele_if_exists_option'] = function() {
   test.fileDelete(tarballPath3);
   assert.equal(test.fileExists(tarballPath3), false);
 
-  extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: false}, function(error) {
-    assert.ifError(error);
+  extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: false}, function(err) {
+    assert.ifError(err);
     assert.equal(test.fileExists(tarballPath3), true);
 
-    extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: true}, function(error) {
-      assert.ifError(error);
+    extract.createTarball(bundlePath, dataPath, tarballName3, {deleteIfExists: true}, function(err) {
+      assert.ifError(err);
       assert.equal(test.fileExists(tarballPath3), true);
       test.fileDelete(tarballPath3);
     });
@@ -113,12 +118,12 @@ exports['test_store_in_tarball_name_directory_is_false'] = function() {
   test.fileDelete(tarballPath4);
   assert.equal(test.fileExists(tarballPath4), false);
 
-  extract.createTarball(bundlePath, dataPath, tarballName4, {storeInTarballNameDirectory: false}, function(error) {
-    assert.ifError(error);
+  extract.createTarball(bundlePath, dataPath, tarballName4, {storeInTarballNameDirectory: false}, function(err) {
+    assert.ifError(err);
     assert.equal(test.fileExists(tarballPath4), true);
 
-    extract.getTarballFileList(tarballPath4, function(error, fileList) {
-      assert.ifError(error);
+    extract.getTarballFileList(tarballPath4, function(err, fileList) {
+      assert.ifError(err);
       assert.length(fileList, 16);
       for (var i = 0; i < fileList.length; i++) {
         assert.match(fileList[i], /\.\//);
@@ -133,13 +138,13 @@ exports['test_store_in_tarball_name_directory_is_true'] = function() {
   test.fileDelete(tarballPath5);
   assert.equal(test.fileExists(tarballPath5), false);
 
-  extract.createTarball(bundlePath, dataPath, tarballName5, {storeInTarballNameDirectory: true}, function(error) {
-    assert.ifError(error);
+  extract.createTarball(bundlePath, dataPath, tarballName5, {storeInTarballNameDirectory: true}, function(err) {
+    assert.ifError(err);
     assert.equal(test.fileExists(tarballPath5), true);
 
-    extract.getTarballFileList(tarballPath5, function(error, fileList) {
+    extract.getTarballFileList(tarballPath5, function(err, fileList) {
       var regexp = new RegExp(sprintf('%s/', rootDirectoryName));
-      assert.ifError(error);
+      assert.ifError(err);
       assert.length(fileList, 16);
       for (var i = 0; i < fileList.length; i++) {
         assert.match(fileList[i], regexp);
@@ -153,24 +158,45 @@ exports['test_exclude_pattern'] = function() {
   test.fileDelete(tarballPath6);
   assert.equal(test.fileExists(tarballPath6), false);
 
-  extract.createTarball(bundlePath, dataPath, tarballName6, {deleteIfExists: false, excludePattern: '*.sh'}, function(error) {
-    assert.ifError(error);
+  extract.createTarball(bundlePath, dataPath, tarballName6, {deleteIfExists: false, excludePattern: '*.sh'}, function(err) {
+    assert.ifError(err);
     assert.equal(test.fileExists(tarballPath6), true);
 
-    extract.getTarballFileList(tarballPath6, function(error, fileList) {
-      assert.ifError(error);
+    extract.getTarballFileList(tarballPath6, function(err, fileList) {
+      assert.ifError(err);
       assert.length(fileList, 14);
       test.fileDelete(tarballPath6);
     });
   });
 };
 
-exports['test_ignore_file_changed_error'] = function() {
+exports['test_ignore_file_changed_err'] = function() {
   test.fileDelete(tarballPath7);
   assert.equal(test.fileExists(tarballPath7), false);
-  extract.createTarball(dataPath, dataPath, tarballName7, {deleteIfExists: false, ignoreFileChangedError: true}, function(error) {
-    assert.ifError(error);
+  extract.createTarball(dataPath, dataPath, tarballName7, {deleteIfExists: false, ignoreFileChangedError: true}, function(err) {
+    assert.ifError(err);
     assert.equal(test.fileExists(tarballPath7), true);
     test.fileDelete(tarballPath7);
   });
+};
+
+exports['test_excludeFile'] = function() {
+  test.fileDelete(tarballPath8);
+  assert.equal(test.fileExists(tarballPath8), false);
+
+  extract.createTarball(bundlePath, dataPath, tarballName8, {deleteIfExists: false,
+                                                             ignoreFileChangedError: true,
+                                                             excludeFile: 'data/exclude_file'}, function(err) {
+    assert.ifError(err);
+    assert.equal(test.fileExists(tarballPath8), true);
+
+    extract.getTarballFileList(tarballPath8, function(err, fileList) {
+      assert.ifError(err);
+      assert.length(fileList, 3);
+      assert.ok(misc.inArray('foo-bar-1.0.8/', fileList));
+      assert.ok(misc.inArray('foo-bar-1.0.8/osx-pkg-dmg-create.sh', fileList));
+      assert.ok(misc.inArray('foo-bar-1.0.8/updateAuthors.awk', fileList));
+      test.fileDelete(tarballPath8);
+    });
+ });
 };

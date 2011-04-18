@@ -22,7 +22,7 @@
     "async": "= 0.1.4",
     "optparse": "= 1.0.1",
     "sprintf": "= 0.1.1",
-    "whiskey": "= 0.2.2",
+    "whiskey": "= 0.2.3",
     "nodelint": "= 0.4.0",
     "worker-pool": "= 0.1.0",
     "magic-templates": "= 0.1.0",
