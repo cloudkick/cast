@@ -278,11 +278,12 @@ exports['test_http_bundles'] = function() {
       });
     },
 
-    // Delete a bundle file
+    // Delete a bundle tarball
     function(callback) {
       assert.response(getServer(), {
-        url: '/' + API_VERSION + '/bundles/foo/foo@1.0.tar.gz',
-        method: 'DELETE'
+        url: '/' + API_VERSION + '/bundles/foo/foo@1.0',
+        method: 'DELETE',
+        body: 'bundle_type=tarball'
       },
       function(res) {
         assert.equal(res.statusCode, 204);
@@ -300,7 +301,34 @@ exports['test_http_bundles'] = function() {
         assert.equal(res.statusCode, 404);
         callback();
       });
-    }],
+    },
+
+    // Delete a bundle extracted directory
+    function(callback) {
+      assert.response(getServer(), {
+        url: '/' + API_VERSION + '/bundles/foo/foo@1.0',
+        method: 'DELETE',
+        body: 'bundle_type=extracted'
+      },
+      function(res) {
+        assert.equal(res.statusCode, 204);
+        callback();
+      });
+    },
+
+    // Verify that the tarball and extracted directory has beel deleted
+    function(callback) {
+      assert.response(getServer(), {
+        url: '/' + API_VERSION + '/bundles/foo/foo@1.0',
+        method: 'DELETE',
+        body: 'bundle_type=both'
+      },
+      function(res) {
+        assert.equal(res.statusCode, 404);
+        callback();
+      });
+    }
+  ],
 
   function(err) {
     assert.ifError(err);
