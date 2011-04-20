@@ -17,9 +17,6 @@ EnsureSConsVersion(1, 1, 0)
 
 import os
 import sys
-import re
-import shutil
-import subprocess
 import os.path
 from os.path import join as pjoin
 
@@ -37,6 +34,23 @@ opts.Add(PathVariable('PREFIX', default = '/opt/cast_test',
 
 env = Environment(options = opts, ENV = os.environ.copy())
 opts.Update(env)
+
+# Options
+AddOption(
+  '--use-system-node',
+  dest = 'use_system_node',
+  action = 'store_true',
+  help = 'True to use existing system node binary'
+)
+
+system_node_binary_path = None
+if GetOption('use_system_node'):
+  system_node_binary_path = env.WhereIs('node')
+
+  if not system_node_binary_path:
+    print 'Could not find system node binary. Make sure node is installed ' + \
+          'or don\'t use the "--use-system-node" option.'
+    sys.exit(1)
 
 # Variables
 node_tarball = 'deps/node.tar.gz'
@@ -59,7 +73,7 @@ default_config = """{
 cast_client_bin_path = pjoin('/usr/local/bin', 'cast')
 cast_agent_bin_path = pjoin('/usr/local/bin', 'cast-agent')
 
-node_binary_path = pjoin(node_install_prefix, 'bin/node')
+node_binary_path = system_node_binary_path or pjoin(node_install_prefix, 'bin/node')
 shebang_line = '#!%s' % (node_binary_path)
 
 # Builder functions
@@ -134,10 +148,14 @@ install_cast = [ copy_cast_files, replace_cast_lines, populate_cast_config,
 cleanup = env.Command('.build', 'build', 'rm -rf $SOURCE')
 
 # Uninstall (delete base path and remove symlinks)
+# TODO: Add option to also delete ~/.cast/ directory
+# TODO: Add option to use system node binary
 paths_to_delete = [ cast_client_bin_path, cast_agent_bin_path, base_install_prefix ]
 uninstall = env.Command('.uninstall', paths_to_delete, delete_paths)
 
-install = install_node + install_cast
+if not system_node_binary_path:
+  install.extend(install_node)
+install.extend(install_cast)
 
 # Aliases
 env.Alias('install', install)
@@ -145,4 +163,4 @@ env.Alias('uninstall', uninstall)
 env.Alias('cleanup', cleanup)
 env.Alias('delete', 'uninstall')
 
-env.Default('install')
+env.Default(None)
