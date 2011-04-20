@@ -67,6 +67,7 @@ def copytree(src, dest, symlinks=False):
        destPath = dest
     # actually copy the files
     copyItems(src, destPath)
+    return None
 
 def symlink(target, source, env):
   os.symlink(str(source[0]), str(target[0]))
