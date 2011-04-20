@@ -16,6 +16,7 @@
 EnsureSConsVersion(1, 1, 0)
 
 import os
+import sys
 import re
 import shutil
 import subprocess
@@ -23,7 +24,8 @@ import os.path
 from os.path import join as pjoin
 
 import SCons
-import utils
+cwd = os.getcwd()
+sys.path.insert(0, 'other/')
 from site_scons.utils import copy_tree, copy_files, symlink, delete_paths
 
 cwd = os.getcwd()
@@ -49,7 +51,7 @@ cast_config_path = pjoin(os.path.expanduser('~'), '.cast/config.json')
 cast_paths = [ 'lib/', 'bin/', 'node_modules/' ]
 
 default_config = """{
-  "data_root": "%(data_root)s"
+  "data_root": "%(data_root)s",
   "service_dir_enabled": "%(service_dir_enabled)s"
 }
 """
