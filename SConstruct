@@ -218,9 +218,9 @@ create_distribution_commands = [
                                  'rm -rf dist',
                                  'mkdir dist',
                                  'rm -rf build',
-                                 'mkdir build',
-                                 'cp other/SConstruct build/SConstruct']
+                                 'mkdir build']
 create_distribution_commands.extend(copy_paths)
+create_distribution_commands.extend(['cp other/SConstruct build/SConstruct'])
 create_distribution_commands.extend([create_tarball])
 create_distribution_commands.extend(['rm -rf build'])
 create_distribution_tarball = env.Command('.create-dist', [],
