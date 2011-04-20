@@ -49,7 +49,7 @@ AddOption(
 
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
-                  tools = ['packaging', 'default'])
+                  tools = ['default', 'packaging'])
 
 #TODO: convert this to a configure builder, so it gets cached
 def read_version(prefix, path):
@@ -165,22 +165,25 @@ env.Alias('update-deps', 'update-dependencies')
 
 # Create a distribution tarball
 dependencies = [
-  [ env['node_tarball_url'], 'dist/deps/node.tar.gz' ],
+  [ env['node_tarball_url'], 'deps/node.tar.gz' ],
 ]
 
 download_dependencies  = []
 for dependency in dependencies:
   download_dependencies.append((env.Command('.%s' % (dependency[1]), '', download_file(dependency[0], dependency[1]))))
 
-paths_to_include = [ 'bin', 'lib', 'node_modules', 'other' ]
+paths_to_include = [ 'bin', 'lib', 'node_modules', 'other', 'deps']
+files_to_include = [ 'SConstruct', 'README', 'NOTICE',
+                     'LICENSE' ]
 paths_to_skip = [ 'lib/extern/expresso', 'lib/extern/whiskey',
                   'lib/extern/Nodelint',
                   'lib/extern/jsdoc-toolkit', 'lib/extern/closure-linter',
                   'lib/extern/node-jscoverage',
                   'lib/SConscript', 'lib/README', 'other/SConstruct',
-                  'other/site_scons',
                   'other/docgen.js']
 files_to_pack = get_file_list(cwd, paths_to_include, paths_to_skip)
+build_to_pack = [ pjoin('build', path) for path in files_to_pack +
+                  files_to_include ]
 
 package = env.Package(
   PACKAGEROOT = '.',
@@ -188,7 +191,7 @@ package = env.Package(
   VERSION = env['version_string'],
   PACKAGETYPE = 'src_targz',
   LICENSE = 'Apache 2.0',
-  source =  files_to_pack,
+  source =  build_to_pack,
   SOURCE_URL = 'https://github.com/cloudkick/cast/tarball/v%s' % (env['version_string'])
 )
 
@@ -206,10 +209,25 @@ env.Depends(covcmd, jsconvcopy)
 env.AlwaysBuild(covcmd)
 """
 
-# Targets
-#env.Alias('coverage', covcmd)
-#env.Alias('cov', 'coverage')
+folder_name = 'cast-%s' % (env['version_string'])
+copy_paths = [ 'cp -r %s build' % (path) for path in paths_to_include +
+               files_to_include ]
+create_tarball = 'tar -zc -f dist/%s --transform \'s,^build,%s,\' %s' % ('%s.tar.gz' % (folder_name),
+                  folder_name, ' '.join(build_to_pack))
+create_distribution_commands = [
+                                 'rm -rf dist',
+                                 'mkdir dist',
+                                 'rm -rf build',
+                                 'mkdir build',
+                                 'cp other/SConstruct build/SConstruct']
+create_distribution_commands.extend(copy_paths)
+create_distribution_commands.extend([create_tarball])
+create_distribution_commands.extend(['rm -rf build'])
+create_distribution_tarball = env.Command('.create-dist', [],
+                                          ' ; '.join(create_distribution_commands))
+
 env.Alias('download-deps', download_dependencies)
+env.Alias('dist', create_distribution_tarball)
 
 targets = []
 env.Default(targets)
