@@ -23,7 +23,7 @@ var assert = require('assert')
 
 var utilHttp = require('util/http');
 
-var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
+var startPort = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
 assert.response = function(server, req, res, msg) {
   // Callback as third or fourth arg
@@ -42,8 +42,8 @@ assert.response = function(server, req, res, msg) {
   server.__pending = server.__pending || 0;
   server.__pending++;
 
-
-  server.listen(server.__port = port++, '127.0.0.1');
+  var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
+  server.listen(server.__port = port, '127.0.0.1');
 
   process.nextTick(function() {
     // Issue request
