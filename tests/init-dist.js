@@ -22,7 +22,11 @@ var sprintf = require('sprintf').sprintf;
 var common = require('./common');
 
 exports['init'] = function(callback) {
-  exec('rm -rf dist', function(err, stdout, stderr) {
-    callback();
+  common.setUp(function() {
+    exec('rm -rf dist ; rm -rf tmp ;' +
+         ' rm -rf ~/.cast/ ;' +
+         ' rm /usr/local/bin/cast*', function(err, stdout, stderr) {
+      callback();
+    });
   });
 };
