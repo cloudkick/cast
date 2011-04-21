@@ -27,7 +27,6 @@ var assert = require('./../assert');
 var http = require('services/http');
 
 exports['test_route_function'] = function() {
-  console.log(assert.eql)
   var i, expectedRoutes, expectedRoutesLen;
   var apiVersion, versionRoutes, versionRoutesLen;
   function func() {}
