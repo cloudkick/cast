@@ -82,6 +82,7 @@ Export("env")
 
 source = SConscript("lib/SConscript")
 testsource = env.Glob("tests/*.js") + env.Glob("tests/*/*.js")
+dist_tests = env.Glob('tests/dist/*.js');
 
 allsource = testsource + source
 
@@ -131,7 +132,8 @@ env.Alias('upload-docs', uploaddocscmd)
 env.Alias('build-docs', [ docscmd, uploaddocscmd ])
 env.Depends(uploaddocscmd, docscmd)
 
-IGNORED_TESTS = [ 'tests/assert.js', 'tests/init.js', 'tests/common.js', 'tests/helpers.js', 'tests/data/' ]
+IGNORED_TESTS = [ 'tests/assert.js', 'tests/init.js', 'tests/common.js',
+                  'tests/helpers.js', 'tests/data/', 'tests/dist/' ];
 tests = sorted(testsource)
 
 test_files = []
@@ -155,9 +157,17 @@ chdir = pjoin(os.getcwd(), 'tests')
 init_file = pjoin(os.getcwd(), 'tests', 'init.js')
 testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
                       (chdir, init_file, ' '.join(tests_to_run)))
+
+chdir = pjoin(os.getcwd())
+init_file = pjoin(os.getcwd(), 'tests', 'init-dist.js')
+dist_tests_to_run = [ test.get_path() for test in dist_tests ]
+testcmd_dist = env.Command('.tests_dist_run', [], "$WHISKEY --timeout 60000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
+                           (chdir, init_file, ' '.join(dist_tests_to_run)))
+
 env.AlwaysBuild(testcmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
+env.Alias('test-dist', testcmd_dist)
 
 # Update NPM dependencies
 update_dependencies_cmd = env.Command('.update_dependencies', [], "rm -rf node_modules ; npm install")
