@@ -125,7 +125,7 @@ def populate_cast_config(target, source, env):
   target_path = str(target[0])
 
   config = default_config % { 'data_root': base_install_prefix,
-                              'service_dir_enabled': pjoin(base_install_prefix, 'services-enabled')
+                              'service_dir_enabled': 'services-enabled'
                             }
   fp = open(target_path, 'w')
   fp.write(config)
