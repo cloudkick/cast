@@ -192,6 +192,7 @@ paths_to_skip = [ 'lib/extern/expresso', 'lib/extern/whiskey',
                   'lib/extern/Nodelint',
                   'lib/extern/jsdoc-toolkit', 'lib/extern/closure-linter',
                   'lib/extern/node-jscoverage',
+                  'node_modules/.npm/',
                   'lib/SConscript', 'lib/README', 'other/SConstruct',
                   'other/docgen.js']
 files_to_pack = get_file_list(cwd, paths_to_include, paths_to_skip)
