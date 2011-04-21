@@ -1,5 +1,6 @@
 import os
 import os.path
+import hashlib
 from os.path import join as pjoin
 
 def download_file(source, target):
@@ -33,3 +34,26 @@ def get_file_list(base_path, include_list = None, exclude_list = None):
         files.append(file_path)
 
   return files
+
+def file_sum(file_path, hash_type='md5'):
+  if hash not in [ 'sha1', 'md5' ]:
+    raise ValueError('Invalid hash type: %s' % (hash_type))
+
+  file_hash = getattr(hashlib, hash_type, None)
+  with open(file_path, 'rb') as fp:
+    content = fp.read()
+
+  file_hash.update(content)
+  return file_hash.hexdigest()
+
+def get_tar_bin_path(where_is_func, possible_names=None):
+  if not possible_names:
+    possible_names = [ 'gnutar', 'gtar', 'tar' ]
+
+  for binary in possible_names:
+    binary_path = where_is_func(binary)
+
+    if binary_path:
+      return binary_path
+
+  return None
