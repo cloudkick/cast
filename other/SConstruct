@@ -22,7 +22,11 @@ from os.path import join as pjoin
 
 import SCons
 cwd = os.getcwd()
-sys.path.insert(0, 'other/')
+other_path = pjoin(cwd, 'other')
+
+if other_path not in sys.path:
+  sys.path.insert(0, other_path)
+
 from site_scons.utils import copy_tree, copy_files, symlink, delete_paths
 
 cwd = os.getcwd()
