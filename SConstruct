@@ -21,7 +21,7 @@ import os
 import re
 from os.path import join as pjoin
 
-from utils import download_file, get_file_list
+from utils import download_file, get_file_list, get_tar_bin_path
 
 cwd = os.getcwd()
 
@@ -50,6 +50,8 @@ AddOption(
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
                   tools = ['default', 'packaging'])
+
+tar_bin_path = get_tar_bin_path(where_is_func=env.WhereIs)
 
 #TODO: convert this to a configure builder, so it gets cached
 def read_version(prefix, path):
@@ -210,9 +212,10 @@ env.AlwaysBuild(covcmd)
 """
 
 folder_name = 'cast-%s' % (env['version_string'])
-copy_paths = [ 'cp -r %s build' % (path) for path in paths_to_include +
+copy_paths = [ 'cp -R %s build' % (path) for path in paths_to_include +
                files_to_include ]
-create_tarball = 'tar -zc -f dist/%s --transform \'s,^build,%s,\' %s' % ('%s.tar.gz' % (folder_name),
+create_tarball = '%s -zc -f dist/%s --transform \'s,^build,%s,\' %s' % (
+                  tar_bin_path, '%s.tar.gz' % (folder_name),
                   folder_name, ' '.join(build_to_pack))
 create_distribution_commands = [
                                  'rm -rf dist',
