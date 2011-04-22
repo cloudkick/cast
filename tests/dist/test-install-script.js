@@ -36,7 +36,8 @@ exports['test_scons_install_and_uninstall'] = function() {
   var tarballname = sprintf('%s.tar.gz', versionString);
   var tarballPath = path.join(cwd, 'dist', tarballname);
   var extractPath = path.join(cwd, 'tmp');
-  var castDataRoot = path.join(cwd, 'tmp');
+
+  var castDataRoot = path.join(cwd, 'tmp-install');
 
   var installCmd = sprintf('sudo scons install PREFIX=%s --use-system-node',
                            castDataRoot);
@@ -44,7 +45,7 @@ exports['test_scons_install_and_uninstall'] = function() {
 
   var configPath = path.join(misc.expanduser('~'), '.cast/config.json');
   var expectedFilePaths = [ '/usr/local/bin/cast', '/usr/local/bin/cast-agent',
-                            'tmp/cast', configPath ];
+                            'tmp-install/cast', configPath ];
   var expectedConfigLines = [
     sprintf('"data_root": "%s/",', castDataRoot),
     '"service_dir_enabled": "services-enabled"'
@@ -72,7 +73,8 @@ exports['test_scons_install_and_uninstall'] = function() {
     // Run install script
     function(callback) {
       // TODO: Verify that files which should be installed dont exist yet
-      exec(sprintf('cd tmp ; %s', installCmd), function(err, stdout, stderr) {
+      exec(sprintf('cd tmp ; %s', installCmd), function(err, stdout,
+                                                                stderr) {
         assert.ifError(err);
         callback();
       });
@@ -90,7 +92,7 @@ exports['test_scons_install_and_uninstall'] = function() {
           filePath = path.join(cwd, filePath);
         }
 
-        assert.ok(test.fileExists(filePath));
+        assert.ok(test.fileExists(filePath), filePath);
       }
 
       // Very config file content
@@ -99,6 +101,14 @@ exports['test_scons_install_and_uninstall'] = function() {
         configLine = expectedConfigLines[i];
         assert.ok(configContent.indexOf(configLine) !== -1);
       }
+
+      // Verify that Cast client can be called
+      exec('./tmp-install/cast/bin/cast', function(err, stdout, stderr) {
+        assert.ifError(err);
+        assert.ok(!err);
+        assert.ok(stdout);
+        callback();
+      });
     },
 
     // Run uninstall
@@ -120,7 +130,7 @@ exports['test_scons_install_and_uninstall'] = function() {
           filePath = path.join(cwd, filePath);
         }
 
-        assert.ok(!test.fileExists(filePath));
+        assert.ok(!test.fileExists(filePath), filePath);
       }
 
       callback();
