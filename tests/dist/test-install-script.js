@@ -31,7 +31,7 @@ var flowctrl = require('util/flow_control');
 
 var cwd = process.cwd();
 
-exports['test_scons_install'] = function() {
+exports['test_scons_install_and_uninstall'] = function() {
   var versionString = version.toString().replace('-dev', '');
   var tarballname = sprintf('%s.tar.gz', versionString);
   var tarballPath = path.join(cwd, 'dist', tarballname);
@@ -39,7 +39,8 @@ exports['test_scons_install'] = function() {
   var castDataRoot = path.join(cwd, 'tmp');
 
   var installCmd = sprintf('sudo scons install PREFIX=%s --use-system-node',
-                            castDataRoot);
+                           castDataRoot);
+  var uninstallCmd = 'scons uninstall --remove-settings';
 
   var configPath = path.join(misc.expanduser('~'), '.cast/config.json');
   var expectedFilePaths = [ '/usr/local/bin/cast', '/usr/local/bin/cast-agent',
@@ -98,6 +99,31 @@ exports['test_scons_install'] = function() {
         configLine = expectedConfigLines[i];
         assert.ok(configContent.indexOf(configLine) !== -1);
       }
+    },
+
+    // Run uninstall
+    function(callback) {
+      exec(uninstallCmd, function(err, stdout, stderr) {
+        assert.ifError(err);
+        callback();
+      });
+    },
+
+    // Verify that all the files including config were removed
+    function(callback) {
+      var i, filePath;
+
+      for (i = 0; i < expectedFilePaths.length; i++) {
+        filePath = expectedFilePaths[i];
+
+        if (filePath.charAt(0) !== '/') {
+          filePath = path.join(cwd, filePath);
+
+          assert.ok(!test.fileExists(filePath));
+        }
+      }
+
+      callback();
     }
   ],
 
