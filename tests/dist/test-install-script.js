@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
 var exec = require('child_process').exec;
@@ -35,11 +36,18 @@ exports['test_scons_install'] = function() {
   var tarballname = sprintf('%s.tar.gz', versionString);
   var tarballPath = path.join(cwd, 'dist', tarballname);
   var extractPath = path.join(cwd, 'tmp');
-  var installCmd = sprintf('sudo scons install PREFIX=%s --use-system-node',
-                            path.join(cwd, 'tmp'));
+  var castDataRoot = path.join(cwd, 'tmp');
 
-  var expectedFilesAbsolute = [ '/usr/local/bin/cast',
-                                '/usr/local/bin/cast-agent' ];
+  var installCmd = sprintf('sudo scons install PREFIX=%s --use-system-node',
+                            castDataRoot);
+
+  var configPath = path.join(misc.expanduser('~'), '.cast/config.json');
+  var expectedFilePaths = [ '/usr/local/bin/cast', '/usr/local/bin/cast-agent',
+                            'tmp/cast', configPath ];
+  var expectedConfigLines = [
+    sprintf('"data_root": "%s/",', castDataRoot),
+    '"service_dir_enabled": "services-enabled"'
+  ];
 
   async.series([
     // Create distribution tarball
@@ -71,15 +79,25 @@ exports['test_scons_install'] = function() {
 
     // Verify that all the folders and files were created
     function(callback) {
+      var i, filePath, configContent, configLine;
       // Verify that client and agent symlinks have been created
-      assert.ok(test.fileExists(expectedFilesAbsolute[0]));
-      assert.ok(test.fileExists(expectedFilesAbsolute[1]));
-
       // Verify that the config file has been created
-      assert.ok(test.fileExists(path.join(misc.expanduser('~'),
-                                '.cast/config.json')));
+      for (i = 0; i < expectedFilePaths.length; i++) {
+        filePath = expectedFilePaths[i];
 
-      // TODO: Very config content
+        if (filePath.charAt(0) !== '/') {
+          filePath = path.join(cwd, filePath);
+
+          assert.ok(test.fileExists(filePath));
+        }
+      }
+
+      // Very config file content
+      configContent = fs.readFileSync(configPath, 'utf8');
+      for (i = 0; i < expectedConfigLines.length; i++) {
+        configLine = expectedConfigLines[i];
+        assert.ok(configContent.indexOf(configLine) !== -1);
+      }
     }
   ],
 
