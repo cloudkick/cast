@@ -67,7 +67,7 @@ if GetOption('use_system_node'):
     sys.exit(1)
 elif GetOption('remove_settings'):
   remove_settings = True
-  settings_path = pjoin(user_home_path, '.cast1')
+  settings_path = pjoin(user_home_path, '.cast')
 
 # Variables
 node_tarball = 'deps/node.tar.gz'
