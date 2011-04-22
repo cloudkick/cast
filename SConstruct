@@ -162,7 +162,7 @@ testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' -
 chdir = pjoin(os.getcwd())
 init_file = pjoin(os.getcwd(), 'tests', 'init-dist.js')
 dist_tests_to_run = [ test.get_path() for test in dist_tests ]
-testcmd_dist = env.Command('.tests_dist_run', [], "$WHISKEY --timeout 60000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
+testcmd_dist = env.Command('.tests_dist_run', [], "$WHISKEY --timeout 180000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
                            (chdir, init_file, ' '.join(dist_tests_to_run)))
 
 env.AlwaysBuild(testcmd)
