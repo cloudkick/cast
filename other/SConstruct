@@ -33,7 +33,7 @@ cwd = os.getcwd()
 user_home_path = os.path.expanduser('~')
 
 opts = Variables('build.py')
-opts.Add(PathVariable('prefix', default = '/opt/cast_test',
+opts.Add(PathVariable('PREFIX', default = '/opt/cast_test',
                       help = 'Directory to install under',
                       validator = SCons.Variables.PathVariable.PathAccept))
 
@@ -72,7 +72,7 @@ elif GetOption('remove_settings'):
 # Variables
 node_tarball = 'deps/node.tar.gz'
 
-prefix = env['prefix']
+prefix = env['PREFIX']
 base_install_prefix = '%s/' % (prefix)
 node_install_prefix = '%s/node/' % (prefix)
 cast_install_prefix = '%s/cast/' % (prefix)
