@@ -33,7 +33,7 @@ cwd = os.getcwd()
 user_home_path = os.path.expanduser('~')
 
 opts = Variables('build.py')
-opts.Add(PathVariable('PREFIX', default = '/opt/cast_test',
+opts.Add(PathVariable('PREFIX', default = '/opt/cast',
                       help = 'Directory to install under',
                       validator = SCons.Variables.PathVariable.PathAccept))
 
