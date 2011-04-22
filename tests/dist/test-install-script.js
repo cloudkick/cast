@@ -88,9 +88,9 @@ exports['test_scons_install_and_uninstall'] = function() {
 
         if (filePath.charAt(0) !== '/') {
           filePath = path.join(cwd, filePath);
-
-          assert.ok(test.fileExists(filePath));
         }
+
+        assert.ok(test.fileExists(filePath));
       }
 
       // Very config file content
@@ -118,9 +118,9 @@ exports['test_scons_install_and_uninstall'] = function() {
 
         if (filePath.charAt(0) !== '/') {
           filePath = path.join(cwd, filePath);
-
-          assert.ok(!test.fileExists(filePath));
         }
+
+        assert.ok(!test.fileExists(filePath));
       }
 
       callback();
