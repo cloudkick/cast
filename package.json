@@ -22,12 +22,14 @@
     "async": "= 0.1.4",
     "optparse": "= 1.0.1",
     "sprintf": "= 0.1.1",
-    "whiskey": "= 0.2.3",
     "nodelint": "= 0.4.0",
     "worker-pool": "= 0.1.0",
     "magic-templates": "= 0.1.0",
     "node-uuid": "= 1.1.0",
     "corrector": "= 0.1.0"
+  },
+  "devDependencies": {
+    "whiskey": "= 0.2.3",
   },
   "engines": {
     "node": ">= 0.4.0"
