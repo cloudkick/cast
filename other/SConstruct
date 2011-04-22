@@ -100,9 +100,6 @@ def replace_lines(target, source, env):
   """
   replacements = [
     [ '#!/usr/bin/env node', shebang_line ],
-    [ "var path_setup = require('../lib/util/path_setup').path_setup;",
-      "var path_setup = require('%slib/util/path_setup').path_setup;" %
-      (cast_install_prefix) ]
   ]
 
   for file in [ 'cast', 'cast-agent' ]:
