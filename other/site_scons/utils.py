@@ -69,6 +69,18 @@ def copytree(src, dest, symlinks=False):
     copyItems(src, destPath)
     return None
 
+def get_file_list(root_path):
+  paths = []
+  for root, dirs, files in os.walk(root_path):
+    for filename in files:
+      path = pjoin(root, filename)
+      paths.append(path)
+
+  return paths
+
+def noop(target, source, env):
+  return None
+
 def symlink(target, source, env):
   os.symlink(str(source[0]), str(target[0]))
 
