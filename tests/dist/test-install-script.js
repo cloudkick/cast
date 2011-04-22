@@ -39,9 +39,10 @@ exports['test_scons_install_and_uninstall'] = function() {
 
   var castDataRoot = path.join(cwd, 'tmp-install');
 
-  var installCmd = sprintf('sudo scons install PREFIX=%s --use-system-node',
+  var installCmd = sprintf('scons install PREFIX=%s --use-system-node',
                            castDataRoot);
-  var uninstallCmd = 'scons uninstall --remove-settings';
+  var uninstallCmd = sprintf('scons uninstall PREFIX=%s --remove-settings',
+                             castDataRoot);
 
   var configPath = path.join(misc.expanduser('~'), '.cast/config.json');
   var expectedFilePaths = [ '/usr/local/bin/cast', '/usr/local/bin/cast-agent',
@@ -74,7 +75,7 @@ exports['test_scons_install_and_uninstall'] = function() {
     function(callback) {
       // TODO: Verify that files which should be installed dont exist yet
       exec(sprintf('cd tmp ; %s', installCmd), function(err, stdout,
-                                                                stderr) {
+                                                        stderr) {
         assert.ifError(err);
         callback();
       });
@@ -105,7 +106,7 @@ exports['test_scons_install_and_uninstall'] = function() {
       // Verify that Cast client can be called
       exec('./tmp-install/cast/bin/cast', function(err, stdout, stderr) {
         assert.ifError(err);
-        assert.ok(!err);
+        assert.ok(!stderr);
         assert.ok(stdout);
         callback();
       });
@@ -113,7 +114,7 @@ exports['test_scons_install_and_uninstall'] = function() {
 
     // Run uninstall
     function(callback) {
-      exec(uninstallCmd, function(err, stdout, stderr) {
+      exec(sprintf('cd tmp/ ; %s', uninstallCmd), function(err, stdout, stderr) {
         assert.ifError(err);
         callback();
       });
