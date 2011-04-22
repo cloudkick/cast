@@ -42,20 +42,28 @@ opts.Update(env)
 
 # Options
 AddOption(
-  '--remove-settings',
-  dest = 'remove_settings',
-  action = 'store_true',
-  help = 'True to also remove cast settings directory upon uninstall'
-)
-
-AddOption(
   '--use-system-node',
   dest = 'use_system_node',
   action = 'store_true',
   help = 'True to use existing system node binary'
 )
 
+AddOption(
+  '--no-symlinks',
+  dest = 'no_symlinks',
+  action = 'store_true',
+  help = 'True to not create client and agent symlink in /usr/local/bin'
+)
+
+AddOption(
+  '--remove-settings',
+  dest = 'remove_settings',
+  action = 'store_true',
+  help = 'True to also remove cast settings directory upon uninstall'
+)
+
 system_node_binary_path = None
+no_symlinks = False
 remove_settings = False
 if GetOption('use_system_node'):
   # TODO: Check for min version
@@ -65,7 +73,9 @@ if GetOption('use_system_node'):
     print 'Could not find system node binary. Make sure node is installed ' + \
           'or don\'t use the "--use-system-node" option.'
     sys.exit(1)
-elif GetOption('remove_settings'):
+if GetOption('no_symlinks'):
+  no_symlinks = True
+if GetOption('remove_settings'):
   remove_settings = True
   settings_path = pjoin(user_home_path, '.cast')
 
@@ -160,8 +170,10 @@ Depends(symlink_cast_client, copy_cast_files)
 Depends(symlink_cast_agent, copy_cast_files)
 Depends(replace_cast_lines, copy_cast_files)
 
-install_cast = [ copy_cast_files, replace_cast_lines, populate_cast_config,
-                 symlink_cast_client, symlink_cast_agent]
+install_cast = [ copy_cast_files, replace_cast_lines, populate_cast_config ]
+
+if not no_symlinks:
+  install_cast.extend([ symlink_cast_client, symlink_cast_agent ])
 
 # Cleanup
 cleanup = env.Command('.build', 'build', 'rm -rf $SOURCE')
