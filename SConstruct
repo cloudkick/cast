@@ -192,7 +192,6 @@ dependencies = [
 download_dependencies  = [ env.Command('.mkdir_deps', [], 'rm -rf deps ; mkdir deps')]
 dependency_paths = [ 'deps/node.tar.gz' ]
 for dependency in dependencies:
-  dependency_paths.append(dependency[1])
   download_dependencies.append((env.Command('.%s' % (dependency[1]), '', download_file(dependency[0], dependency[1]))))
 
 paths_to_include = [ 'bin', 'lib', 'node_modules', 'other', 'deps']
@@ -238,7 +237,7 @@ tarball_name = '%s.tar.gz' % (folder_name)
 
 # Calculate distribution tarball md5sum
 calculate_md5sum = env.Command('.calculate_md5sum', [],
-                                'md5sum dist/%s | awk "{print $1}" > dist/%s.md5sum' % (tarball_name, tarball_name))
+                                'md5sum dist/%s | awk \'{gsub("dist/", "", $0); print $0}\' > dist/%s.md5sum' % (tarball_name, tarball_name))
 
 copy_paths = [ 'cp -R %s build' % (path) for path in paths_to_include +
                files_to_include + dependency_paths]
