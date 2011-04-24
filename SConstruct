@@ -226,10 +226,16 @@ env.AlwaysBuild(covcmd)
 """
 
 folder_name = 'cast-%s' % (env['version_string'])
+tarball_name = '%s.tar.gz' % (folder_name)
+
+# Calculate distribution tarball md5sum
+calculate_md5sum = env.Command('.calculate_md5sum', [],
+                                'md5sum dist/%s | awk "{print $1}" > dist/%s.md5sum' % (tarball_name, tarball_name))
+
 copy_paths = [ 'cp -R %s build' % (path) for path in paths_to_include +
                files_to_include + dependency_paths]
 create_tarball = '%s -zc -f dist/%s --transform \'s,^build,%s,\' %s' % (
-                  tar_bin_path, '%s.tar.gz' % (folder_name),
+                  tar_bin_path, '%s' % (tarball_name),
                   folder_name, ' '.join(build_to_pack))
 create_distribution_commands = [
                                  'rm -rf dist',
@@ -243,8 +249,12 @@ create_distribution_commands.extend(['rm -rf build'])
 create_distribution_tarball = env.Command('.create-dist', [],
                                           ' ; '.join(create_distribution_commands))
 
+Depends(create_distribution_tarball, download_dependencies)
+Depends(calculate_md5sum, create_distribution_tarball)
+
 env.Alias('download-deps', download_dependencies)
-env.Alias('dist', [ download_dependencies, create_distribution_tarball ])
+env.Alias('dist', [ download_dependencies, create_distribution_tarball,
+                    calculate_md5sum ])
 
 targets = []
 env.Default(targets)
