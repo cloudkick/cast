@@ -57,7 +57,14 @@ AddOption(
   '--no-symlinks',
   dest = 'no_symlinks',
   action = 'store_true',
-  help = 'True to not create client and agent symlink in /usr/local/bin'
+  help = 'True to not create Cast client and agent symlink in PREFIX'
+)
+
+AddOption(
+  '--settings-path',
+  dest = 'settings_path',
+  action = 'store',
+  help = 'Settings path'
 )
 
 AddOption(
@@ -67,9 +74,13 @@ AddOption(
   help = 'True to also remove cast settings directory upon uninstall'
 )
 
+settings_path = GetOption('settings_path')
+settings_path = settings_path or pjoin(user_home_path, '.cast')
+
 system_node_binary_path = None
 no_symlinks = False
 remove_settings = False
+
 if GetOption('use_system_node'):
   # TODO: Check for min version
   system_node_binary_path = env.WhereIs('node')
@@ -82,7 +93,6 @@ if GetOption('no_symlinks'):
   no_symlinks = True
 if GetOption('remove_settings'):
   remove_settings = True
-  settings_path = pjoin(user_home_path, '.cast')
 
 # Variables
 node_tarball = 'deps/node.tar.gz'
@@ -95,7 +105,7 @@ node_install_prefix = '%s/node/' % (cast_prefix)
 cast_install_prefix = '%s/cast/' % (cast_prefix)
 cast_data_prefix = '%s/cast/data/' % (cast_prefix)
 
-cast_config_path = pjoin(user_home_path, '.cast/config.json')
+cast_config_path = pjoin(settings_path, '.cast/config.json')
 cast_paths = [ 'lib/', 'bin/', 'node_modules/' ]
 
 default_config = """{
