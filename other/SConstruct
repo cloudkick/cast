@@ -34,8 +34,12 @@ cwd = os.getcwd()
 user_home_path = os.path.expanduser('~')
 
 opts = Variables('build.py')
-opts.Add(PathVariable('PREFIX', default = '/opt/cast',
-                      help = 'Directory to install under',
+opts.Add(PathVariable('CASTPREFIX', default = '/opt/cast',
+                      help = 'Directory to install Cast under',
+                      validator = SCons.Variables.PathVariable.PathAccept))
+
+opts.Add(PathVariable('PREFIX', default = '/usr/local/bin',
+                      help = 'Destination where the symlinks will be created',
                       validator = SCons.Variables.PathVariable.PathAccept))
 
 env = Environment(options = opts, ENV = os.environ.copy())
@@ -83,11 +87,13 @@ if GetOption('remove_settings'):
 # Variables
 node_tarball = 'deps/node.tar.gz'
 
-prefix = env['PREFIX']
-base_install_prefix = '%s/' % (prefix)
-node_install_prefix = '%s/node/' % (prefix)
-cast_install_prefix = '%s/cast/' % (prefix)
-cast_data_prefix = '%s/cast/data/' % (prefix)
+symlinks_prefix = env['PREFIX']
+cast_prefix = env['CASTPREFIX']
+
+base_install_prefix = '%s/' % (cast_prefix)
+node_install_prefix = '%s/node/' % (cast_prefix)
+cast_install_prefix = '%s/cast/' % (cast_prefix)
+cast_data_prefix = '%s/cast/data/' % (cast_prefix)
 
 cast_config_path = pjoin(user_home_path, '.cast/config.json')
 cast_paths = [ 'lib/', 'bin/', 'node_modules/' ]
@@ -98,8 +104,8 @@ default_config = """{
 }
 """
 
-cast_client_bin_path = pjoin('/usr/local/bin', 'cast')
-cast_agent_bin_path = pjoin('/usr/local/bin', 'cast-agent')
+cast_client_bin_path = pjoin(symlinks_prefix, 'cast')
+cast_agent_bin_path = pjoin(symlinks_prefix, 'cast-agent')
 
 node_binary_path = system_node_binary_path or pjoin(node_install_prefix, 'bin/node')
 shebang_line = '#!%s' % (node_binary_path)
