@@ -40,10 +40,10 @@ exports['test_scons_install_and_uninstall'] = function() {
   var castDataRoot = path.join(cwd, 'tmp-install');
   var castBinPath = path.join(cwd, 'tmp-bin');
 
-  var installCmd = sprintf('scons install PREFIX=%s CASTPREFIX=%s ' +
+  var installCmd = sprintf('scons install PREFIX="%s" CASTPREFIX="%s" ' +
                            '--use-system-node',
                            castBinPath, castDataRoot);
-  var uninstallCmd = sprintf('scons uninstall PREFIX=%s CASTPREFIX=%s ' +
+  var uninstallCmd = sprintf('scons uninstall PREFIX="%s" CASTPREFIX="%s" ' +
                              '--remove-settings',
                              castBinPath, castDataRoot);
 
