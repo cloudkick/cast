@@ -181,8 +181,10 @@ dependencies = [
   [ env['node_tarball_url'], 'deps/node.tar.gz' ],
 ]
 
-download_dependencies  = []
+download_dependencies  = [ env.Command('.mkdir_deps', [], 'rm -rf deps ; mkdir deps')]
+dependency_paths = [ 'deps/node.tar.gz' ]
 for dependency in dependencies:
+  dependency_paths.append(dependency[1])
   download_dependencies.append((env.Command('.%s' % (dependency[1]), '', download_file(dependency[0], dependency[1]))))
 
 paths_to_include = [ 'bin', 'lib', 'node_modules', 'other', 'deps']
@@ -225,7 +227,7 @@ env.AlwaysBuild(covcmd)
 
 folder_name = 'cast-%s' % (env['version_string'])
 copy_paths = [ 'cp -R %s build' % (path) for path in paths_to_include +
-               files_to_include ]
+               files_to_include + dependency_paths]
 create_tarball = '%s -zc -f dist/%s --transform \'s,^build,%s,\' %s' % (
                   tar_bin_path, '%s.tar.gz' % (folder_name),
                   folder_name, ' '.join(build_to_pack))
@@ -242,7 +244,7 @@ create_distribution_tarball = env.Command('.create-dist', [],
                                           ' ; '.join(create_distribution_commands))
 
 env.Alias('download-deps', download_dependencies)
-env.Alias('dist', create_distribution_tarball)
+env.Alias('dist', [ download_dependencies, create_distribution_tarball ])
 
 targets = []
 env.Default(targets)
