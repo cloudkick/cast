@@ -38,14 +38,17 @@ exports['test_scons_install_and_uninstall'] = function() {
   var extractPath = path.join(cwd, 'tmp');
 
   var castDataRoot = path.join(cwd, 'tmp-install');
+  var castBinPath = path.join(cwd, 'tmp-bin');
 
-  var installCmd = sprintf('scons install CASTPREFIX=%s --use-system-node',
-                           castDataRoot);
-  var uninstallCmd = sprintf('scons uninstall CASTPREFIX=%s --remove-settings',
-                             castDataRoot);
+  var installCmd = sprintf('scons install PREFIX=%s CASTPREFIX=%s ' +
+                           '--use-system-node',
+                           castBinPath, castDataRoot);
+  var uninstallCmd = sprintf('scons uninstall PREFIX=%s CASTPREFIX=%s ' +
+                             '--remove-settings',
+                             castBinPath, castDataRoot);
 
   var configPath = path.join(misc.expanduser('~'), '.cast/config.json');
-  var expectedFilePaths = [ '/usr/local/bin/cast', '/usr/local/bin/cast-agent',
+  var expectedFilePaths = [ 'tmp-bin/cast', 'tmp-bin/cast-agent',
                             'tmp-install/cast', configPath ];
   var expectedConfigLines = [
     sprintf('"data_root": "%s/",', castDataRoot),

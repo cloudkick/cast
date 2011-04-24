@@ -25,7 +25,8 @@ exports['init'] = function(callback) {
   common.setUp(function() {
     exec('rm -rf dist ; rm -rf tmp* ;' +
          ' rm -rf ~/.cast/ ;' +
-         ' rm /usr/local/bin/cast*', function(err, stdout, stderr) {
+         ' rm /usr/local/bin/cast* ;' +
+         ' mkdir tmp-bin', function(err, stdout, stderr) {
       callback();
     });
   });
