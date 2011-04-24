@@ -47,6 +47,13 @@ AddOption(
   help = 'A list of JavaScript files'
 )
 
+AddOption(
+  '--no-deps',
+  dest = 'no_deps',
+  action = 'store_true',
+  help = 'Don\'t download dependencies when creating a distribution tarball'
+)
+
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
                   tools = ['default', 'packaging'])
@@ -86,6 +93,7 @@ dist_tests = env.Glob('tests/dist/*.js');
 
 allsource = testsource + source
 
+no_deps = GetOption('no_deps')
 js_files = GetOption('js_files')
 if js_files:
   js_files = js_files.split(' ')
@@ -249,12 +257,16 @@ create_distribution_commands.extend(['rm -rf build'])
 create_distribution_tarball = env.Command('.create-dist', [],
                                           ' ; '.join(create_distribution_commands))
 
-Depends(create_distribution_tarball, download_dependencies)
+dist_targets = [ create_distribution_tarball, calculate_md5sum ]
+
+if not no_deps:
+  Depends(create_distribution_tarball, download_dependencies)
+  dist_targets.insert(0, download_dependencies)
+
 Depends(calculate_md5sum, create_distribution_tarball)
 
 env.Alias('download-deps', download_dependencies)
-env.Alias('dist', [ download_dependencies, create_distribution_tarball,
-                    calculate_md5sum ])
+env.Alias('dist', dist_targets)
 
 targets = []
 env.Default(targets)
