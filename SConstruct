@@ -197,12 +197,15 @@ for dependency in dependencies:
 paths_to_include = [ 'bin', 'lib', 'node_modules', 'other', 'deps']
 files_to_include = [ 'SConstruct', 'README', 'NOTICE',
                      'LICENSE' ]
-paths_to_skip = [ 'lib/extern/expresso', 'lib/extern/whiskey',
-                  'lib/extern/Nodelint',
+paths_to_skip = [  'lib/extern/Nodelint',
                   'lib/extern/jsdoc-toolkit', 'lib/extern/closure-linter',
                   'lib/extern/node-jscoverage',
                   'node_modules/.npm/',
-                  'lib/SConscript', 'lib/README', 'other/SConstruct',
+                  'node_modules/whiskey',
+                  'node_modules/nodelint',
+                  'node_modules/.bin/',
+                  'lib/SConscript',
+                  'other/SConstruct',
                   'other/docgen.js']
 files_to_pack = get_file_list(cwd, paths_to_include, paths_to_skip)
 build_to_pack = [ pjoin('build', path) for path in files_to_pack +
