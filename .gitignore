@@ -10,3 +10,6 @@ lib/extern/node-jscoverage/*
 .tests
 *.pyc
 temp/*
+dist/
+deps/
+tmp/
