@@ -155,11 +155,13 @@ replace_cast_lines = env.Command('.replace_lines', '', replace_lines)
 # Copy cast files into the install prefix
 copy_cast_files = env.Command('.%s' % (cast_install_prefix), cast_paths, copy_tree)
 
-noop = env.Command([pjoin(cast_install_prefix, 'bin/cast'), pjoin(cast_install_prefix, 'bin/cast-agent')], '', noop)
-
 # Symlink Cast scripts to /usr/local/bin
-symlink_cast_client = env.Command(cast_client_bin_path, pjoin(cast_install_prefix, 'bin/cast'), symlink)
-symlink_cast_agent = env.Command(cast_agent_bin_path, pjoin(cast_install_prefix, 'bin/cast-agent'), symlink)
+symlink_cast_client = env.Command(cast_client_bin_path, '', 'ln -s %s %s' % (
+                                  pjoin(cast_install_prefix, 'bin/cast'),
+                                  cast_client_bin_path))
+symlink_cast_agent = env.Command(cast_agent_bin_path, '', 'ln -s %s %s' % (
+                                  pjoin(cast_install_prefix, 'bin/cast-agent'),
+                                  cast_agent_bin_path))
 
 # Populate default cast config
 populate_cast_config = env.Command(cast_config_path, '', populate_cast_config)
@@ -168,7 +170,7 @@ Depends(symlink_cast_client, copy_cast_files)
 Depends(symlink_cast_agent, copy_cast_files)
 Depends(replace_cast_lines, copy_cast_files)
 
-install_cast = [ copy_cast_files, noop, replace_cast_lines, populate_cast_config ]
+install_cast = [ copy_cast_files, replace_cast_lines, populate_cast_config ]
 
 if not no_symlinks:
   install_cast.extend([ symlink_cast_client, symlink_cast_agent ])
