@@ -1,11 +1,3 @@
-
-* HTTP Interfaces
-** Define reverse pulling / Helen-like API for HTTP RPC in reverse
-** Figure out authentication / SSL Certs / less pain
-
-* Services Management
-** Decide if we stick with runit, patch it, use something else, or rewrite.
-
 * Cluster Support
 ** BItTorrent Plan
 ** File distribution / patching
