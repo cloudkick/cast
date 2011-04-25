@@ -196,7 +196,7 @@ for dependency in dependencies:
 
 paths_to_include = [ 'bin', 'lib', 'node_modules', 'other', 'deps']
 files_to_include = [ 'SConstruct', 'README', 'NOTICE',
-                     'LICENSE' ]
+                     'LICENSE', 'CHANGES' ]
 paths_to_skip = [  'lib/extern/Nodelint',
                   'lib/extern/jsdoc-toolkit', 'lib/extern/closure-linter',
                   'lib/extern/node-jscoverage',
