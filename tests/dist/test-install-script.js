@@ -50,10 +50,10 @@ exports['test_scons_install_and_uninstall'] = function() {
 
   var configPath = path.join(castSettingsPath, 'config.json');
   var expectedFilePaths = [ 'tmp-bin/cast', 'tmp-bin/cast-agent',
-                            'tmp-install/cast', castSettingsPath,
-                            configPath ];
+                            'tmp-install/cast', 'tmp-install/data',
+                            castSettingsPath, configPath ];
   var expectedConfigLines = [
-    sprintf('"data_root": "%s/",', castDataRoot),
+    sprintf('"data_root": "%s/data",', castDataRoot),
     '"service_dir_enabled": "services-enabled"'
   ];
 
