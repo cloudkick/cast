@@ -38,24 +38,29 @@ exports['test_scons_install_and_uninstall'] = function() {
   var extractPath = path.join(cwd, 'tmp');
 
   var castDataRoot = path.join(cwd, 'tmp-install');
+  var castBinPath = path.join(cwd, 'tmp-bin');
+  var castSettingsPath = path.join(cwd, 'tmp-settings');
 
-  var installCmd = sprintf('scons install PREFIX=%s --use-system-node',
-                           castDataRoot);
-  var uninstallCmd = sprintf('scons uninstall PREFIX=%s --remove-settings',
-                             castDataRoot);
+  var installCmd = sprintf('scons install PREFIX="%s" CASTPREFIX="%s" ' +
+                           '--settings-path="%s" --use-system-node',
+                           castBinPath, castDataRoot, castSettingsPath);
+  var uninstallCmd = sprintf('scons uninstall PREFIX="%s" CASTPREFIX="%s" ' +
+                             '--settings-path="%s" --remove-settings',
+                             castBinPath, castDataRoot, castSettingsPath);
 
-  var configPath = path.join(misc.expanduser('~'), '.cast/config.json');
-  var expectedFilePaths = [ '/usr/local/bin/cast', '/usr/local/bin/cast-agent',
-                            'tmp-install/cast', configPath ];
+  var configPath = path.join(castSettingsPath, 'config.json');
+  var expectedFilePaths = [ 'tmp-bin/cast', 'tmp-bin/cast-agent',
+                            'tmp-install/cast', 'tmp-install/data',
+                            castSettingsPath, configPath ];
   var expectedConfigLines = [
-    sprintf('"data_root": "%s/",', castDataRoot),
+    sprintf('"data_root": "%s/data",', castDataRoot),
     '"service_dir_enabled": "services-enabled"'
   ];
 
   async.series([
     // Create distribution tarball
     function(callback) {
-      exec('scons dist', function(err, stdout, stderr) {
+      exec('scons dist --no-deps', function(err, stdout, stderr) {
         assert.ifError(err);
         callback();
       });

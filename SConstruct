@@ -47,6 +47,13 @@ AddOption(
   help = 'A list of JavaScript files'
 )
 
+AddOption(
+  '--no-deps',
+  dest = 'no_deps',
+  action = 'store_true',
+  help = 'Don\'t download dependencies when creating a distribution tarball'
+)
+
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
                   tools = ['default', 'packaging'])
@@ -86,6 +93,7 @@ dist_tests = env.Glob('tests/dist/*.js');
 
 allsource = testsource + source
 
+no_deps = GetOption('no_deps')
 js_files = GetOption('js_files')
 if js_files:
   js_files = js_files.split(' ')
@@ -181,19 +189,23 @@ dependencies = [
   [ env['node_tarball_url'], 'deps/node.tar.gz' ],
 ]
 
-download_dependencies  = []
+download_dependencies  = [ env.Command('.mkdir_deps', [], 'rm -rf deps ; mkdir deps')]
+dependency_paths = [ 'deps/node.tar.gz' ]
 for dependency in dependencies:
   download_dependencies.append((env.Command('.%s' % (dependency[1]), '', download_file(dependency[0], dependency[1]))))
 
 paths_to_include = [ 'bin', 'lib', 'node_modules', 'other', 'deps']
 files_to_include = [ 'SConstruct', 'README', 'NOTICE',
-                     'LICENSE' ]
-paths_to_skip = [ 'lib/extern/expresso', 'lib/extern/whiskey',
-                  'lib/extern/Nodelint',
+                     'LICENSE', 'CHANGES' ]
+paths_to_skip = [  'lib/extern/Nodelint',
                   'lib/extern/jsdoc-toolkit', 'lib/extern/closure-linter',
                   'lib/extern/node-jscoverage',
                   'node_modules/.npm/',
-                  'lib/SConscript', 'lib/README', 'other/SConstruct',
+                  'node_modules/whiskey',
+                  'node_modules/nodelint',
+                  'node_modules/.bin/',
+                  'lib/SConscript',
+                  'other/SConstruct',
                   'other/docgen.js']
 files_to_pack = get_file_list(cwd, paths_to_include, paths_to_skip)
 build_to_pack = [ pjoin('build', path) for path in files_to_pack +
@@ -224,10 +236,16 @@ env.AlwaysBuild(covcmd)
 """
 
 folder_name = 'cast-%s' % (env['version_string'])
+tarball_name = '%s.tar.gz' % (folder_name)
+
+# Calculate distribution tarball md5sum
+calculate_md5sum = env.Command('.calculate_md5sum', [],
+                                'md5sum dist/%s | awk \'{gsub("dist/", "", $0); print $0}\' > dist/%s.md5sum' % (tarball_name, tarball_name))
+
 copy_paths = [ 'cp -R %s build' % (path) for path in paths_to_include +
                files_to_include ]
 create_tarball = '%s -zc -f dist/%s --transform \'s,^build,%s,\' %s' % (
-                  tar_bin_path, '%s.tar.gz' % (folder_name),
+                  tar_bin_path, '%s' % (tarball_name),
                   folder_name, ' '.join(build_to_pack))
 create_distribution_commands = [
                                  'rm -rf dist',
@@ -241,8 +259,16 @@ create_distribution_commands.extend(['rm -rf build'])
 create_distribution_tarball = env.Command('.create-dist', [],
                                           ' ; '.join(create_distribution_commands))
 
+dist_targets = [ create_distribution_tarball, calculate_md5sum ]
+
+if not no_deps:
+  Depends(create_distribution_tarball, download_dependencies)
+  dist_targets.insert(0, download_dependencies)
+
+Depends(calculate_md5sum, create_distribution_tarball)
+
 env.Alias('download-deps', download_dependencies)
-env.Alias('dist', create_distribution_tarball)
+env.Alias('dist', dist_targets)
 
 targets = []
 env.Default(targets)
