@@ -48,7 +48,7 @@ exports['test_scons_install_and_uninstall'] = function() {
                              '--settings-path="%s" --remove-settings',
                              castBinPath, castDataRoot, castSettingsPath);
 
-  var configPath = path.join(castSettingsPath, '.cast/config.json');
+  var configPath = path.join(castSettingsPath, 'config.json');
   var expectedFilePaths = [ 'tmp-bin/cast', 'tmp-bin/cast-agent',
                             'tmp-install/cast', castSettingsPath,
                             configPath ];

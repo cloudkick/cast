@@ -105,7 +105,7 @@ node_install_prefix = '%s/node/' % (cast_prefix)
 cast_install_prefix = '%s/cast/' % (cast_prefix)
 cast_data_prefix = '%s/cast/data/' % (cast_prefix)
 
-cast_config_path = pjoin(settings_path, '.cast/config.json')
+cast_config_path = pjoin(settings_path, 'config.json')
 cast_paths = [ 'lib/', 'bin/', 'node_modules/' ]
 
 default_config = """{
