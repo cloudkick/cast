@@ -243,7 +243,7 @@ calculate_md5sum = env.Command('.calculate_md5sum', [],
                                 'md5sum dist/%s | awk \'{gsub("dist/", "", $0); print $0}\' > dist/%s.md5sum' % (tarball_name, tarball_name))
 
 copy_paths = [ 'cp -R %s build' % (path) for path in paths_to_include +
-               files_to_include + dependency_paths]
+               files_to_include ]
 create_tarball = '%s -zc -f dist/%s --transform \'s,^build,%s,\' %s' % (
                   tar_bin_path, '%s' % (tarball_name),
                   folder_name, ' '.join(build_to_pack))
