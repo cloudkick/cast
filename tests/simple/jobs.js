@@ -51,20 +51,22 @@ function TestResourceManager() {
 sys.inherits(TestResourceManager, jobs.ResourceManager);
 
 
-function CreateTestResourceJob() {
+function CreateTestResourceJob(name) {
   jobs.Job.call(this);
   this.options = jobs.JobOptions.CREATE;
+  this.resourceType = TestResource;
+  this.resourceName = name;
 }
 
 sys.inherits(CreateTestResourceJob, jobs.Job);
 
 
 CreateTestResourceJob.prototype.run = function(testResource, callback) {
-  var dataPath = this.getDataPath();
+  var dataPath = testResource.getDataPath();
   var dataText = sprintf('this is %s', testResource.name);
 
   function createRoot(callback) {
-    fs.mkdir(testResource.getRoot(), callback);
+    fs.mkdir(testResource.getRoot(), 0755, callback);
   }
 
   function writeData(callback) {
@@ -75,16 +77,18 @@ CreateTestResourceJob.prototype.run = function(testResource, callback) {
 };
 
 
-function ModifyTestResourceJob(text) {
+function ModifyTestResourceJob(name, text) {
   jobs.Job.call(this, [text]);
   this.options = jobs.JobOptions.UPDATE;
+  this.resourceType = TestResource;
+  this.resourceName = name;
 }
 
 sys.inherits(ModifyTestResourceJob, jobs.Job);
 
 
-ModifyTestResourceJob.prototype.run = function(testResource, text) {
-  ws = fs.createWriteStream(this.getDataPath(), {flags: 'a'});
+ModifyTestResourceJob.prototype.run = function(testResource, text, callback) {
+  ws = fs.createWriteStream(testResource.getDataPath(), {flags: 'a'});
   ws.once('error', callback);
   ws.once('close', callback);
 
@@ -93,7 +97,8 @@ ModifyTestResourceJob.prototype.run = function(testResource, text) {
 
 
 exports['test_directory_resource_queueing'] = function() {
-  var m = new TestResourceManager();
+  var jobManager = new jobs.JobManager();
+  jobManager.registerResourceManager(new TestResourceManager());
 
   async.series([
     // Create the TestResource root
@@ -103,7 +108,7 @@ exports['test_directory_resource_queueing'] = function() {
 
     // Attempt to run an UPDATE job on a nonexistant resource
     function(callback) {
-      var j = new ModifyTestResourceJob(' testing');
+      var j = new ModifyTestResourceJob('foo', ' testing');
 
       j.on('ready', function badJobReady() {
         throw new Error('Job should not have reached \'ready\' state.');
@@ -114,25 +119,25 @@ exports['test_directory_resource_queueing'] = function() {
       });
 
       j.on('error', function badJobError(err) {
-        console.log(err);
         assert.ok(err);
         assert.match(err.message, /TestResource \'foo\' does not exist/);
+        callback();
       });
 
       // Run this job against TestResource 'foo'
-      m.runJob('foo', j);
+      jobManager.run(j);
     },
 
     // Queue a create then a bunch of updates on nonexistant resource
     function(callback) {
       testJobs = [
-        new CreateTestResourceJob(),
-        new UpdateTestResourceJob(' test0'),
-        new UpdateTestResourceJob(' test1'),
-        new UpdateTestResourceJob(' test2'),
-        new UpdateTestResourceJob(' test3'),
-        new UpdateTestResourceJob(' test4'),
-        new UpdateTestResourceJob(' test5')
+        new CreateTestResourceJob('bar'),
+        new ModifyTestResourceJob('bar', ' test0'),
+        new ModifyTestResourceJob('bar', ' test1'),
+        new ModifyTestResourceJob('bar', ' test2'),
+        new ModifyTestResourceJob('bar', ' test3'),
+        new ModifyTestResourceJob('bar', ' test4'),
+        new ModifyTestResourceJob('bar', ' test5')
       ];
 
       var completed = 0;
@@ -141,13 +146,15 @@ exports['test_directory_resource_queueing'] = function() {
       testJobs.forEach(function(j, i) {
         function unexpectedJobError(err) {
           console.log('ERROR ON JOB ' + i);
-          throw err;
         }
-
        
         function jobSuccess() {
           assert.equal(completed, i);
           completed++;
+
+          if (completed > 1) {
+            throw new Err(completed);
+          }
 
           if (completed === testJobs.length) {
             afterCompleting();
@@ -156,7 +163,7 @@ exports['test_directory_resource_queueing'] = function() {
 
         j.on('error', unexpectedJobError);
         j.on('sucess', jobSuccess);
-        m.runJob('bar', j);
+        jobManager.run(j);
       });
 
       function afterCompletion() {
