@@ -145,6 +145,7 @@ exports['test_directory_resource_queueing'] = function() {
 
       // Run this job against TestResource 'foo'
       jobManager.run(j);
+      assert.equal(j, jobManager.getJob(j.id));
     },
 
     // Queue a create then a bunch of updates on nonexistant resource
@@ -244,6 +245,9 @@ exports['test_directory_resource_queueing'] = function() {
         assert.ok(err);
         assert.match(err.message, /does not exist/);
         assert.ok(created);
+        assert.equal(c0, jobManager.getJob(c0.id));
+        assert.equal(d0, jobManager.getJob(d0.id));
+        assert.equal(d1, jobManager.getJob(d1.id));
         testsComplete++;
         callback();
       });
