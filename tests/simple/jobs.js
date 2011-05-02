@@ -79,6 +79,18 @@ CreateTestResourceJob.prototype.run = function(testResource, callback) {
 };
 
 
+function FailCreateTestResourceJob(name) {
+  CreateTestResourceJob.call(this, name);
+}
+
+sys.inherits(FailCreateTestResourceJob, CreateTestResourceJob);
+
+
+FailCreateTestResourceJob.prototype.run = function(testResource, callback) {
+  callback(new Error('unable to create test resource'));
+};
+
+
 function DeleteTestResourceJob(name) {
   jobs.Job.call(this);
   this.options = jobs.JobOptions.DELETE;
@@ -255,10 +267,45 @@ exports['test_directory_resource_queueing'] = function() {
       jobManager.run(c0);
       jobManager.run(d0);
       jobManager.run(d1);
+    },
+
+    function(callback) {
+      var fc0 = new FailCreateTestResourceJob('bam');
+      var u0 = new ModifyTestResourceJob('bam', 'testing');
+
+      var createQueued = false;
+      var updateQueued = false;
+
+      fc0.on('success', function() {
+        throw new Error('creation of resource should not succeed');
+      });
+
+      fc0.on('ready', function() {
+        createQueued = true;
+      });
+
+
+      u0.on('ready', function() {
+        updateQueued = true;
+      });
+
+      u0.on('error', function() {
+        assert.ok(createQueued);
+        assert.ok(updateQueued);
+        testsComplete++;
+        callback();
+      });
+
+      u0.on('success', function() {
+        throw new Error('update of resource after failed creation succeeded');
+      });
+
+      jobManager.run(fc0);
+      jobManager.run(u0);
     }
   ],
   function(err) {
     assert.ifError(err);
-    assert.equal(testsComplete, 4);
+    assert.equal(testsComplete, 5);
   });
 };
