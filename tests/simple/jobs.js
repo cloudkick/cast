@@ -274,7 +274,13 @@ exports['test_directory_resource_queueing'] = function() {
       var u0 = new ModifyTestResourceJob('bam', 'testing');
 
       var createQueued = false;
+      var createFailed = false;
       var updateQueued = false;
+
+      fc0.on('error', function(err) {
+        assert.ok(err);
+        createFailed = true;
+      });
 
       fc0.on('success', function() {
         throw new Error('creation of resource should not succeed');
@@ -291,6 +297,7 @@ exports['test_directory_resource_queueing'] = function() {
 
       u0.on('error', function() {
         assert.ok(createQueued);
+        assert.ok(createFailed);
         assert.ok(updateQueued);
         testsComplete++;
         callback();
