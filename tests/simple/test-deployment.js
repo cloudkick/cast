@@ -36,7 +36,7 @@ constants.RUNIT_DELAY = 0;
 
 var svcRootAvail, appRoot, extRoot;
 var cwd = process.cwd();
-/*
+
 exports['setUp'] = function(test, assert) {
   svcRootAvail = config.get()['service_dir_available'];
   appRoot = config.get()['app_dir'];
@@ -56,8 +56,7 @@ function verifyInstance(assert, name, bundle, version, versions, verifyServiceEx
   else if (!versions) {
     versions = [ version ];
   }
-  console.log('zaaa')
-console.log(assert)
+
   async.parallel([
     function(callback) {
       fs.readdir(path.join(appRoot, name, 'versions'), function(err, files) {
@@ -131,12 +130,8 @@ exports['test_deployment'] = function(test, assert) {
     function(callback) {
       var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');
       var expath = path.join(process.cwd(), '.tests/data_root/extracted/fooapp/fooapp@v1.0');
-      console.log('zaaa111')
       tarball.extractTarball(tbpath, expath, 0755, function(err) {
-    console.log(err)
-        console.log('zaaa111')
         assert.ifError(err);
-  console.log('zaaa111')
         callback();
       });
     },
@@ -450,7 +445,7 @@ exports['test_resolveDataFiles'] = function(test, assert) {
                 path.join(cwd, '.tests/data_root3/applications/app1'),
                 dataFiles2),
 
-    function(callback){
+    function(callback) {
       helpers.checkPath({
         path: '.tests/data_root3/applications/app1/data/archive.tar.gz',
         type: 'symlink.file',
@@ -474,6 +469,8 @@ exports['test_resolveDataFiles'] = function(test, assert) {
         type: 'symlink.directory',
         target: '.tests/data_tmp2/dbdata'
       });
+
+      callback();
     }
   ],
 
@@ -481,4 +478,4 @@ exports['test_resolveDataFiles'] = function(test, assert) {
     assert.ifError(err);
     test.finish();
   });
-};*/
+};
