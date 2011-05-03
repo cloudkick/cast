@@ -26,8 +26,8 @@ var sprintf = require('sprintf').sprintf;
 
 var fsutil = require('util/fs');
 var jobs = require('jobs');
-var assert = require('./../assert');
 
+console.log(jobs)
 
 var TEST_RESOURCE_ROOT = '.tests/testresource';
 
@@ -116,7 +116,7 @@ sys.inherits(ModifyTestResourceJob, jobs.Job);
 
 
 ModifyTestResourceJob.prototype.run = function(testResource, text, callback) {
-  ws = fs.createWriteStream(testResource.getDataPath(), {flags: 'a'});
+  var ws = fs.createWriteStream(testResource.getDataPath(), {flags: 'a'});
   ws.once('error', callback);
   ws.once('close', callback);
 
@@ -124,7 +124,7 @@ ModifyTestResourceJob.prototype.run = function(testResource, text, callback) {
 };
 
 
-exports['test_directory_resource_queueing'] = function() {
+exports['test_directory_resource_queueing'] = function(test, assert) {
   var jobManager = new jobs.JobManager();
   jobManager.registerResourceManager(new TestResourceManager());
 
@@ -314,5 +314,6 @@ exports['test_directory_resource_queueing'] = function() {
   function(err) {
     assert.ifError(err);
     assert.equal(testsComplete, 5);
+    test.finish();
   });
 };
