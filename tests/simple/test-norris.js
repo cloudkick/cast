@@ -18,12 +18,9 @@
 var async = require('async');
 
 var norris = require('norris');
-var assert = require('./../assert');
 
-exports['test_get_fact'] = function() {
+exports['test_get_fact'] = function(test, assert) {
   norris.get(function(facts)  {
-    console.log(facts);
-
     // Check the hostname
     assert.ok(facts.hostname);
 
@@ -35,5 +32,7 @@ exports['test_get_fact'] = function() {
 
     // Check username
     assert.ok(facts.username);
+
+    test.finish();
   });
 };

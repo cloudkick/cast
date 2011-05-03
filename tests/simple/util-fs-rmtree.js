@@ -23,7 +23,6 @@ var async = require('async');
 var sprintf = require('sprintf').sprintf;
 
 var fsutil = require('util/fs');
-var assert = require('./../assert');
 
 function createTestDirectories(rootName, callback) {
   // Create some nested directories and files
@@ -37,9 +36,9 @@ function createTestDirectories(rootName, callback) {
   function(err) {
     callback();
   });
-};
+}
 
-exports['test_rmtree_relative_path'] = function() {
+exports['test_rmtree_relative_path'] = function(test, assert) {
   async.series([
     async.apply(createTestDirectories, 'a'),
 
@@ -57,11 +56,12 @@ exports['test_rmtree_relative_path'] = function() {
 
       fs.stat('.tests/fs/a', function(err, stats) {
         assert.ok(err);
+        test.finish();
       });
     });
 };
 
-exports['test_rmtree_absolute_path'] = function() {
+exports['test_rmtree_absolute_path'] = function(test, assert) {
   async.series([
     async.apply(createTestDirectories, 'b'),
 
@@ -78,11 +78,12 @@ exports['test_rmtree_absolute_path'] = function() {
 
       fs.stat('.tests/fs/b', function(err, stats) {
         assert.ok(err);
+        test.finish();
       });
     });
 };
 
-exports['test_rmtree_try_deleting_twice'] = function() {
+exports['test_rmtree_try_deleting_twice'] = function(test, assert) {
   async.series([
     // Create an empty directory
     async.apply(exec, 'mkdir -p .tests/fsutil/c'),
@@ -114,12 +115,14 @@ exports['test_rmtree_try_deleting_twice'] = function() {
 
     function(err) {
       assert.ifError(err);
+      test.finish();
     });
 };
 
-exports['test_deleting_no_path_throws_error'] = function() {
+exports['test_deleting_no_path_throws_error'] = function(test, assert) {
   fsutil.rmtree('', function(err) {
     assert.ok(err);
     assert.match(err.message, /ENOENT/);
+    test.finish();
   });
 };
