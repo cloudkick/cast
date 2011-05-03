@@ -36,7 +36,7 @@ constants.RUNIT_DELAY = 0;
 
 var svcRootAvail, appRoot, extRoot;
 var cwd = process.cwd();
-
+/*
 exports['setUp'] = function(test, assert) {
   svcRootAvail = config.get()['service_dir_available'];
   appRoot = config.get()['app_dir'];
@@ -481,4 +481,4 @@ exports['test_resolveDataFiles'] = function(test, assert) {
     assert.ifError(err);
     test.finish();
   });
-};
+};*/

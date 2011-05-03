@@ -31,7 +31,7 @@ var flowctrl = require('util/flow_control');
 
 var cwd = process.cwd();
 
-exports['test_scons_install_and_uninstall'] = function() {
+exports['test_scons_install_and_uninstall'] = function(test, assert) {
   var versionString = version.toString().replace('-dev', '');
   var tarballname = sprintf('%s.tar.gz', versionString);
   var tarballPath = path.join(cwd, 'dist', tarballname);
@@ -145,5 +145,6 @@ exports['test_scons_install_and_uninstall'] = function() {
 
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };

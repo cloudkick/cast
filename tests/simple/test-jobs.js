@@ -27,8 +27,6 @@ var sprintf = require('sprintf').sprintf;
 var fsutil = require('util/fs');
 var jobs = require('jobs');
 
-console.log(jobs)
-
 var TEST_RESOURCE_ROOT = '.tests/testresource';
 
 

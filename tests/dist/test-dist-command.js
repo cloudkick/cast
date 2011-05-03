@@ -26,7 +26,7 @@ var version = require('util/version');
 
 var cwd = process.cwd();
 
-exports['test_dist_command_works'] = function() {
+exports['test_dist_command_works'] = function(test, assert) {
   var versionString = version.toString().replace('-dev', '');
   var tarballname = sprintf('%s.tar.gz', versionString);
   var tarballPath = path.join(cwd, 'dist', tarballname);
@@ -39,5 +39,7 @@ exports['test_dist_command_works'] = function() {
     // Make sure the distribution tarball and md5sum file has been created
     assert.ok(test.fileExists(tarballPath));
     assert.ok(test.fileExists(tarballMd5SumPath));
+
+    test.finish();
   });
 };
