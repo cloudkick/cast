@@ -164,8 +164,9 @@ else:
 
 chdir = pjoin(os.getcwd(), 'tests')
 init_file = pjoin(os.getcwd(), 'tests', 'init.js')
-testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
-                      (chdir, init_file, ' '.join(tests_to_run)))
+assert_module_path = pjoin(os.getcwd(), 'tests', 'assert.js')
+testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
+                      (chdir, assert_module_path, init_file, ' '.join(tests_to_run)))
 
 chdir = pjoin(os.getcwd())
 init_file = pjoin(os.getcwd(), 'tests', 'init-dist.js')
