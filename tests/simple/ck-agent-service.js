@@ -19,8 +19,7 @@ var sys = require('sys');
 var sprintf = require('sprintf').sprintf;
 var async = require('async');
 
-var assert = require('./../assert');
-var test = require('util/test');
+var testUtil = require('util/test');
 var Agent = require('services/agent')._agent;
 var agentConstants = require('agent/constants');
 
@@ -71,12 +70,12 @@ AgentTest.prototype.logBufferContains = function(command, type) {
   return false;
 };
 
-exports['test_agent_connection'] = function() {
+exports['test_agent_connection'] = function(test, assert) {
 // Test agent connection
-  var port = test.getPort();
+  var port = testUtil.getPort();
   var agent = new AgentTest();
 
-  test.runTestTcpServer('127.0.0.1', port, {}, false, function() {
+  testUtil.runTestTcpServer('127.0.0.1', port, {}, false, function() {
     var self = this;
     agent.start(port, '127.0.0.1');
 
@@ -84,15 +83,17 @@ exports['test_agent_connection'] = function() {
       agent.stop();
       self.close();
       assert.ok(agent._connected);
+
+      test.finish();
     }, 200);
   });
 };
 
-exports['test_agent_hello_and_ping'] = function() {
+exports['test_agent_hello_and_ping'] = function(test, assert) {
   var n = 0;
-  var port = test.getPort();
+  var port = testUtil.getPort();
   var agent = new AgentTest();
-  test.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
+  testUtil.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
     var self = this;
     agent.start(port, '127.0.0.1');
 
@@ -108,17 +109,19 @@ exports['test_agent_hello_and_ping'] = function() {
         self.close();
         assert.equal(n, 1);
         assert.equal(agent._pingSentCount, agent._pongGotCount);
+
+        test.finish();
       }
     }, 200);
   });
 };
 
-exports['test_command_queuing'] = function() {
+exports['test_command_queuing'] = function(test, assert) {
   var n = 0;
-  var port = test.getPort();
+  var port = testUtil.getPort();
   var agent = new AgentTest();
 
-  test.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
+  testUtil.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
     var self = this;
     agent.start(port, '127.0.0.1');
 
@@ -143,17 +146,19 @@ exports['test_command_queuing'] = function() {
       agent.stop();
       self.close();
       assert.equal(n, 2);
+
+      test.finish();
     }, 900);
   });
 };
 
-exports['test_incoming_error_command'] = function() {
+exports['test_incoming_error_command'] = function(test, assert) {
   var n = 0;
   var logBuffer = [];
-  var port = test.getPort();
+  var port = testUtil.getPort();
   var agent = new AgentTest();
 
-  test.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
+  testUtil.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
     var self = this;
     agent.start(port, '127.0.0.1');
 
@@ -171,17 +176,19 @@ exports['test_incoming_error_command'] = function() {
       agent.stop();
       self.close();
       assert.equal(n, 1);
+
+      test.finish();
     }, 400);
   });
 };
 
-exports['test_incoming_restart_command'] = function() {
+exports['test_incoming_restart_command'] = function(test, assert) {
   var n = 0;
   var logBuffer = [];
-  var port = test.getPort();
+  var port = testUtil.getPort();
   var agent = new AgentTest();
 
-  test.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
+  testUtil.runTestTcpServer('127.0.0.1', port, responseDictionary, false, function(connection) {
     var self = this;
     agent.start(port, '127.0.0.1');
 
@@ -199,6 +206,8 @@ exports['test_incoming_restart_command'] = function() {
       agent.stop();
       self.close();
       assert.equal(n, 1);
+
+      test.finish();
     }, 700);
   });
 };
