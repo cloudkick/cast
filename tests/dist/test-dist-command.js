@@ -27,7 +27,7 @@ var version = require('util/version');
 var cwd = process.cwd();
 
 exports['test_dist_command_works'] = function(test, assert) {
-  var versionString = version.toString().replace('-dev', '');
+  var versionString = version.toString().replace('-dev', '').replace('-release', '');
   var tarballname = sprintf('%s.tar.gz', versionString);
   var tarballPath = path.join(cwd, 'dist', tarballname);
   var tarballMd5SumPath = path.join(cwd, 'dist',
