@@ -23,7 +23,7 @@ var exec = require('child_process').exec;
 var async = require('async');
 var sprintf = require('sprintf').sprintf;
 
-var test = require('util/test');
+var testUtil = require('util/test');
 var tarball = require('util/tarball');
 var misc = require('util/misc');
 var version = require('util/version');
@@ -69,7 +69,7 @@ exports['test_scons_install_and_uninstall'] = function(test, assert) {
     // Extract the tarball
     function(callback) {
       // Make sure the distribution tarball has been created
-      assert.ok(test.fileExists(tarballPath));
+      assert.ok(testUtil.fileExists(tarballPath));
       tarball.extractTarball(tarballPath, extractPath, 0755, function(err) {
         assert.ifError(err);
         callback();
@@ -98,7 +98,7 @@ exports['test_scons_install_and_uninstall'] = function(test, assert) {
           filePath = path.join(cwd, filePath);
         }
 
-        assert.ok(test.fileExists(filePath), filePath);
+        assert.ok(testUtil.fileExists(filePath), filePath);
       }
 
       // Very config file content
@@ -136,7 +136,7 @@ exports['test_scons_install_and_uninstall'] = function(test, assert) {
           filePath = path.join(cwd, filePath);
         }
 
-        assert.ok(!test.fileExists(filePath), filePath);
+        assert.ok(!testUtil.fileExists(filePath), filePath);
       }
 
       callback();

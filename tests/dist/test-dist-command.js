@@ -21,7 +21,7 @@ var exec = require('child_process').exec;
 
 var sprintf = require('sprintf').sprintf;
 
-var test = require('util/test');
+var testUtil = require('util/test');
 var version = require('util/version');
 
 var cwd = process.cwd();
@@ -37,8 +37,8 @@ exports['test_dist_command_works'] = function(test, assert) {
   assert.ok(!test.fileExists(tarballPath));
   exec('scons dist --no-deps', function(err, stdout, stderr) {
     // Make sure the distribution tarball and md5sum file has been created
-    assert.ok(test.fileExists(tarballPath));
-    assert.ok(test.fileExists(tarballMd5SumPath));
+    assert.ok(testUtil.fileExists(tarballPath));
+    assert.ok(testUtil.fileExists(tarballMd5SumPath));
 
     test.finish();
   });
