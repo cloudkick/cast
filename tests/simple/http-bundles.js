@@ -24,14 +24,13 @@ var async = require('async');
 
 var misc = require('util/misc');
 var http = require('services/http');
-var assert = require('./../assert');
 
 var API_VERSION = '1.0';
 
 var getServer = http._serverOnly;
 var hello = 'Hello World';
 
-function verifyResponseCode(url, code, method, data, callback) {
+function verifyResponseCode(assert, url, code, method, data, callback) {
   if (!callback) {
     if (data) {
       callback = data;
@@ -55,7 +54,7 @@ function verifyResponseCode(url, code, method, data, callback) {
   });
 }
 
-exports['test_http_bundles'] = function() {
+exports['test_http_bundles'] = function(test, assert) {
   var fooservTarGz, fooservTarGzBad;
 
   // This is handy for tracking successful uploads
@@ -88,28 +87,28 @@ exports['test_http_bundles'] = function() {
     function(callback) {
       async.parallel([
         // Non-existant bundle
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/bar/', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/bar/', 404),
 
         // Up one level from bundles
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/../', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/../', 404),
 
         // At the bundles level
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/./', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/./', 404),
 
         // Uploading to the bundles directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/foo/../', 404, 'PUT', hello),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/foo/../', 404, 'PUT', hello),
 
         // Uploading to a file in the bundles directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/baz/baz@1.0.tar.gz', 500, 'PUT', hello),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/baz/baz@1.0.tar.gz', 500, 'PUT', hello),
 
         // Listing a file in the bundles directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/baz/', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/baz/', 404),
 
         // Get a file that is actually a directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404),
 
         // Delete a file that is actually a directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404)
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404)
 
       ],
       callback);
@@ -332,5 +331,6 @@ exports['test_http_bundles'] = function() {
 
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };

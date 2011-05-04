@@ -24,16 +24,17 @@ var assert = require('./../assert');
 
 var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
 
-exports['test_initialization'] = function() {
+exports['test_initialization'] = function(test, assert) {
   var completed = false;
   var parser = new CommandParser(COMMANDS_PATH);
 
   assert.deepEqual(parser._globalCommands, ['completion']);
   assert.deepEqual(parser._normalCommands, {});
   assert.equal(parser.banner, '');
+  test.finish();
 };
 
-exports['test_command_additional_and_removal'] = function() {
+exports['test_command_additional_and_removal'] = function(test, assert) {
     // Test command addition and removal
   var parser = new CommandParser(COMMANDS_PATH);
 
@@ -47,13 +48,14 @@ exports['test_command_additional_and_removal'] = function() {
   assert.deepEqual(parser._normalCommands, { 'services': ['list', 'restart'] });
   parser.removeCommands(['services/list', 'services/restart']);
   assert.deepEqual(parser._normalCommands, {});
+  test.finish();
 };
 
-exports['test_exception_is_thrown_on_append_with_no_value'] = function() {
+exports['test_exception_is_thrown_on_append_with_no_value'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -70,13 +72,14 @@ exports['test_exception_is_thrown_on_append_with_no_value'] = function() {
 
   parser.parse(['bin', 'file', 'services', 'list', '--display-disabled']);
   assert.equal(1, n, 'Exceptions thrown');
+  test.finish();
 };
 
-exports['test_exception_is_thrown_when_store_true_is_given_key_value'] = function() {
+exports['test_exception_is_thrown_when_store_true_is_given_key_value'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -92,13 +95,14 @@ exports['test_exception_is_thrown_when_store_true_is_given_key_value'] = functio
   }
 
   assert.equal(1, n, 'Exceptions thrown');
+  test.finish();
 };
 
-exports['test_exception_is_thrown_upon_invalid_command_name'] = function() {
+exports['test_exception_is_thrown_upon_invalid_command_name'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -126,13 +130,14 @@ exports['test_exception_is_thrown_upon_invalid_command_name'] = function() {
   }
 
   assert.equal(3, n, 'Exceptions thrown');
+  test.finish();
 };
 
-exports['test_exception_is_thrown_upon_invalid_argument_or_type'] = function() {
+exports['test_exception_is_thrown_upon_invalid_argument_or_type'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -155,13 +160,14 @@ exports['test_exception_is_thrown_upon_invalid_argument_or_type'] = function() {
   }
 
   assert.equal(2, n, 'Exceptions thrown');
+  test.finish();
 };
 
-exports['test_exception_is_thrown_on_invalid_command'] = function() {
+exports['test_exception_is_thrown_on_invalid_command'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -177,13 +183,14 @@ exports['test_exception_is_thrown_on_invalid_command'] = function() {
   }
 
   assert.equal(1, n, 'Exceptions thrown');
+  test.finish();
 };
 
-exports['test_exception_is_thrown_on_too_many_arguments'] = function() {
+exports['test_exception_is_thrown_on_too_many_arguments'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -199,13 +206,14 @@ exports['test_exception_is_thrown_on_too_many_arguments'] = function() {
   }
 
   assert.equal(1, n, 'Exceptions thrown');
-};
+  test.finish();
+}
 
-exports['test_exception_is_thrown_on_missing_required_argument'] = function() {
+exports['test_exception_is_thrown_on_missing_required_argument'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -221,13 +229,14 @@ exports['test_exception_is_thrown_on_missing_required_argument'] = function() {
   }
 
   assert.equal(1, n, 'Exceptions thrown');
+  test.finish();
 };
 
-exports['test_global_help'] = function() {
+exports['test_global_help'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -235,13 +244,14 @@ exports['test_global_help'] = function() {
   assert.equal(stdoutData.length, 0);
   parser.parse(['bin', 'file', 'help']);
   assert.match(stdoutData.join(''), /.*available commands.*/i);
+  test.finish();
 };
 
-exports['test_command_help'] = function() {
+exports['test_command_help'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -249,13 +259,14 @@ exports['test_command_help'] = function() {
   assert.equal(stdoutData.length, 0);
   parser.parse(['bin', 'file', 'help', 'services']);
   assert.match(stdoutData.join(''), /.*available sub-commands for command.*/i);
+  test.finish();
 };
 
-exports['test_sub_command_help'] = function() {
+exports['test_sub_command_help'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -263,13 +274,14 @@ exports['test_sub_command_help'] = function() {
   assert.equal(stdoutData.length, 0);
   parser.parse(['bin', 'file', 'help', 'services', 'list']);
   assert.match(stdoutData.join(''), /.*services list.*/i);
+  test.finish();
 };
 
-exports['test_global_command'] = function() {
+exports['test_global_command'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -277,13 +289,14 @@ exports['test_global_command'] = function() {
   var value = parser.parse(['bin', 'file', 'hello']);
 
   assert.match(value, /hello world/i);
+  test.finish();
 };
 
-exports['test_command_services_list'] = function() {
+exports['test_command_services_list'] = function(test, assert) {
   var stdoutData = [];
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['hello', 'services/list', 'services/restart']);
@@ -293,13 +306,14 @@ exports['test_command_services_list'] = function() {
 
   assert.match(value1, /listing services for all servers/i);
   assert.match(value2, /listing services for server server1/i);
+  test.finish();
 };
 
-exports['test_command_services_list'] = function() {
+exports['test_command_services_list'] = function(test, assert) {
   var stdoutData = [], value, m;
   function captureWrite (string) {
     stdoutData.push(string);
-  };
+  }
 
   var parser = new CommandParser(COMMANDS_PATH, captureWrite);
   parser.addCommands(['with_color']);
@@ -323,4 +337,5 @@ exports['test_command_services_list'] = function() {
 
   value = parser.parse(['bin', 'file', 'with_color', '--colors']);
   assert.deepEqual(value, { 'colors': true });
+  test.finish();
 };

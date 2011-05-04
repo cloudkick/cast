@@ -21,7 +21,6 @@ var path = require('path');
 var async = require('async');
 
 var fsutil = require('util/fs');
-var assert = require('./../assert');
 
 var PATH1 = '.tests/utilfs/foo';
 var PATH1_SUBDIR = '.tests/utilfs/foo/bar';
@@ -29,12 +28,12 @@ var PATH2 = '.tests/utilfs/bar/baz';
 var PATH3 = '.tests/utilfs/baz/buz';
 var PATH4 = '.tests/utilfs/whammy';
 
-exports['test_mkdir_file_exists'] = function() {
+exports['test_mkdir_file_exists'] = function(test, assert) {
   async.series([
   function(callback) {
-    fs.mkdir, '.tests/utilfs', 0700, function(err) {
+    fs.mkdir('.tests/utilfs', 0700, function(err) {
       callback();
-    }
+    });
   },
 
   // Create a file
@@ -77,11 +76,12 @@ exports['test_mkdir_file_exists'] = function() {
   }],
 
   function(err) {
-   // assert.ifError(err);
+    assert.ifError(err);
+    test.finish();
   });
 };
 
-exports['test_recursive_mkdir_relative_path'] = function() {
+exports['test_recursive_mkdir_relative_path'] = function(test, assert) {
   async.series([
   async.apply(fsutil.mkdir, PATH2, 0700),
 
@@ -97,10 +97,11 @@ exports['test_recursive_mkdir_relative_path'] = function() {
 
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };
 
-exports['test_recursive_mkdir_absolute_path'] = function() {
+exports['test_recursive_mkdir_absolute_path'] = function(test, assert) {
   async.series([
   async.apply(fsutil.mkdir, path.join(process.cwd(), PATH3), 0700),
 
@@ -116,10 +117,11 @@ exports['test_recursive_mkdir_absolute_path'] = function() {
 
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };
 
-exports['test_mkdir_implicit_perms'] = function() {
+exports['test_mkdir_implicit_perms'] = function(test, assert) {
   async.series([
   async.apply(fsutil.mkdir, PATH4),
 
@@ -135,5 +137,6 @@ exports['test_mkdir_implicit_perms'] = function() {
 
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };

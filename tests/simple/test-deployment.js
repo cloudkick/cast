@@ -18,7 +18,6 @@
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
-var assert = require('assert');
 
 var async = require('async');
 var sprintf = require('sprintf').sprintf;
@@ -38,15 +37,15 @@ constants.RUNIT_DELAY = 0;
 var svcRootAvail, appRoot, extRoot;
 var cwd = process.cwd();
 
-exports['setUp'] = function(callback) {
+exports['setUp'] = function(test, assert) {
   svcRootAvail = config.get()['service_dir_available'];
   appRoot = config.get()['app_dir'];
   extRoot = config.get()['extracted_dir'];
 
-  callback();
+  test.finish();
 };
 
-function verifyInstance(name, bundle, version, versions, verifyServiceExists,
+function verifyInstance(assert, name, bundle, version, versions, verifyServiceExists,
                         callback) {
   // TODO: More in-depth verification of data files, templated files
   // and templated services
@@ -117,7 +116,7 @@ function verifyInstance(name, bundle, version, versions, verifyServiceExists,
   });
 }
 
-exports['test_deployment'] = function() {
+exports['test_deployment'] = function(test, assert) {
   var curInstance;
 
   async.series([
@@ -164,7 +163,7 @@ exports['test_deployment'] = function() {
     },
 
     // Verify the instance
-    async.apply(verifyInstance, 'foo0', 'fooapp', 'v1.0', null, true),
+    async.apply(verifyInstance, assert, 'foo0', 'fooapp', 'v1.0', null, true),
 
     // Create another instance, but this time with enable=true
     function(callback) {
@@ -175,7 +174,7 @@ exports['test_deployment'] = function() {
     },
 
     // Verify that one too
-    async.apply(verifyInstance, 'foo1', 'fooapp', 'v1.0', null, true),
+    async.apply(verifyInstance, assert, 'foo1', 'fooapp', 'v1.0', null, true),
 
     function (callback) {
       // Verify that the instance has been enabled
@@ -288,7 +287,7 @@ exports['test_deployment'] = function() {
 
     // Verify nothing broke
     function(callback) {
-      verifyInstance(curInstance.name, 'fooapp', 'v1.0', null, true, callback);
+      verifyInstance(assert, curInstance.name, 'fooapp', 'v1.0', null, true, callback);
     },
 
     // Check Instance.activate_version on an existing but unprepared version
@@ -301,7 +300,7 @@ exports['test_deployment'] = function() {
 
     // Verify nothing broke
     function(callback) {
-      verifyInstance(curInstance.name, 'fooapp', 'v1.0', null, true, callback);
+      verifyInstance(assert, curInstance.name, 'fooapp', 'v1.0', null, true, callback);
     },
 
     // Check Instance.prepare_version with an existing version
@@ -315,7 +314,7 @@ exports['test_deployment'] = function() {
     // Verify the new version was prepared
     function(callback) {
       var versions = ['v1.0', 'v1.5'];
-      verifyInstance(curInstance.name, 'fooapp', 'v1.0', versions, true, callback);
+      verifyInstance(assert, curInstance.name, 'fooapp', 'v1.0', versions, true, callback);
     },
 
     // Check Instance.activate_version on a prepared version
@@ -329,7 +328,7 @@ exports['test_deployment'] = function() {
     // Verify the new version was activated
     function(callback) {
       var versions = ['v1.0', 'v1.5'];
-      verifyInstance(curInstance.name, 'fooapp', 'v1.5', versions, false, callback);
+      verifyInstance(assert, curInstance.name, 'fooapp', 'v1.5', versions, false, callback);
     },
 
     // Get a list of instances
@@ -369,10 +368,11 @@ exports['test_deployment'] = function() {
 
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };
 
-exports['test_resolveDataFiles'] = function() {
+exports['test_resolveDataFiles'] = function(test, assert) {
   var dataFiles1 = [ 'test1/', 'test2/', 'test3/foo.txt' ];
   var dataFiles2 = [ 'data/archive.tar.gz', 'data/README', 'data/file3.txt',
                      'dbdata/' ];
@@ -445,7 +445,7 @@ exports['test_resolveDataFiles'] = function() {
                 path.join(cwd, '.tests/data_root3/applications/app1'),
                 dataFiles2),
 
-    function(callback){
+    function(callback) {
       helpers.checkPath({
         path: '.tests/data_root3/applications/app1/data/archive.tar.gz',
         type: 'symlink.file',
@@ -469,10 +469,13 @@ exports['test_resolveDataFiles'] = function() {
         type: 'symlink.directory',
         target: '.tests/data_tmp2/dbdata'
       });
+
+      callback();
     }
   ],
 
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };

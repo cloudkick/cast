@@ -20,9 +20,7 @@ var fsutil = require('util/fs');
 
 var async = require('async');
 
-var assert = require('./../assert');
-
-exports['test_templateToTreeSimple_complex'] = function() {
+exports['test_templateToTreeSimple_complex'] = function(test, assert) {
   var tmpl = {
     afile: "simple file",
     subdir: {
@@ -32,9 +30,9 @@ exports['test_templateToTreeSimple_complex'] = function() {
 
   async.series([
     function(callback) {
-      fs.mkdir, '.tests/fsutil', 0700, function(err) {
+      fs.mkdir('.tests/fsutil', 0700, function(err) {
         callback();
-      }
+      });
     },
 
     // Render a template to a tree
@@ -99,10 +97,11 @@ exports['test_templateToTreeSimple_complex'] = function() {
 
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };
 
-exports['test_templateToTreeSimple'] = function() {
+exports['test_templateToTreeSimple'] = function(test, assert) {
   var tmpl = {
     afile: "simple file",
     subdir: {
@@ -141,11 +140,11 @@ exports['test_templateToTreeSimple'] = function() {
 
     function(err) {
       assert.ifError(err);
-    }
-  );
+      test.finish();
+    });
 };
 
-exports['test_templateToTree_throws_exception_on_existing_directory'] = function() {
+exports['test_templateToTree_throws_exception_on_existing_directory'] = function(test, assert) {
   var tmpl = {
     afile: "simple file",
     subdir: {
@@ -162,6 +161,7 @@ exports['test_templateToTree_throws_exception_on_existing_directory'] = function
 
       fsutil.templateToTree(".tests/fsutil.template1", tmpl, true, function(err) {
         assert.equal(err, undefined);
+        test.finish();
       });
     });
   });

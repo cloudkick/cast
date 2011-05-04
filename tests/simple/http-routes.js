@@ -17,15 +17,13 @@
 
 var fs = require('fs');
 var path = require('path');
-var assert = require('assert');
 
 var sprintf = require('sprintf').sprintf;
 
 /*
  * A test which verified that all the http modules export the "urls" variable.
  */
-
-exports['test_all_http_modules_export_urls_variable'] = function() {
+exports['test_all_http_modules_export_urls_variable'] = function(test, assert) {
   var blacklist = [ 'constants.js' ];
   var httpModulesPath = path.join(process.cwd(), '../lib/services/http/');
 
@@ -45,5 +43,7 @@ exports['test_all_http_modules_export_urls_variable'] = function() {
       module = require(sprintf('services/http/%s', file.replace('.js', '')));
       assert.ok(module.urls);
     }
-  })
+
+    test.finish();
+  });
 };

@@ -20,9 +20,8 @@ var sys = require('sys');
 var async = require('async');
 
 var ps = require('util/pubsub');
-var assert = require('./../assert');
 
-exports['test_basic_subscription'] = function() {
+exports['test_basic_subscription'] = function(test, assert) {
   var n = 0;
   ps.on('basic', function(value) {
     assert.equal(n, value);
@@ -33,9 +32,10 @@ exports['test_basic_subscription'] = function() {
   ps.emit('basic', n);
 
   assert.equal(n, 2, 'Events Received');
+  test.finish();
 };
 
-exports['test_once_subscription'] = function() {
+exports['test_once_subscription'] = function(test, assert) {
   var n = 0;
   var m = 0;
   ps.once('once', function(value) {
@@ -55,9 +55,10 @@ exports['test_once_subscription'] = function() {
 
   assert.equal(n, 1);
   assert.equal(m, 1);
+  test.finish();
 };
 
-exports['test_bad_parameters'] = function() {
+exports['test_bad_parameters'] = function(test, assert) {
   var n = 0;
 
   try {
@@ -83,4 +84,5 @@ exports['test_bad_parameters'] = function() {
   }
 
   assert.equal(3, n, 'Exceptions thrown');
+  test.finish();
 };

@@ -22,13 +22,12 @@ require.paths.unshift(path.join(root, '../'));
 
 var sprintf = require('sprintf').sprintf;
 
-var assert = require('./../assert');
-
 var http = require('services/http');
 
-exports['test_route_function'] = function() {
+exports['test_route_function'] = function(test, assert) {
   var i, expectedRoutes, expectedRoutesLen;
   var apiVersion, versionRoutes, versionRoutesLen;
+  var clutchRoutes, versionRouteArgs, expectedRoutesArgs;
   function func() {}
 
   var routes = [
@@ -37,13 +36,14 @@ exports['test_route_function'] = function() {
     ['GET /foobar/$', '1.1', func],
     ['HEAD /foobar/$', '1.2', func],
     ['DELETE /foobar/$', '2.0', func]
-  ]
+  ];
+
   var expectedResult = {
     '1.0': [ ['PUT /foo/bar/$', func] ],
     '1.1': [ ['GET /foobar/$', func] ],
     '1.2': [ ['HEAD /foobar/$', func] ],
     '2.0': [ ['POST /foobar/$', func], ['DELETE /foobar/$', func] ]
-  }
+  };
 
   clutchRoutes = http.route(routes);
 
@@ -55,7 +55,7 @@ exports['test_route_function'] = function() {
     versionRoutes = clutchRoutes[apiVersion];
     versionRoutesLen = versionRoutes.length;
     expectedRoutes = expectedResult[apiVersion];
-    expectedRoutesLen = expectedRoutes.length
+    expectedRoutesLen = expectedRoutes.length;
 
     assert.equal(versionRoutesLen, expectedRoutesLen);
 
@@ -67,9 +67,11 @@ exports['test_route_function'] = function() {
       assert.equal(versionRouteArgs[1], expectedRoutesArgs[1]);
     }
   }
+
+  test.finish();
 };
 
-exports['test_url_routing'] = function() {
+exports['test_url_routing'] = function(test, assert) {
   var latestVersion = '2.0';
 
   assert.response(http._serverOnly('data/http_services/', [ 'test-service' ]), {
@@ -113,5 +115,6 @@ exports['test_url_routing'] = function() {
     assert.equal(res.statusCode, 202);
     var data = JSON.parse(res.body);
     assert.equal(data.text, sprintf('test %s', latestVersion));
+    test.finish();
   });
 };

@@ -21,12 +21,12 @@ var exec = require('child_process').exec;
 
 var sprintf = require('sprintf').sprintf;
 
-var test = require('util/test');
+var testUtil = require('util/test');
 var version = require('util/version');
 
 var cwd = process.cwd();
 
-exports['test_dist_command_works'] = function() {
+exports['test_dist_command_works'] = function(test, assert) {
   var versionString = version.toString().replace('-dev', '');
   var tarballname = sprintf('%s.tar.gz', versionString);
   var tarballPath = path.join(cwd, 'dist', tarballname);
@@ -34,10 +34,12 @@ exports['test_dist_command_works'] = function() {
                                     sprintf('%s.md5sum', tarballname));
 
   // Make sure the distribution tarball doesn't exist
-  assert.ok(!test.fileExists(tarballPath));
+  assert.ok(!testUtil.fileExists(tarballPath));
   exec('scons dist --no-deps', function(err, stdout, stderr) {
     // Make sure the distribution tarball and md5sum file has been created
-    assert.ok(test.fileExists(tarballPath));
-    assert.ok(test.fileExists(tarballMd5SumPath));
+    assert.ok(testUtil.fileExists(tarballPath));
+    assert.ok(testUtil.fileExists(tarballMd5SumPath));
+
+    test.finish();
   });
 };

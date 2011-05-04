@@ -29,7 +29,7 @@
     "corrector": "= 0.1.0"
   },
   "devDependencies": {
-    "whiskey": "= 0.2.3",
+    "whiskey": "= 0.3.1"
   },
   "engines": {
     "node": ">= 0.4.0"

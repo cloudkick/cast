@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-var assert = require('assert');
-
 var misc = require('util/misc');
 var rateLimiter = require('util/rate-limiter');
 
-exports['test_add_new_limit_success'] = function() {
+exports['test_add_new_limit_success'] = function(test, assert) {
   var limiter = new rateLimiter.RateLimiter();
   var path1 = /\/foo bar/, path2 = /\/foo bar\/test\//;
   var method1 = 'GET', method2 = 'all';
@@ -36,9 +34,10 @@ exports['test_add_new_limit_success'] = function() {
   assert.ok(limiter._limits.hasOwnProperty(key2));
   assert.ok(limiter._limitsData.hasOwnProperty(key1));
   assert.ok(limiter._limitsData.hasOwnProperty(key2));
+  test.finish();
 };
 
-exports['test_new_limit_already_exists'] = function() {
+exports['test_new_limit_already_exists'] = function(test, assert) {
   var limiter = new rateLimiter.RateLimiter();
   var path1 = /\/foo bar/;
   var method1 = 'GET';
@@ -48,13 +47,14 @@ exports['test_new_limit_already_exists'] = function() {
     limiter.addLimit(path1, method1, 10, 100, false);
   } catch(err) {
     assert.ok(true);
+    test.finish();
     return;
   }
 
   assert.ok(false, 'Exception was not thrown');
 };
 
-exports['test_new_limit_invalid_method'] = function() {
+exports['test_new_limit_invalid_method'] = function(test, assert) {
   var limiter = new rateLimiter.RateLimiter();
   var path1 = /\/foo bar/;
   var method1 = 'invalid-method';
@@ -63,13 +63,14 @@ exports['test_new_limit_invalid_method'] = function() {
     limiter.addlimit(path1, method1, 10, 100, false);
   } catch(err) {
     assert.ok(true);
+    test.finish();
     return;
   }
 
   assert.ok(false, 'exception was not thrown');
 };
 
-exports['test_remove_limit_succcess'] = function() {
+exports['test_remove_limit_succcess'] = function(test, assert) {
   var limiter = new rateLimiter.RateLimiter();
   var path1 = /\/foo bar/;
   var method1 = 'put';
@@ -84,42 +85,46 @@ exports['test_remove_limit_succcess'] = function() {
   limiter.removeLimit(path1, method1);
   assert.ok(!limiter._limits.hasOwnProperty(key1));
   assert.ok(!limiter._limitsData.hasOwnProperty(key1));
+  test.finish();
 };
 
-exports['test_remove_limit_does_not_exist'] = function() {
+exports['test_remove_limit_does_not_exist'] = function(test, assert) {
   var limiter = new rateLimiter.RateLimiter();
 
   try {
     limiter.removeLimit(/test-inexistent-path/, 'get', 10, 100, false);
   } catch(err) {
     assert.match(err, /does not exist/);
+    test.finish();
     return;
   }
 
   assert.ok(false, 'exception was not thrown');
 };
 
-exports['test_addLimit_throws_exception_on_invalid_limit_values'] = function() {
+exports['test_addLimit_throws_exception_on_invalid_limit_values'] = function(test, assert) {
+  var errors = 0;
   var limiter = new rateLimiter.RateLimiter();
 
   try {
     limiter.addLimit(/test/, 'get', -1, 1, false);
   } catch(err) {
+    errors++;
     assert.match(err.message, /must be bigger or equal to 1/);
-    return;
   }
 
   try {
     limiter.addLimit(/test/, 'get', 1, -1, false);
   } catch(err2) {
+    errors++;
     assert.match(err2.message, /must be bigger or equal to 1/);
-    return;
   }
 
-  assert.ok(false, 'exception was not thrown');
+  assert.equal(errors, 2);
+  test.finish();
 };
 
-exports['test_resetIpAddressAccessCounter_success'] = function() {
+exports['test_resetIpAddressAccessCounter_success'] = function(test, assert) {
   var key;
   var path = '/test-path/';
   var method = 'GET';
@@ -138,9 +143,10 @@ exports['test_resetIpAddressAccessCounter_success'] = function() {
   assert.equal(limiter._limitsData[key][ipAddress]['access_count'], 5);
   limiter.resetIpAddressAccessCounter(path, method, ipAddress);
   assert.equal(limiter._limitsData[key][ipAddress]['access_count'], 0);
+  test.finish();
 };
 
-exports['test_resetIpAddressAccessCounter_no_recorded_data'] = function() {
+exports['test_resetIpAddressAccessCounter_no_recorded_data'] = function(test, assert) {
   var path = '/test-path/';
   var method = 'GET';
   var ipAddress = '127.0.0.4';
@@ -152,13 +158,14 @@ exports['test_resetIpAddressAccessCounter_no_recorded_data'] = function() {
     limiter.resetIpAddressAccessCounter(path, method, ipAddress);
   } catch(err) {
     assert.match(err.message, /no recorded data/i);
+    test.finish();
     return;
   }
 
   assert.ok(false, 'exception was not thrown');
 };
 
-exports['test_processLimit_no_drop'] = function() {
+exports['test_processLimit_no_drop'] = function(test, assert) {
   var wroteHeaders = [];
   var wroteResponses = [];
   var callbackCalled = false;
@@ -193,9 +200,10 @@ exports['test_processLimit_no_drop'] = function() {
 
   limiter.processRequest(mockRequest, mockResponse, callback);
   assert.ok(callbackCalled);
+  test.finish();
 };
 
-exports['test_processLimit_request_dropped'] = function() {
+exports['test_processLimit_request_dropped'] = function(test, assert) {
   var wroteHeaders = [];
   var wroteResponses = [];
   var callbackCalledCount = 0;
@@ -247,7 +255,7 @@ exports['test_processLimit_request_dropped'] = function() {
     'end': end
   };
 
-  var methods = ['head', 'post', 'delete', 'get', 'put'];
+  methods = ['head', 'post', 'delete', 'get', 'put'];
 
   key1 = limiter._getKeyForLimit('/test-path/', 'GET');
   key2 = limiter._getKeyForLimit('/test-path-all/', 'all');
@@ -298,4 +306,6 @@ exports['test_processLimit_request_dropped'] = function() {
     limiter.processRequest(mockRequest4, mockResponse, callback);
     assert.equal(limiter._limitsData[key2]['127.0.0.2']['access_count'], i + 1);
   }
+
+  test.finish();
 };
