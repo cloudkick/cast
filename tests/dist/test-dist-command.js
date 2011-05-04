@@ -34,7 +34,7 @@ exports['test_dist_command_works'] = function(test, assert) {
                                     sprintf('%s.md5sum', tarballname));
 
   // Make sure the distribution tarball doesn't exist
-  assert.ok(!test.fileExists(tarballPath));
+  assert.ok(!testUtil.fileExists(tarballPath));
   exec('scons dist --no-deps', function(err, stdout, stderr) {
     // Make sure the distribution tarball and md5sum file has been created
     assert.ok(testUtil.fileExists(tarballPath));
