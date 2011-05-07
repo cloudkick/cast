@@ -25,20 +25,25 @@ var sprintf = require('sprintf').sprintf;
 var ca = require('security/ca');
 var certgen = require('security/certgen');
 
+
 var TMPDIR = path.join('.tests', 'tmp');
+var requestManager = null;
+
 
 exports['setUp'] = function(test, assert) {
-  var testCA = ca.getCA();
   exec(sprintf('mkdir -p "%s"', TMPDIR), function(err) {
     assert.ifError(err);
-
-    testCA.init(test.finish);
+    requestManager = new ca.SigningRequestManager();
+    requestManager.init(function(err) {
+      assert.ifError(err);
+      test.finish();
+    });
   });
 };
 
 exports['test_ca_basic_use'] = function(test, assert) {
-  var testCA = ca.getCA();
   var reqHost = 'test.example.com';
+  var badReqHost = 'bogushost.example.com';
   var keyPath = path.join(TMPDIR, 'test.key');
   var reqPath = path.join(TMPDIR, 'test.csr');
   var certPath = path.join(TMPDIR, 'test.crt');
@@ -68,35 +73,24 @@ exports['test_ca_basic_use'] = function(test, assert) {
 
     // Add Request to CA
     function(callback) {
-      testCA.addRequest(reqHost, reqText, function(err, reqStatus) {
+      var req = new ca.SigningRequest(reqHost);
+      req.create(reqText, function(err) {
         assert.ifError(err);
-        assert.ok(reqStatus);
-        assert.equal(reqStatus.hostname, reqHost);
-        assert.equal(reqStatus.signed, false);
-        assert.equal(reqStatus.cert, null);
         callback();
       });
     },
 
-    // Try adding a bogus request with the same name
+    // Try adding a bogus request
     function(callback) {
-      testCA.addRequest(reqHost, badReqText, function(err, cert) {
-        assert.ok(err);
-        assert.match(err.message, /does not match/);
-        assert.equal(cert, null);
-        callback();
-      });
-    },
-
-    // Try adding a bogus request with a different name
-    function(callback) {
-      testCA.addRequest('bogushost.example.com', badReqText, function(err) {
+      var req = new ca.SigningRequest(badReqHost);
+      req.create(badReqText, function(err) {
         assert.ok(err);
         assert.match(err.message, /Invalid CSR received/);
         callback();
       });
     },
 
+    /*
     // List requests (should be one unsigned request)
     function(callback) {
       testCA.listRequests(function(err, requests) {
@@ -107,15 +101,18 @@ exports['test_ca_basic_use'] = function(test, assert) {
         callback();
       });
     },
+    */
 
     // Sign the request
     function(callback) {
-      testCA.signRequest(reqHost, false, function(err) {
+      var req = new ca.SigningRequest(reqHost);
+      req.sign(false, function(err) {
         assert.ifError(err);
         callback();
       });
     },
 
+    /*
     // List requests (should be one signed request)
     function(callback) {
       testCA.listRequests(function(err, requests) {
@@ -138,32 +135,41 @@ exports['test_ca_basic_use'] = function(test, assert) {
         fs.writeFile(certPath, reqStatus.cert, callback);
       });
     },
+    */
 
     // Verify the client cert
     function(callback) {
+      var req = new ca.SigningRequest(reqHost);
       var cmdpat = 'openssl verify -CAfile %s -verbose %s';
-      exec(sprintf(cmdpat, testCA.cert, certPath), function(err, stdout, stderr) {
+      exec(sprintf(cmdpat, requestManager.cert, req.getCRTPath()), function(err, stdout, stderr) {
         assert.ifError(err);
-        assert.match(stdout, /OK/);
         assert.ok(!stderr);
+        assert.match(stdout, /OK/);
         callback();
       });
     },
 
     // Delete a non-existant request
     function(callback) {
-      testCA.removeRequest('bogushost.example.com', true, function(err) {
+      var req = new ca.SigningRequest(badReqHost);
+      req.destroy(function(err) {
         assert.ok(err);
         callback();
       });
     },
 
-    // Delete the real request
+    // Try to delete the signed requests
     function(callback) {
-      testCA.removeRequest(reqHost, true, callback);
+      var req = new ca.SigningRequest(reqHost);
+      req.destroy(function(err) {
+        assert.ok(err);
+        assert.match(err.message, /Certificate already exists/);
+        callback();
+      });
     },
 
-    // List requests (should be none)
+    /**
+    // List requests should be one
     function(callback) {
       testCA.listRequests(function(err, requests) {
         assert.ifError(err);
@@ -171,6 +177,7 @@ exports['test_ca_basic_use'] = function(test, assert) {
         callback();
       });
     }
+    */
   ],
   function(err) {
     assert.ifError(err);
