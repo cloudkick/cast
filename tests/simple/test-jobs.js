@@ -124,7 +124,8 @@ ModifyTestResourceJob.prototype.run = function(testResource, text, callback) {
 
 exports['test_directory_resource_queueing'] = function(test, assert) {
   var jobManager = new jobs.JobManager();
-  jobManager.registerResourceManager(new TestResourceManager());
+  var trManager = new TestResourceManager();
+  jobManager.registerResourceManager(trManager);
 
   var testsComplete = 0;
 
@@ -150,12 +151,16 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
         assert.ok(err);
         assert.match(err.message, /TestResource \'foo\' does not exist/);
         testsComplete++;
-        callback();
+        process.nextTick(function() {
+          assert.ok(!trManager.resources['foo']);
+          callback();
+        });
       });
 
       // Run this job against TestResource 'foo'
       jobManager.run(j);
       assert.equal(j, jobManager.getJob(j.id));
+      assert.ok(trManager.resources['foo']);
     },
 
     // Queue a create then a bunch of updates on nonexistant resource
@@ -197,6 +202,7 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
         fs.readFile(dp, 'utf8', function(err, text) {
           assert.ifError(err);
           assert.equal(text, 'this is bar test0 test1 test2 test3 test4 test5');
+          assert.ok(!trManager['bar']);
           testsComplete++;
           callback();
         });
@@ -297,6 +303,7 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
         assert.ok(createQueued);
         assert.ok(createFailed);
         assert.ok(updateQueued);
+        assert.ok(!trManager['bam']);
         testsComplete++;
         callback();
       });
