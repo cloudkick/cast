@@ -21,6 +21,7 @@
   "dependencies": {
     "async": "= 0.1.4",
     "express": "= 2.3.4",
+    "jade": "= 0.10.7",
     "optparse": "= 1.0.1",
     "sprintf": "= 0.1.1",
     "nodelint": "= 0.4.0",
