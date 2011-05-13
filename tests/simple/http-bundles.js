@@ -286,6 +286,7 @@ exports['test_http_bundles'] = function(test, assert) {
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@1.0',
         method: 'DELETE',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
         body: 'bundle_type=tarball'
       },
       function(res) {
@@ -311,6 +312,7 @@ exports['test_http_bundles'] = function(test, assert) {
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@1.0',
         method: 'DELETE',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
         body: 'bundle_type=extracted'
       },
       function(res) {
@@ -324,6 +326,7 @@ exports['test_http_bundles'] = function(test, assert) {
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@1.0',
         method: 'DELETE',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
         body: 'bundle_type=both'
       },
       function(res) {
