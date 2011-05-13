@@ -23,9 +23,9 @@ var sprintf = require('sprintf').sprintf;
 /*
  * A test which verified that all the http modules export the "urls" variable.
  */
-exports['test_all_http_modules_export_urls_variable'] = function(test, assert) {
-  var blacklist = [ 'constants.js' ];
-  var httpModulesPath = path.join(process.cwd(), '../lib/services/http/');
+exports['test_all_http_modules_export_register_function'] = function(test, assert) {
+  var blacklist = [ 'constants.js', 'api.js' ];
+  var httpModulesPath = path.join(process.cwd(), '../lib/http/endpoints/');
 
   fs.readdir(httpModulesPath, function(err, files) {
     assert.ifError(err);
@@ -40,8 +40,9 @@ exports['test_all_http_modules_export_urls_variable'] = function(test, assert) {
         continue;
       }
 
-      module = require(sprintf('services/http/%s', file.replace('.js', '')));
-      assert.ok(module.urls);
+      module = require(sprintf('http/endpoints/%s', file.replace('.js', '')));
+      assert.ok(module.register);
+      assert.ok(typeof module.register === 'function');
     }
 
     test.finish();
