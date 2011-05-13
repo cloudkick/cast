@@ -24,53 +24,6 @@ var sprintf = require('sprintf').sprintf;
 
 var http = require('services/http');
 
-exports['test_route_function'] = function(test, assert) {
-  var i, expectedRoutes, expectedRoutesLen;
-  var apiVersion, versionRoutes, versionRoutesLen;
-  var clutchRoutes, versionRouteArgs, expectedRoutesArgs;
-  function func() {}
-
-  var routes = [
-    ['PUT /foo/bar/$', '1.0', func],
-    ['POST /foobar/$', '2.0', func],
-    ['GET /foobar/$', '1.1', func],
-    ['HEAD /foobar/$', '1.2', func],
-    ['DELETE /foobar/$', '2.0', func]
-  ];
-
-  var expectedResult = {
-    '1.0': [ ['PUT /foo/bar/$', func] ],
-    '1.1': [ ['GET /foobar/$', func] ],
-    '1.2': [ ['HEAD /foobar/$', func] ],
-    '2.0': [ ['POST /foobar/$', func], ['DELETE /foobar/$', func] ]
-  };
-
-  clutchRoutes = http.route(routes);
-
-  assert.equal(Object.keys(clutchRoutes).length, 4);
-
-  for (apiVersion in clutchRoutes) {
-    assert.ok(expectedResult.hasOwnProperty(apiVersion));
-
-    versionRoutes = clutchRoutes[apiVersion];
-    versionRoutesLen = versionRoutes.length;
-    expectedRoutes = expectedResult[apiVersion];
-    expectedRoutesLen = expectedRoutes.length;
-
-    assert.equal(versionRoutesLen, expectedRoutesLen);
-
-    for (i = 0; i < versionRoutesLen; i++) {
-      versionRouteArgs = versionRoutes[i];
-      expectedRoutesArgs = expectedRoutes[i];
-
-      assert.equal(versionRouteArgs[0], expectedRoutesArgs[0]);
-      assert.equal(versionRouteArgs[1], expectedRoutesArgs[1]);
-    }
-  }
-
-  test.finish();
-};
-
 exports['test_url_routing'] = function(test, assert) {
   var latestVersion = '2.0';
 
