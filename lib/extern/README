@@ -52,6 +52,11 @@ optparse 1.0.1
   License: "MIT-style license"
   Command Line argument parsing.
 
+rate-limiter 0.1.0
+  http://github.com/cloudkick/rate-limiter
+  License: Apache 2.0
+  HTTP request rate limiting.
+
 sprintf 0.1.1
   http://www.diveintojavascript.com/projects/sprintf-for-javascript
   License: BSD
