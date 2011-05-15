@@ -21,8 +21,8 @@ var misc = require('util/misc');
 
 var express = require('express');
 
-var RateLimiter = require('../lib/index').RateLimiter;
-var expressMiddleware = require('../lib/index').expressMiddleware;
+var RateLimiter = require('../index').RateLimiter;
+var expressMiddleware = require('../index').expressMiddleware;
 
 exports['test_add_new_limit_success'] = function(test, assert) {
   var limiter = new RateLimiter();
