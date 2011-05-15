@@ -9,11 +9,6 @@ closure-linter 2.2.7 (September 2, 2010)
   License: Apache 2.0
   Checks code style
 
-clutch 42373a7a518739 (July 4, 2010)
-  http://github.com/clement/clutch
-  License: MIT
-  Library used to route URLs to handlers in HTTP server.
-
 jsdoc-toolkit v2.4.0 (December 13, 2010)
    http://code.google.com/p/jsdoc-toolkit/
    License: X11/MIT
