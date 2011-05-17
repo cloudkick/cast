@@ -373,7 +373,7 @@ function puts() {
   var term = process.env.TERM;
   var supportsStyles = true;
 
-  if (!USE_ANSI_CODES || !term || TERMINAL_SUPPORTS_ANSI_CODES.indexof(term.toLowerCase()) === -1) {
+  if (!USE_ANSI_CODES || !term || TERMINAL_SUPPORTS_ANSI_CODES.indexOf(term.toLowerCase()) === -1) {
     supportsStyles = false;
   }
 
