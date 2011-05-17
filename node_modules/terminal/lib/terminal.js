@@ -243,11 +243,11 @@ function printWrapped(text, width, indent, outputFunction) {
  * @param {String} question Question which is sent to standard output
  * @param {Array} validOptions Array of valid options (e.g. ['yes', 'no'])
  * @param {String} defaultOption Option which is used as a default if empty line is received
- * @param {Function} outputFunction Output function (defaults to PUTS_FUNC).
+ * @param {Function} outputFunction Output function (defaults to PRINT_FUNC).
  * @param {Function} callback Callback which is called with user input
  */
 function prompt(question, validOptions, defaultOption, outputFunction, callback) {
-  outputFunction = outputFunction || PUTS_FUNC;
+  outputFunction = outputFunction || PRINT_FUNC;
   var stdin = process.openStdin();
   stdin.resume();
   var options, option, questionMark, dataString;
