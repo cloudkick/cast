@@ -28,7 +28,8 @@
     "magic-templates": "= 0.1.0",
     "node-uuid": "= 1.1.0",
     "corrector": "= 0.1.0",
-    "rate-limiter": "= 0.1.0"
+    "rate-limiter": "= 0.1.0",
+    "terminal": "= 0.1.0"
   },
   "devDependencies": {
     "whiskey": "= 0.3.2"
