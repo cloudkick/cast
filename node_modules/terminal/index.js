@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-var i, varLen, varValue, varName;
-var exportedVars = require('./lib/terminal');
+function exportVars(exportedVars) {
+  var varValue, varName;
 
-for (varName in exportedVars) {
-  if (exportedVars.hasOwnProperty(varName)) {
-    varValue = exportedVars[varName];
-    exports = module.exports[varName] = varValue;
+  for (varName in exportedVars) {
+    if (exportedVars.hasOwnProperty(varName)) {
+      varValue = exportedVars[varName];
+      exports = module.exports[varName] = varValue;
+    }
   }
 }
+
+exportVars(require('./lib/terminal'));
+exportVars(require('./lib/spinner'));

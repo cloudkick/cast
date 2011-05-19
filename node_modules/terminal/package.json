@@ -1,7 +1,7 @@
 {
   "name": "terminal",
   "description": "A collection of different terminal utility functions.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Cloudkick, Inc. <tomaz+npm@cloudkick.com> http://www.cloudkick.com",
   "keywords": [ "terminal", "term", "colors", "style" ],
   "homepage": "https://github.com/cloudkick/terminal",
@@ -11,7 +11,8 @@
     "url": "git://github.com/cloudkick/terminal.git"
   },
   "modules": {
-    "terminal": "./lib/terminal"
+    "terminal": "./lib/terminal",
+    "spinner": "./lib/spinner"
   },
   "directories": {
     "lib": "./lib",
