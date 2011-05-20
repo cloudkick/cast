@@ -30,6 +30,7 @@ var misc = require('util/misc');
 var cwd = process.cwd();
 var dataPath = path.join(cwd, 'data');
 var bundlePath = path.join(dataPath, 'test foo bar');
+var bundlePath2 = path.join(dataPath, 'folder_with_symlink');
 
 var tarballName1 = 'foo-bar-1.0.1.tar.gz';
 var tarballPath1 = path.join(dataPath, tarballName1);
@@ -54,6 +55,9 @@ var tarballPath7 = path.join(dataPath, tarballName7);
 
 var tarballName8 = 'foo-bar-1.0.8.tar.gz';
 var tarballPath8 = path.join(dataPath, tarballName8);
+
+var tarballName9 = 'foo-bar-1.0.9.tar.gz';
+var tarballPath9 = path.join(dataPath, tarballName9);
 
 exports['test_invalid_source_path'] = function(test, assert) {
   extract.createTarball('/invalid/source/path/', dataPath, tarballName1, {deleteIfExists: false}, function(err) {
@@ -212,3 +216,20 @@ exports['test_excludeFile'] = function(test, assert) {
     });
  });
 };
+
+exports['test_create_tarball_with_symlinks'] = function(test, assert) {
+  testUtil.fileDelete(tarballPath9);
+
+  extract.createTarball(bundlePath2, dataPath, tarballName9, {}, function(err) {
+    assert.ifError(err);
+    assert.equal(testUtil.fileExists(tarballPath9), true);
+
+    extract.getTarballFileList(tarballPath9, function(err, fileList) {
+      assert.ifError(err);
+      // Verify that the symlink path was not trasnformed
+      assert.ok(fileList.indexOf('../b/file') !== -1);
+      assert.length(fileList, 5);
+      testUtil.fileDelete(tarballPath9);
+      test.finish();
+    });
+ });};
