@@ -16,9 +16,8 @@
  */
 
 var req = require('util/requirements');
-var assert = require('./../assert');
 
-exports['test_compareVersions_b_less_than_a'] = function() {
+exports['test_compareVersions_b_less_than_a'] = function(test, assert) {
   var i, version;
   var versionA = '0.2.1';
   var versionsB = [ '0.1.0', '0.1.9', '0.2.0', '0.0.0' ];
@@ -27,10 +26,12 @@ exports['test_compareVersions_b_less_than_a'] = function() {
     version = versionsB[i];
     assert.equal(req.compareVersions(versionA, version), false);
   }
+
+  test.finish();
 };
 
 // Test compare_versions ver_b >= ver_a
-exports['test_compareVersions_b_more_than_or_equal_a'] = function() {
+exports['test_compareVersions_b_more_than_or_equal_a'] = function(test, assert) {
   var i, version;
   var versionA = '0.2.1';
   var versionsB = [ '0.2.1', '0.2.2', '0.2.3', '0.2.9', '0.3.0', '1.0.0' ];
@@ -39,9 +40,11 @@ exports['test_compareVersions_b_more_than_or_equal_a'] = function() {
     version = versionsB[i];
     assert.ok(req.compareVersions(versionA, version));
   }
+
+  test.finish();
 };
 
-exports['test_isDefined'] = function() {
+exports['test_isDefined'] = function(test, assert) {
   var i, item;
   var assertTrue = [ '1', ['foo', 'bar'], 1, {}, { 'foo': 'bar'}, true ];
   var assertFalse = [ null, undefined, false ];
@@ -55,4 +58,6 @@ exports['test_isDefined'] = function() {
     item = assertFalse[i];
     assert.equal(req.isDefined(null, item), false);
   }
+
+  test.finish();
 };

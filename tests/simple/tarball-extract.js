@@ -20,18 +20,18 @@ var path = require('path');
 var async = require('async');
 
 var tarball = require('util/tarball');
-var assert = require('./../assert');
 
-exports['test_extract_success'] = function() {
+exports['test_extract_success'] = function(test, assert) {
   var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');
   var expath = path.join(process.cwd(), '.tests/fooserv1');
 
   tarball.extractTarball(tbpath, expath, 0755, function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };
 
-exports['test_extract_to_path_that_already_exists_throws_error'] = function() {
+exports['test_extract_to_path_that_already_exists_throws_error'] = function(test, assert) {
   var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');
   var expath = path.join(process.cwd(), '.tests/fooserv2');
 
@@ -39,14 +39,16 @@ exports['test_extract_to_path_that_already_exists_throws_error'] = function() {
     assert.ifError(err);
     tarball.extractTarball(tbpath, expath, 0755, function(err) {
       assert.ok(err);
+      test.finish();
     });
   });
 };
 
-exports['test_extract_inexistent_tarball'] = function() {
+exports['test_extract_inexistent_tarball'] = function(test, assert) {
   var tbpath = path.join(process.cwd(), 'data/slowapp.tar.gz');
   var expath = path.join(process.cwd(), '.tests/slowserv');
   tarball.extractTarball(tbpath, expath, 0755, function(err) {
     assert.ok(err);
+    test.finish();
   });
 };

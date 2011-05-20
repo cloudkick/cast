@@ -21,17 +21,18 @@ var crypto = require('crypto');
 var exec = require('child_process').exec;
 
 var async = require('async');
+var sprintf = require('sprintf').sprintf;
 
 var misc = require('util/misc');
 var http = require('services/http');
-var assert = require('./../assert');
 
 var API_VERSION = '1.0';
 
-var getServer = http._serverOnly;
+var getServer = http.getAndConfigureServer;
+
 var hello = 'Hello World';
 
-function verifyResponseCode(url, code, method, data, callback) {
+function verifyResponseCode(assert, url, code, method, data, callback) {
   if (!callback) {
     if (data) {
       callback = data;
@@ -50,12 +51,14 @@ function verifyResponseCode(url, code, method, data, callback) {
     req.data = data;
   }
   assert.response(getServer(), req, function(res) {
-    assert.equal(res.statusCode, code, method + ' ' + url);
+    var errMsg = sprintf('Expected: %s, Actual: %s, %s %s', code, res.statusCode,
+                         method, url);
+    assert.equal(res.statusCode, code, errMsg);
     callback();
   });
 }
 
-exports['test_http_bundles'] = function() {
+exports['test_http_bundles'] = function(test, assert) {
   var fooservTarGz, fooservTarGzBad;
 
   // This is handy for tracking successful uploads
@@ -88,28 +91,28 @@ exports['test_http_bundles'] = function() {
     function(callback) {
       async.parallel([
         // Non-existant bundle
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/bar/', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/bar/', 404),
 
         // Up one level from bundles
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/../', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/../', 404),
 
         // At the bundles level
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/./', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/./', 404),
 
         // Uploading to the bundles directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/foo/../', 404, 'PUT', hello),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/foo/../', 404, 'PUT', hello),
 
         // Uploading to a file in the bundles directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/baz/baz@1.0.tar.gz', 500, 'PUT', hello),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/baz/baz@1.0.tar.gz', 500, 'PUT', hello),
 
         // Listing a file in the bundles directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/baz/', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/baz/', 404),
 
         // Get a file that is actually a directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404),
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404),
 
         // Delete a file that is actually a directory
-        async.apply(verifyResponseCode, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404)
+        async.apply(verifyResponseCode, assert, '/' + API_VERSION + '/bundles/foo/foo@3.0.tar.gz', 404)
 
       ],
       callback);
@@ -283,6 +286,7 @@ exports['test_http_bundles'] = function() {
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@1.0',
         method: 'DELETE',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
         body: 'bundle_type=tarball'
       },
       function(res) {
@@ -308,6 +312,7 @@ exports['test_http_bundles'] = function() {
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@1.0',
         method: 'DELETE',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
         body: 'bundle_type=extracted'
       },
       function(res) {
@@ -321,6 +326,7 @@ exports['test_http_bundles'] = function() {
       assert.response(getServer(), {
         url: '/' + API_VERSION + '/bundles/foo/foo@1.0',
         method: 'DELETE',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
         body: 'bundle_type=both'
       },
       function(res) {
@@ -332,5 +338,6 @@ exports['test_http_bundles'] = function() {
 
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };

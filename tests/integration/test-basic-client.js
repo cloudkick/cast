@@ -33,15 +33,14 @@ var exec = require('child_process').exec;
 
 var async = require('async');
 var sprintf = require('sprintf').sprintf;
-var assert = require('./../assert');
 
 var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
 function getServer() {
-  return require('services/http')._serverOnly();
+  return require('services/http').getAndConfigureServer();
 }
 
-exports['test_remotes'] = function() {
+exports['test_remotes'] = function(test, assert) {
   var cbin = path.normalize(path.join(process.cwd(), '..', 'bin', 'cast'));
   var aroot = path.join(process.cwd(), '.tests');
   var croot = path.join(process.cwd(), '.tests/fooserv');
@@ -120,5 +119,6 @@ exports['test_remotes'] = function() {
   function(err) {
     server.close();
     assert.ifError(err);
+    test.finish();
   });
 };

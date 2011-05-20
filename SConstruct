@@ -164,8 +164,15 @@ else:
 
 chdir = pjoin(os.getcwd(), 'tests')
 init_file = pjoin(os.getcwd(), 'tests', 'init.js')
-testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
-                      (chdir, init_file, ' '.join(tests_to_run)))
+assert_module_path = pjoin(os.getcwd(), 'tests', 'assert.js')
+testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
+                      (chdir, assert_module_path, init_file, ' '.join(tests_to_run)))
+
+coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --timeout 10000 --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
+                                             "--tests '%s' --coverage --coverage-reporter html --coverage-dir coverage_html " \
+                                             "--coverage-encoding utf8 --coverage-exclude extern" %
+                      (chdir, assert_module_path, init_file, ' '.join(tests_to_run)))
+
 
 chdir = pjoin(os.getcwd())
 init_file = pjoin(os.getcwd(), 'tests', 'init-dist.js')
@@ -174,9 +181,13 @@ testcmd_dist = env.Command('.tests_dist_run', [], "$WHISKEY --timeout 180000 --c
                            (chdir, init_file, ' '.join(dist_tests_to_run)))
 
 env.AlwaysBuild(testcmd)
+env.AlwaysBuild(coveragecmd)
 env.Alias('test', testcmd)
 env.Alias('tests', 'test')
 env.Alias('test-dist', testcmd_dist)
+
+env.Alias('coverage', coveragecmd)
+env.Alias('cov', 'coverage')
 
 # Update NPM dependencies
 update_dependencies_cmd = env.Command('.update_dependencies', [], "rm -rf node_modules ; npm install")

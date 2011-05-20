@@ -17,25 +17,27 @@
 
 var path = require('path');
 
+var async = require('async');
+
 var instances = require('deployment/instances');
 var hooks = require('deployment/hooks');
-var assert = require('./../assert');
 
-instance = new instances.Instance('test_instance');
+var instance = new instances.Instance('test_instance');
 instance._bundleName = 'test_bundle';
 instance.root = path.join(__dirname, '../data/instances/test_instance/');
 
 var instance_version_path = path.join(instance.root, 'versions/test_bundle@1.0');
 var hooks_path = path.join(instance_version_path, '.cast-project/hooks');
 
-exports['test_success'] = function() {
+exports['test_success'] = function(test, assert) {
   function callback(err, killed, stdout, stderr) {
     assert.ifError(err);
     assert.ok(!killed);
 
     assert.equal('test hook success stdout', stdout);
     assert.equal('test hook success stderr', stderr);
-  };
+    test.finish();
+  }
 
   var hook_file = 'hook_success.js';
   var base_hook = new hooks.Hook('pre', hook_file,
@@ -47,14 +49,15 @@ exports['test_success'] = function() {
   instance_hook.execute(null, [], callback);
 };
 
-exports['test_failure'] = function() {
+exports['test_failure'] = function(test, assert) {
   function callback(err, killed, stdout, stderr) {
     assert.ok(err);
     assert.ok(!killed);
 
     assert.equal('test hook failure stdout', stdout);
     assert.equal('test hook failure stderr', stderr);
-  };
+    test.finish();
+  }
 
   var hook_file = 'hook_failure.js';
   var base_hook = new hooks.Hook('pre', hook_file,
@@ -66,14 +69,15 @@ exports['test_failure'] = function() {
   instance_hook.execute(null, [], callback);
 };
 
-exports['test_hook_args'] = function() {
+exports['test_hook_args'] = function(test, assert) {
   function callback(err, killed, stdout, stderr) {
     assert.ifError(err);
     assert.ok(!killed);
 
     assert.equal('test hook args stdout: test1, test2', stdout);
     assert.equal('test hook args stderr', stderr);
-  };
+    test.finish();
+  }
 
   var hook_file = 'hook_args.js';
   var base_hook = new hooks.Hook('pre', hook_file,
@@ -85,12 +89,13 @@ exports['test_hook_args'] = function() {
   instance_hook.execute(null, [ 'test1', 'test2'], callback);
 };
 
-exports['test_timeout'] = function() {
+exports['test_timeout'] = function(test, assert) {
   function callback(err, killed, stdout, stderr) {
     assert.ok(err);
     assert.match(err, /timeout/);
     assert.ok(killed);
-  };
+    test.finish();
+  }
 
   var hook_file = 'hook_timeout.js';
   var base_hook = new hooks.Hook('pre', hook_file,
@@ -102,12 +107,13 @@ exports['test_timeout'] = function() {
   instance_hook.execute(300, [], callback);
 };
 
-exports['test_failure_hook_is_not_executable'] = function() {
+exports['test_failure_hook_is_not_executable'] = function(test, assert) {
   function callback(err, killed, stdout, stderr) {
     assert.ok(err);
     assert.match(err, /status 127/);
     assert.ok(!killed);
-  };
+    test.finish();
+  }
 
   var hook_file = 'hook_not_executable.js';
   var base_hook = new hooks.Hook('pre', hook_file,
@@ -119,23 +125,47 @@ exports['test_failure_hook_is_not_executable'] = function() {
   instance_hook.execute(null, [], callback);
 };
 
-exports['test_failure_hook_does_not_exist'] = function() {
+exports['test_failure_hook_does_not_exist'] = function(test, assert) {
   function callback1(err, killed, stdout, stderr) {
     assert.ok(!err);
     assert.ok(!killed);
-  };
+  }
 
   function callback2(err, killed, stdout, stderr) {
     assert.ok(err);
     assert.match(err, /does not exist/);
     assert.ok(!killed);
-  };
+    test.finish();
+  }
 
   var hook_file = 'hook_not_exists.js';
   var hook1 = new hooks.InstanceHook('pre', hook_file,
                                      instance_version_path, false);
   var hook2 = new hooks.InstanceHook('pre', hook_file,
                                      instance_version_path, true);
-  hook1.execute(null, [], callback1);
-  hook2.execute(null, [], callback2);
+
+  async.parallel([
+    function(callback) {
+      hook1.execute(null, [], function(err, killed, stdout, stderr) {
+        assert.ok(!err);
+        assert.ok(!killed);
+
+        callback();
+      });
+    },
+
+    function(callback) {
+      hook2.execute(null, [], function(err, killed, stdout, stderr) {
+        assert.ok(err);
+        assert.match(err, /does not exist/);
+        assert.ok(!killed);
+
+        callback();
+      });
+
+    }],
+
+    function(err) {
+      test.finish();
+    });
 };

@@ -24,13 +24,12 @@ var sprintf = require('sprintf').sprintf;
 
 var certgen = require('security/certgen');
 var misc = require('util/misc');
-var assert = require('./../assert');
 
-exports['setUp'] = function(callback) {
-  fs.mkdir('.tests/certs', 0700, callback);
+exports['setUp'] = function(test, assert) {
+  fs.mkdir('.tests/certs', 0700, test.finish);
 };
 
-exports['test_openssl_cert_generation'] = function() {
+exports['test_openssl_cert_generation'] = function(test, assert) {
   var hostname = 'testhostnamerare' + misc.randstr(5);
   var keypath = '.tests/certs/t.key';
   var crtpath = '.tests/certs/t.crt';
@@ -40,11 +39,12 @@ exports['test_openssl_cert_generation'] = function() {
     exec('openssl x509 -noout -subject -in .tests/certs/t.crt', function(err, stdout, stderr) {
       assert.ifError(err);
       assert.equal('subject= /CN=' + hostname, misc.trim(stdout));
+      test.finish();
     });
   });
 };
 
-exports['test_openssl_key_generation'] = function() {
+exports['test_openssl_key_generation'] = function(test, assert) {
   var keypath = '.tests/certs/t2.key';
   certgen.genKey(keypath, function(err) {
     assert.ifError(err);
@@ -52,11 +52,12 @@ exports['test_openssl_key_generation'] = function() {
       assert.ifError(err);
       assert.match(text, /BEGIN RSA PRIVATE KEY/);
       assert.match(text, /END RSA PRIVATE KEY/);
-    })
+      test.finish();
+    });
   });
 };
 
-exports['test_openssl_csr_generation_verification'] = function() {
+exports['test_openssl_csr_generation_verification'] = function(test, assert) {
   var keypath = '.tests/certs/t3.key';
   var csrpath = '.tests/certs/t3.csr';
   var opts = {
@@ -99,12 +100,14 @@ exports['test_openssl_csr_generation_verification'] = function() {
       });
     }
   ],
+
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };
 
-exports['tests_openssl_ca_functionality'] = function() {
+exports['tests_openssl_ca_functionality'] = function(test, assert) {
   var cadir = '.tests/ca';
   var cakey = path.join(cadir, 'ca.key');
   var cacert = path.join(cadir, 'ca.crt');
@@ -172,12 +175,14 @@ exports['tests_openssl_ca_functionality'] = function() {
       });
     }
   ],
+
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };
 
-exports['test_openssl_certificate_fingerprint'] = function() {
+exports['test_openssl_certificate_fingerprint'] = function(test, assert) {
   var certPath = path.join(process.cwd(), 'data', 'test.crt');
   var badPath = path.join(process.cwd(), 'data', 'nonexistant.crt');
 
@@ -191,5 +196,6 @@ exports['test_openssl_certificate_fingerprint'] = function() {
 
   certgen.getCertFingerprint(badPath, function(err, fingerprint) {
     assert.ok(err);
+    test.finish();
   });
-}
+};

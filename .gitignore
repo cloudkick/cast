@@ -6,10 +6,10 @@ lib-cov
 *.swp
 .deps
 *-h1
-lib/extern/node-jscoverage/*
 .tests
 *.pyc
 temp/*
 dist/
 deps/
 tmp/
+coverage_html/

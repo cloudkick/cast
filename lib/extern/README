@@ -9,11 +9,6 @@ closure-linter 2.2.7 (September 2, 2010)
   License: Apache 2.0
   Checks code style
 
-clutch 42373a7a518739 (July 4, 2010)
-  http://github.com/clement/clutch
-  License: MIT
-  Library used to route URLs to handlers in HTTP server.
-
 jsdoc-toolkit v2.4.0 (December 13, 2010)
    http://code.google.com/p/jsdoc-toolkit/
    License: X11/MIT
@@ -56,6 +51,11 @@ optparse 1.0.1
   http://github.com/jfd/optparse-js
   License: "MIT-style license"
   Command Line argument parsing.
+
+rate-limiter 0.1.0
+  http://github.com/cloudkick/rate-limiter
+  License: Apache 2.0
+  HTTP request rate limiting.
 
 sprintf 0.1.1
   http://www.diveintojavascript.com/projects/sprintf-for-javascript

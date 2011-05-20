@@ -24,22 +24,19 @@ var sprintf = require('sprintf').sprintf;
 
 var ca = require('security/ca');
 var certgen = require('security/certgen');
-var assert = require('./../assert');
 
 var TMPDIR = path.join('.tests', 'tmp');
 
-exports['setUp'] = function(callback) {
+exports['setUp'] = function(test, assert) {
   var testCA = ca.getCA();
   exec(sprintf('mkdir -p "%s"', TMPDIR), function(err) {
-    if (err) {
-      callback(err);
-      return;
-    }
-    testCA.init(callback);
+    assert.ifError(err);
+
+    testCA.init(test.finish);
   });
 };
 
-exports['test_ca_basic_use'] = function(callback) {
+exports['test_ca_basic_use'] = function(test, assert) {
   var testCA = ca.getCA();
   var reqHost = 'test.example.com';
   var keyPath = path.join(TMPDIR, 'test.key');
@@ -177,11 +174,6 @@ exports['test_ca_basic_use'] = function(callback) {
   ],
   function(err) {
     assert.ifError(err);
+    test.finish();
   });
 };
-
-
-
-
-
-
