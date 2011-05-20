@@ -232,4 +232,5 @@ exports['test_create_tarball_with_symlinks'] = function(test, assert) {
       testUtil.fileDelete(tarballPath9);
       test.finish();
     });
- });};
+  });
+};
