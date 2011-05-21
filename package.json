@@ -20,13 +20,16 @@
   },
   "dependencies": {
     "async": "= 0.1.4",
+    "express": "= 2.3.4",
     "optparse": "= 1.0.1",
     "sprintf": "= 0.1.1",
     "nodelint": "= 0.4.0",
     "worker-pool": "= 0.1.0",
     "magic-templates": "= 0.1.0",
     "node-uuid": "= 1.1.0",
-    "corrector": "= 0.1.0"
+    "corrector": "= 0.1.0",
+    "rate-limiter": "= 0.1.0",
+    "terminal": "= 0.1.1"
   },
   "devDependencies": {
     "whiskey": "= 0.3.2"

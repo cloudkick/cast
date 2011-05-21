@@ -37,7 +37,7 @@ var sprintf = require('sprintf').sprintf;
 var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
 function getServer() {
-  return require('services/http')._serverOnly();
+  return require('services/http').getAndConfigureServer();
 }
 
 exports['test_remotes'] = function(test, assert) {
