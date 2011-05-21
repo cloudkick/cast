@@ -1,3 +1,10 @@
+20.05.2011 - v0.1.2 (hotfix):
+ * Fix a bug with invalid handling of the symlinks in the Cast bundles
+
+17.05.2011 - v0.1.1 (hotfix):
+ * Fix a bug with "bundles upload" client command not working if the terminal
+   window size could not be detected
+
 25.04.2011 - v0.1.0 (stable, preview):
 
  * Initial public preview release
