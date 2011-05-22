@@ -70,6 +70,7 @@ exports['test_getApiResponse'] = function(test, assert) {
 
         server_.get('/1.0/test-url', reqHandlerError);
         server_.get('/1.0/test-url-body', reqHandlerBody);
+        http.configureErrorHandlers(server_);
 
         server = server_;
         callback();
@@ -84,14 +85,14 @@ exports['test_getApiResponse'] = function(test, assert) {
       });
     },
 
-    /*function testUnsupportedApiVersion(callback) {
+    function testUnsupportedApiVersion(callback) {
       httpUtil.getApiResponse(REMOTE['name'], '5.5', '/test-url', 'GET',
-                            null, false, [200], function onResponse(err, response) {
+                            null, false, null, function onResponse(err, response) {
         assert.ok(err);
-        assert.match(err.message, /does not support api version/);
+        assert.match(err.message, /does not support api version/i);
         callback();
       });
-    },*/
+    },
 
     function testSuccessBody(callback) {
       var body = 'foo=bar';
