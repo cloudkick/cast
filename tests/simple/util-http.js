@@ -60,11 +60,16 @@ exports['test_getApiResponse'] = function(test, assert) {
   async.series([
     function startTestServer(callback) {
       testUtil.getTestHttpServer(REMOTE['port'], '127.0.0.1', function(server_) {
-        function reqHandler(req, res) {
+        function reqHandlerError(req, res) {
           httpUtil.returnError(res, 500, 'Test error message');
         }
 
-        server_.get('/1.0/test-url', reqHandler);
+        function reqHandlerBody(req, res) {
+          httpUtil.returnJson(res, 200, req.body);
+        }
+
+        server_.get('/1.0/test-url', reqHandlerError);
+        server_.get('/1.0/test-url-body', reqHandlerBody);
 
         server = server_;
         callback();
@@ -75,6 +80,16 @@ exports['test_getApiResponse'] = function(test, assert) {
       httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/test-url', 'GET',
                             null, false, [500], function onResponse(err, response) {
         assert.ifError(err);
+        callback();
+      });
+    },
+
+    function testSuccessBody(callback) {
+      var body = 'foo=bar';
+      httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/test-url-body', 'GET',
+                             body, true, [200], function onResponse(err, response) {
+        assert.ifError(err);
+        assert.deepEqual(response.body, { 'foo': 'bar'});
         callback();
       });
     },
