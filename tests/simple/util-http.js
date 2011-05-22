@@ -16,6 +16,7 @@
  */
 
 var async = require('async');
+var express = require('express');
 
 var http = require('services/http');
 var httpUtil = require('util/http');
@@ -35,25 +36,67 @@ exports['test_getApiResponse_invalid_remote'] = function(test, assert) {
   });
 };
 
-exports['test_getApiResponse_unexpected_status_code'] = function(test, assert) {
+exports['test_getApiResponse_no_api_version_arg'] = function(test, assert) {
+  httpUtil.getApiResponse(REMOTE['name'], null, '/some-inextensitent-path', 'GET',
+                          null, false, null, function onResponse(err, response) {
+    assert.ok(err);
+    assert.match(err.message, /missing value for/i);
+    test.finish();
+  });
+};
+
+exports['test_getApiResponse_invalid method'] = function(test, assert) {
+  httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/some-inextensitent-path',
+                          'INVALID-METHOD', null, false, null, function onResponse(err, response) {
+    assert.ok(err);
+    assert.match(err.message, /invalid method/i);
+    test.finish();
+  });
+};
+
+exports['test_getApiResponse'] = function(test, assert) {
   var server = null;
 
   async.series([
     function startTestServer(callback) {
       testUtil.getTestHttpServer(REMOTE['port'], '127.0.0.1', function(server_) {
+        function reqHandler(req, res) {
+          httpUtil.returnError(res, 500, 'Test error message');
+        }
+
+        server_.get('/1.0/test-url', reqHandler);
+
         server = server_;
         callback();
       });
     },
 
-    function testGetApiResponse(callback) {
+    function testSuccess(callback) {
+      httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/test-url', 'GET',
+                            null, false, [500], function onResponse(err, response) {
+        assert.ifError(err);
+        callback();
+      });
+    },
+
+    function testUnexpectedStatusCode1(callback) {
       httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/some-inextensitent-path', 'GET',
-                            null, false, [300], function onResponse(err, response) {
+                            null, false, [200], function onResponse(err, response) {
         assert.ok(err);
         assert.match(err.message, /unexpected status code/i);
         callback();
       });
-    }
+    },
+
+    function testUnexpectedStatusCode2(callback) {
+      httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/test-url', 'GET',
+                            null, true, [200], function onResponse(err, response) {
+        assert.ok(err);
+        assert.match(err.message, /test error message/i);
+        callback();
+      });
+    },
+
   ],
 
   function(err) {
