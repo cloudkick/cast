@@ -37,7 +37,7 @@ exports['test_getApiResponse_invalid_remote'] = function(test, assert) {
 };
 
 exports['test_getApiResponse_no_api_version_arg'] = function(test, assert) {
-  httpUtil.getApiResponse(REMOTE['name'], null, '/some-inextensitent-path', 'GET',
+  httpUtil.getApiResponse(REMOTE['name'], null, '/', 'GET',
                           null, false, null, function onResponse(err, response) {
     assert.ok(err);
     assert.match(err.message, /missing value for/i);
@@ -45,7 +45,7 @@ exports['test_getApiResponse_no_api_version_arg'] = function(test, assert) {
   });
 };
 
-exports['test_getApiResponse_invalid method'] = function(test, assert) {
+exports['test_getApiResponse_invalid_method'] = function(test, assert) {
   httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/some-inextensitent-path',
                           'INVALID-METHOD', null, false, null, function onResponse(err, response) {
     assert.ok(err);
@@ -84,9 +84,18 @@ exports['test_getApiResponse'] = function(test, assert) {
       });
     },
 
+    /*function testUnsupportedApiVersion(callback) {
+      httpUtil.getApiResponse(REMOTE['name'], '5.5', '/test-url', 'GET',
+                            null, false, [200], function onResponse(err, response) {
+        assert.ok(err);
+        assert.match(err.message, /does not support api version/);
+        callback();
+      });
+    },*/
+
     function testSuccessBody(callback) {
       var body = 'foo=bar';
-      httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/test-url-body', 'GET',
+      httpUtil.getApiResponse(REMOTE['name'], API_VERSION, 'test-url-body', 'GET',
                              body, true, [200], function onResponse(err, response) {
         assert.ifError(err);
         assert.deepEqual(response.body, { 'foo': 'bar'});
