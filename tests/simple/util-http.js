@@ -28,8 +28,15 @@ var API_VERSION = testConstants.API_VERSION;
 var REMOTE = testConstants.AVAILABLE_REMOTES['localhost_http1'];
 
 exports['test_getApiResponse_invalid_remote'] = function(test, assert) {
-  httpUtil.getApiResponse('some-inexistent-remote', API_VERSION, '/some-inextensitent-path', 'GET',
-                          null, false, null, function onResponse(err, response) {
+  var options = {
+    'remote': 'some-inexistent-remote',
+    'apiVersion': API_VERSION,
+    'parseJson': false,
+    'expectedStatusCodes': null,
+  };
+
+  httpUtil.getApiResponse('/some-inextensitent-path', 'GET', null, options,
+                          function onResponse(err, response) {
     assert.ok(err);
     assert.match(err.message, /no such remote/i);
     test.finish();
@@ -37,8 +44,14 @@ exports['test_getApiResponse_invalid_remote'] = function(test, assert) {
 };
 
 exports['test_getApiResponse_no_api_version_arg'] = function(test, assert) {
-  httpUtil.getApiResponse(REMOTE['name'], null, '/', 'GET',
-                          null, false, null, function onResponse(err, response) {
+  var options = {
+    'remote': REMOTE['name'],
+    'apiVersion': null,
+    'parseJson': false,
+    'expectedStatusCodes': null,
+  };
+
+  httpUtil.getApiResponse('/', 'GET', options, function onResponse(err, response) {
     assert.ok(err);
     assert.match(err.message, /missing value for/i);
     test.finish();
@@ -46,8 +59,15 @@ exports['test_getApiResponse_no_api_version_arg'] = function(test, assert) {
 };
 
 exports['test_getApiResponse_invalid_method'] = function(test, assert) {
-  httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/some-inextensitent-path',
-                          'INVALID-METHOD', null, false, null, function onResponse(err, response) {
+  var options = {
+    'remote': REMOTE['name'],
+    'apiVersion': API_VERSION,
+    'parseJson': false,
+    'expectedStatusCodes': null,
+  };
+
+  httpUtil.getApiResponse('/some-inextensitent-path', 'INVALID-METHOD', options,
+                          function onResponse(err, response) {
     assert.ok(err);
     assert.match(err.message, /invalid method/i);
     test.finish();
@@ -56,6 +76,12 @@ exports['test_getApiResponse_invalid_method'] = function(test, assert) {
 
 exports['test_getApiResponse'] = function(test, assert) {
   var server = null;
+  var options = {
+    'remote': REMOTE['name'],
+    'apiVersion': API_VERSION,
+    'parseJson': false,
+    'expectedStatusCodes': null,
+  };
 
   async.series([
     function startTestServer(callback) {
@@ -78,16 +104,21 @@ exports['test_getApiResponse'] = function(test, assert) {
     },
 
     function testSuccess(callback) {
-      httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/test-url', 'GET',
-                            null, false, [500], function onResponse(err, response) {
+      options.parseJson = false;
+      options.expectedStatusCodes = [500];
+
+      httpUtil.getApiResponse('/test-url', 'GET', options, function onResponse(err, response) {
         assert.ifError(err);
         callback();
       });
     },
 
     function testUnsupportedApiVersion(callback) {
-      httpUtil.getApiResponse(REMOTE['name'], '5.5', '/test-url', 'GET',
-                            null, false, null, function onResponse(err, response) {
+      options.apiVersion = '5.5';
+      options.parseJson = false;
+      options.expectedStatusCodes = null;
+
+      httpUtil.getApiResponse('/test-url', 'GET', options, function onResponse(err, response) {
         assert.ok(err);
         assert.match(err.message, /does not support api version/i);
         callback();
@@ -96,8 +127,12 @@ exports['test_getApiResponse'] = function(test, assert) {
 
     function testSuccessBody(callback) {
       var body = 'foo=bar';
-      httpUtil.getApiResponse(REMOTE['name'], API_VERSION, 'test-url-body', 'GET',
-                             body, true, [200], function onResponse(err, response) {
+      options.apiVersion = API_VERSION;
+      options.parseJson = true;
+      options.expectedStatusCodes = [200];
+
+      httpUtil.getApiResponse('test-url-body', 'GET', body, options,
+                              function onResponse(err, response) {
         assert.ifError(err);
         assert.deepEqual(response.body, { 'foo': 'bar'});
         callback();
@@ -105,8 +140,12 @@ exports['test_getApiResponse'] = function(test, assert) {
     },
 
     function testUnexpectedStatusCode1(callback) {
-      httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/some-inextensitent-path', 'GET',
-                            null, false, [200], function onResponse(err, response) {
+      options.apiVersion = API_VERSION;
+      options.parseJson = false;
+      options.expectedStatusCodes = [200];
+
+      httpUtil.getApiResponse('/some-inextensitent-path', 'GET', options,
+                              function onResponse(err, response) {
         assert.ok(err);
         assert.match(err.message, /unexpected status code/i);
         callback();
@@ -114,8 +153,11 @@ exports['test_getApiResponse'] = function(test, assert) {
     },
 
     function testUnexpectedStatusCode2(callback) {
-      httpUtil.getApiResponse(REMOTE['name'], API_VERSION, '/test-url', 'GET',
-                            null, true, [200], function onResponse(err, response) {
+      options.apiVersion = API_VERSION;
+      options.parseJson = true;
+      options.expectedStatusCodes = [200];
+
+      httpUtil.getApiResponse('/test-url', 'GET', options, function onResponse(err, response) {
         assert.ok(err);
         assert.match(err.message, /test error message/i);
         callback();
