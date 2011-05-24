@@ -132,7 +132,10 @@ exports['test_tailFile_follow_multiple_subscribers'] = function(test, assert) {
   function(err) {
     var intervalId;
     intervalId = setInterval(function() {
-      if (callbackCalledCount === 4) {
+      // Callback needs to be called at least 4 times:
+      // subscriber #1 - 1 initial callback, 1+ when "data1" is written
+      // subscriber #2 - 1 initial callback, 1+ when "data1" is written
+      if (callbackCalledCount >= 4) {
         clearInterval(intervalId);
 
         unsubscribeArray[0]();
