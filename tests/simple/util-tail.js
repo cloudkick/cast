@@ -15,8 +15,11 @@
  * limitations under the License.
  */
 
+var fs = require('fs');
 var path = require('path');
 var constants = require('constants');
+
+var async = require('async');
 
 var tail = require('util/tail');
 
@@ -82,7 +85,62 @@ exports['test_tailFile_follow_basic'] = function(test, assert) {
 };
 
 exports['test_tailFile_follow_multiple_subscribers'] = function(test, assert) {
-  test.finish();
+  var filePath = path.join(cwd, '.tests/temp-file-multisubs-test.txt');
+  var writeStream = fs.createWriteStream(filePath);
+  var unsubscribeArray = [];
+  var callbackCalledCount = 0;
+
+  async.series([
+    function tailFileSubscriber1(callback) {
+      var callbackCalled = false;
+
+      tail.tailFile(filePath, 500, true,
+                    function onData(err, data, unsubscribe) {
+        assert.ifError(err);
+        callbackCalledCount++;
+
+        if (!callbackCalled) {
+          callbackCalled = true;
+          unsubscribeArray.push(unsubscribe);
+          callback();
+        }
+      });
+    },
+
+    function tailFileSubscriber2(callback) {
+      var callbackCalled = false;
+
+      tail.tailFile(filePath, 500, true,
+                    function onData(err, data, unsubscribe) {
+        assert.ifError(err);
+        callbackCalledCount++;
+
+        if (!callbackCalled) {
+          callbackCalled = true;
+          unsubscribeArray.push(unsubscribe);
+          callback();
+        }
+      });
+    },
+
+    function writeSomeData(callback) {
+      writeStream.write('data1');
+      setTimeout(callback, 200);
+    }
+  ],
+
+  function(err) {
+    var intervalId;
+    intervalId = setInterval(function() {
+      if (callbackCalledCount === 4) {
+        clearInterval(intervalId);
+
+        unsubscribeArray[0]();
+        unsubscribeArray[1]();
+        test.finish();
+      }
+    }, 100);
+  });
 };
 
 exports['test_tailFile_follow_file_changes'] = function(test, assert) {
