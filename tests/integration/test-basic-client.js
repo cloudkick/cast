@@ -37,7 +37,7 @@ var sprintf = require('sprintf').sprintf;
 var port = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
 function getServer() {
-  return require('services/http')._serverOnly();
+  return require('services/http').getAndConfigureServer();
 }
 
 exports['test_remotes'] = function(test, assert) {
@@ -94,6 +94,15 @@ exports['test_remotes'] = function(test, assert) {
     // Set a default remote
     function(callback) {
       cexec(['remotes', 'set-default', 'test'], function(err, stdout, stderr) {
+        callback();
+      });
+    },
+
+    // Try to set an inexistent remote as a default
+    function(callback) {
+      cexec(['remotes', 'set-default', 'test-inexistent'], false, function(err, stdout, stderr) {
+        assert.ok(err);
+        assert.equal(err.code, 1);
         callback();
       });
     },

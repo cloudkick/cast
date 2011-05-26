@@ -23,10 +23,16 @@ var sprintf = require('sprintf').sprintf;
 
 var config = require('util/config');
 var fsUtil = require('util/fs');
+var dotfiles = require('util/client_dotfiles');
+
+var cwd = process.cwd();
 
 function setUp(callback) {
   var testFolderPath = path.join(__dirname, '.tests');
   var testDataRoot = path.join(testFolderPath, 'data_root');
+
+  // Mock the default remotes path
+  dotfiles.setDotCastRemotesPath(path.join(cwd, 'data/remotes.json'));
 
   config.configFiles = [
     path.join(__dirname, 'test.conf')
