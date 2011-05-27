@@ -25,7 +25,7 @@ var utilHttp = require('util/http');
 
 var startPort = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
-assert.response = function(server, req, res, msg) {
+function assertResponse(server, req, res, msg, parseJson) {
   // Callback as third or fourth arg
   var callback = typeof res === 'function'
       ? res
@@ -134,6 +134,16 @@ assert.response = function(server, req, res, msg) {
             }
           }
 
+          if (parseJson) {
+            // Parse body as JSON
+            try {
+              response.body = JSON.parse(response.body);
+            }
+            catch (err) {
+              assert.fail('Could not parse response body as json: ' + err.message);
+            }
+          }
+
           // Callback
           callback(response);
         });
@@ -146,6 +156,15 @@ assert.response = function(server, req, res, msg) {
     });
   });
 };
+
+assert.responseJson = function(server, req, res, msg) {
+  assertResponse(server, req, res, msg, true);
+};
+
+assert.response = function(server, req, res, msg) {
+  assertResponse(server, req, res, msg, false);
+}
+
 
 var keys = Object.keys(assert);
 keys.forEach(function(key) {
