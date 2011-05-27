@@ -72,10 +72,6 @@ function setUp(callback) {
 
     function setUpAgentConfig(callback) {
       config.setupAgent(callback);
-    },
-
-    function generateAgentCaCert(callback) {
-      ca.getCA().init(callback);
     }
   ],
 

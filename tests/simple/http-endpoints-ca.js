@@ -44,6 +44,10 @@ exports['test_ca_http_endpoint'] = function(test, assert) {
     };
 
   async.waterfall([
+    function generateAgentCaCert(callback) {
+      ca.getCA().init(callback);
+    },
+
     function testListRequestsIsEmpty(callback) {
       var req = testUtil.getReqObject('/ca', 'GET', testConstants.API_VERSION);
 
