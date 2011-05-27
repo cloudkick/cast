@@ -166,8 +166,9 @@ chdir = pjoin(os.getcwd(), 'tests')
 init_file = pjoin(os.getcwd(), 'tests', 'init.js')
 assert_module_path = pjoin(os.getcwd(), 'tests', 'assert.js')
 tests = os.environ.get('TEST_FILE') if os.environ.get('TEST_FILE') else ' '.join(tests_to_run)
-testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
-                      (chdir, assert_module_path, init_file, tests))
+output = '--print-stdout --print-stderr' if os.environ.get('OUTPUT') else ''
+testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
+                      (output, chdir, assert_module_path, init_file, tests))
 
 coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --timeout 10000 --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
                                              "--tests '%s' --coverage --coverage-reporter html --coverage-dir coverage_html " \
