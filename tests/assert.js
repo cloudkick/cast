@@ -140,7 +140,8 @@ function assertResponse(server, req, res, msg, parseJson) {
               response.body = JSON.parse(response.body);
             }
             catch (err) {
-              assert.fail('Could not parse response body as json: ' + err.message);
+              assert.fail('Could not parse response body as json, body: ' +
+                          response.body + ', error: '+ err.message);
             }
           }
 
