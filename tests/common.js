@@ -31,14 +31,19 @@ var cwd = process.cwd();
 function setUp(callback) {
   var testFolderPath = path.join(__dirname, '.tests');
   var testDataRoot = path.join(testFolderPath, 'data_root');
+  var certDirsPath = path.join(testDataRoot, dotfiles.CERTDIR_NAME);
   var caPath = path.join(testDataRoot, 'ca');
   var caOutPath = path.join(caPath, 'out');
+  var dotCastPath = path.join(testFolderPath, '.cast');
+  var certsPath = path.join(dotCastPath, 'certs');
 
-  var directoriesToCreate = [testFolderPath, testDataRoot, caOutPath];
+  var directoriesToCreate = [testFolderPath, testDataRoot, caPath, caOutPath,
+                             dotCastPath, certsPath];
 
   async.series([
     function mockDefaultRemotesPath(callback) {
-      // Mock the default remotes path
+      // Mock the dotCast and default remotes path
+      dotfiles.setDotCastPath(dotCastPath);
       dotfiles.setDotCastRemotesPath(path.join(cwd, 'data/remotes.json'));
       callback();
     },
