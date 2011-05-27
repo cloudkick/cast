@@ -396,7 +396,7 @@ exports['test_resolveDataFiles'] = function(test, assert) {
     function(callback) {
       // A directory should have been created in the data directory and a
       // symlink to it created in the instance directory
-      helpers.checkPath({
+      helpers.checkPath(assert, {
         path: '.tests/data_root2/applications/app1/test1',
         type: 'symlink.directory',
         target: '.tests/data_tmp/test1'
@@ -404,7 +404,7 @@ exports['test_resolveDataFiles'] = function(test, assert) {
 
       // A directory should have been created in the data directory and a
       // symlink to it created in the instance directory
-      helpers.checkPath({
+      helpers.checkPath(assert, {
         path: '.tests/data_root2/applications/app1/test2',
         type: 'symlink.directory',
         target: '.tests/data_tmp/test2'
@@ -416,17 +416,17 @@ exports['test_resolveDataFiles'] = function(test, assert) {
       // root. However, the latter path should not actually exist (creating the
       // data file is up to the application) so the symlink should be broken at
       // this point.
-      helpers.checkPath({
+      helpers.checkPath(assert, {
         path: '.tests/data_tmp/test3',
         type: 'directory'
       });
 
-      helpers.checkPath({
+      helpers.checkPath(assert, {
         path: '.tests/data_root2/applications/app1/test3',
         type: 'directory'
       });
 
-      helpers.checkPath({
+      helpers.checkPath(assert, {
         path: '.tests/data_root2/applications/app1/test3/foo.txt',
         type: 'symlink.null',
         target: '.tests/data_tmp/test3/foo.txt'
@@ -446,25 +446,25 @@ exports['test_resolveDataFiles'] = function(test, assert) {
                 dataFiles2),
 
     function(callback) {
-      helpers.checkPath({
+      helpers.checkPath(assert, {
         path: '.tests/data_root3/applications/app1/data/archive.tar.gz',
         type: 'symlink.file',
         target: '.tests/data_tmp2/data/archive.tar.gz'
       });
 
-      helpers.checkPath({
+      helpers.checkPath(assert, {
         path: '.tests/data_root3/applications/app1/data/README',
         type: 'symlink.file',
         target: '.tests/data_tmp2/data/README'
       });
 
-      helpers.checkPath({
+      helpers.checkPath(assert, {
         path: '.tests/data_root3/applications/app1/data/file3.txt',
         type: 'symlink.file',
         target: '.tests/data_tmp2/data/file3.txt'
       });
 
-      helpers.checkPath({
+      helpers.checkPath(assert, {
         path: '.tests/data_root3/applications/app1/dbdata',
         type: 'symlink.directory',
         target: '.tests/data_tmp2/dbdata'
