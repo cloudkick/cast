@@ -141,8 +141,8 @@ env.Alias('build-docs', [ docscmd, uploaddocscmd ])
 env.Depends(uploaddocscmd, docscmd)
 
 IGNORED_TESTS = [ 'tests/assert.js', 'tests/init.js', 'tests/init-dist.js',
-                  'tests/common.js', 'tests/helpers.js', 'tests/data/',
-                  'tests/dist/' ];
+                  'tests/common.js', 'tests/constants.js', 'tests/helpers.js',
+                  'tests/data/', 'tests/dist/' ];
 tests = sorted(testsource)
 
 test_files = []
@@ -165,13 +165,16 @@ else:
 chdir = pjoin(os.getcwd(), 'tests')
 init_file = pjoin(os.getcwd(), 'tests', 'init.js')
 assert_module_path = pjoin(os.getcwd(), 'tests', 'assert.js')
-testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
-                      (chdir, assert_module_path, init_file, ' '.join(tests_to_run)))
+tests = os.environ.get('TEST_FILE') if os.environ.get('TEST_FILE') else ' '.join(tests_to_run)
+output = '--print-stdout --print-stderr' if os.environ.get('OUTPUT') else ''
+timeout = os.environ.get('TIMEOUT', 10000)
+testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout %s %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
+                      (timeout, output, chdir, assert_module_path, init_file, tests))
 
-coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --timeout 10000 --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
+coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --timeout %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
                                              "--tests '%s' --coverage --coverage-reporter html --coverage-dir coverage_html " \
                                              "--coverage-encoding utf8 --coverage-exclude extern" %
-                      (chdir, assert_module_path, init_file, ' '.join(tests_to_run)))
+                      (timeout, chdir, assert_module_path, init_file, ' '.join(tests_to_run)))
 
 
 chdir = pjoin(os.getcwd())
