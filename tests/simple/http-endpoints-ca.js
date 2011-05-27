@@ -56,7 +56,7 @@ exports['test_ca_http_endpoint'] = function(test, assert) {
     },
 
     function testAddRequestInvalidHostname(callback) {
-      var req = testUtil.getReqObject('/ca/localhost./', 'PUT', testConstants.API_VERSION);
+      var req = testUtil.getReqObject('/ca/localhost.$/', 'PUT', testConstants.API_VERSION);
 
       assert.responseJson(getServer(), req, function(res) {
         // At the beginning there should be no requests
@@ -101,6 +101,25 @@ exports['test_ca_http_endpoint'] = function(test, assert) {
       });
     },
 
+    function testSignRequestInvalidHostname(callback) {
+      var req = testUtil.getReqObject('/ca/localhost.test.$/sign/', 'POST', testConstants.API_VERSION);
+
+      assert.responseJson(getServer(), req, function(res) {
+        assert.equal(res.statusCode, 400);
+        assert.match(res.body.message, /invalid hostname/i);
+        callback();
+      });
+    },
+
+  function testSignRequestSuccess(callback) {
+      var req = testUtil.getReqObject('/ca/localhost.test/sign/', 'POST', testConstants.API_VERSION);
+
+      assert.responseJson(getServer(), req, function(res) {
+        assert.equal(res.statusCode, 200);
+        assert.match(res.body.signed, /true/i);
+        callback();
+      });
+    }
   ],
 
   function(err) {
