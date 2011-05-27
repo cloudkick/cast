@@ -25,6 +25,7 @@ var async = require('async');
 var config = require('util/config');
 var fsUtil = require('util/fs');
 var dotfiles = require('util/client_dotfiles');
+var ca = require('security/ca');
 
 var cwd = process.cwd();
 
@@ -37,8 +38,7 @@ function setUp(callback) {
   var dotCastPath = path.join(testFolderPath, '.cast');
   var certsPath = path.join(dotCastPath, 'certs');
 
-  var directoriesToCreate = [testFolderPath, testDataRoot, caPath, caOutPath,
-                             dotCastPath, certsPath];
+  var directoriesToCreate = [testFolderPath, testDataRoot, dotCastPath];
 
   async.series([
     function mockDefaultRemotesPath(callback) {
@@ -72,6 +72,10 @@ function setUp(callback) {
 
     function setUpAgentConfig(callback) {
       config.setupAgent(callback);
+    },
+
+    function generateAgentCaCert(callback) {
+      ca.getCA().init(callback);
     }
   ],
 
