@@ -20,6 +20,7 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 
 var sprintf = require('sprintf').sprintf;
+var async = require('async');
 
 var config = require('util/config');
 var fsUtil = require('util/fs');
@@ -30,18 +31,48 @@ var cwd = process.cwd();
 function setUp(callback) {
   var testFolderPath = path.join(__dirname, '.tests');
   var testDataRoot = path.join(testFolderPath, 'data_root');
+  var caPath = path.join(testDataRoot, 'ca');
+  var caOutPath = path.join(caPath, 'out');
 
-  // Mock the default remotes path
-  dotfiles.setDotCastRemotesPath(path.join(cwd, 'data/remotes.json'));
+  var directoriesToCreate = [testFolderPath, testDataRoot, caOutPath];
 
-  config.configFiles = [
-    path.join(__dirname, 'test.conf')
-  ];
+  async.series([
+    function mockDefaultRemotesPath(callback) {
+      // Mock the default remotes path
+      dotfiles.setDotCastRemotesPath(path.join(cwd, 'data/remotes.json'));
+      callback();
+    },
 
-  fsUtil.rmtree(testFolderPath, function(err) {
-    exec(sprintf('mkdir -p "%s"', testDataRoot), function(err) {
+    function setConfigFiles(callback) {
+      config.configFiles = [
+        path.join(__dirname, 'test.conf')
+      ];
+
+      callback();
+    },
+
+    function removeTestDirectories(callback) {
+      fsUtil.rmtree(testFolderPath, function(err) {
+        callback();
+      });
+    },
+
+    function createTestDirectories(callback) {
+      async.forEachSeries(directoriesToCreate, function(directory, callback) {
+        console.log(directory);
+        exec(sprintf('mkdir -p "%s"', directory), function(err) {
+          callback();
+        });
+      }, callback);
+    },
+
+    function setUpAgentConfig(callback) {
       config.setupAgent(callback);
-    });
+    }
+  ],
+
+  function(err) {
+    callback();
   });
 }
 
