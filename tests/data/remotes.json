@@ -4,6 +4,7 @@
         "hostname": "127.0.0.1",
         "port": "55555",
         "fingerprint": null,
-        "is_default": true
+        "is_default": true,
+        "global": true
     }
 }
