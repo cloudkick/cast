@@ -22,8 +22,15 @@ var sprintf = require('sprintf').sprintf;
 var async = require('async');
 
 var http = require('services/http');
+var agent = require('cast-agent/entry');
 
 var API_VERSION = '1.0';
+
+/*
+ * Need to mock the agent start date, because those test don't actually start
+ * the agent so this variable is null.
+ */
+agent.dateStarted = new Date();
 
 // @TODO: Verify all the routes including ones which should return 404
 var ACTIVE_ROUTES = [
@@ -51,7 +58,7 @@ var ACTIVE_ROUTES = [
 
 
   // services
-  ['/services/', 'GET'],
+  ['/services/', 'GET']
 ];
 
 /*
