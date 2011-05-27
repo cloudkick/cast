@@ -32,6 +32,7 @@ var dotCastRoot = path.join(testFolderPath, 'dot_cast');
 
 exports['setUp'] = function(test, assert) {
   // Set a temporary remotes.json
+  dotfiles.setDotCastPath(dotCastRoot);
   dotfiles.setDotCastRemotesPath(path.join(dotCastRoot, 'remotes.json'));
 
   // Create the temporary dot_cast dir
