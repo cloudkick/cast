@@ -59,7 +59,6 @@ function setUp(callback) {
 
     function createTestDirectories(callback) {
       async.forEachSeries(directoriesToCreate, function(directory, callback) {
-        console.log(directory);
         exec(sprintf('mkdir -p "%s"', directory), function(err) {
           callback();
         });
