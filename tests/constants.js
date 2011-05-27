@@ -19,6 +19,8 @@ var API_VERSION = '1.0';
 
 var AVAILABLE_REMOTES = {
   'localhost_http1': {
+    'ip': '127.0.0.1',
+    'hostname': 'localhost',
     'protocol': 'http',
     'port': 55555
   }
