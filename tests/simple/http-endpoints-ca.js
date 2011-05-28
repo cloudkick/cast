@@ -106,8 +106,19 @@ exports['test_ca_http_endpoint'] = function(test, assert) {
       dotfiles.loadRemoteCSR(remote, callback);
     },
 
-    function testAddRequestValidCSR(csrBuf, callback) {
+    function testAddRequestOneValidCSR(csrBuf, callback) {
       var req = testUtil.getReqObject('/ca/localhost.test/', 'PUT', testConstants.API_VERSION);
+      req.body = csrBuf.toString('utf8');
+
+      assert.responseJson(getServer(), req, function(res) {
+        assert.equal(res.statusCode, 202);
+        assert.match(res.body.status, /awaiting approval/i);
+        callback(null, csrBuf);
+      });
+    },
+
+    function testAddRequestTwoValidCSR(csrBuf, callback) {
+      var req = testUtil.getReqObject('/ca/localhost.test.two/', 'PUT', testConstants.API_VERSION);
       req.body = csrBuf.toString('utf8');
 
       assert.responseJson(getServer(), req, function(res) {
@@ -154,13 +165,43 @@ exports['test_ca_http_endpoint'] = function(test, assert) {
       var req = testUtil.getReqObject('/ca/localhost.test/', 'GET', testConstants.API_VERSION);
 
       assert.responseJson(getServer(), req, function(res) {
-        // At the beginning there should be no requests
         assert.equal(res.statusCode, 200);
         assert.equal(res.body.signed, true);
         assert.match(res.body.status, /approved/i);
         callback();
       });
     },
+
+    function testRemoveRequestDoesNotExist(callback) {
+      var req = testUtil.getReqObject('/ca/local.inexistent/', 'DELETE', testConstants.API_VERSION);
+
+      assert.responseJson(getServer(), req, function(res) {
+        assert.equal(res.statusCode, 500);
+        assert.match(res.body.message, /no request for/i);
+        callback();
+      });
+    },
+
+    function testRemoveRequestWhichIsAlreadySigned(callback) {
+      var req = testUtil.getReqObject('/ca/localhost.test/', 'DELETE', testConstants.API_VERSION);
+
+      assert.responseJson(getServer(), req, function(res) {
+        assert.equal(res.statusCode, 500);
+        assert.match(res.body.message, /already signed/i);
+        callback();
+      });
+    },
+
+    function testRemoveRequestNotSignedSuccess(callback) {
+      var req = testUtil.getReqObject('/ca/localhost.test.two/', 'DELETE', testConstants.API_VERSION);
+
+      assert.responseJson(getServer(), req, function(res) {
+        assert.equal(res.statusCode, 200);
+        assert.equal(res.body.hostname, 'localhost.test.two');
+        assert.match(res.body.status, /deleted/i);
+        callback();
+      });
+    }
   ],
 
   function(err) {
