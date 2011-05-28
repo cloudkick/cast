@@ -124,8 +124,10 @@ exports['test_tailFile_follow_multiple_subscribers'] = function(test, assert) {
     },
 
     function writeSomeData(callback) {
-      writeStream.write('data1');
-      callback();
+      setTimeout(function() {
+        writeStream.write('data1');
+        callback();
+      }, 700);
     }
   ],
 

@@ -17,7 +17,6 @@
 
 var fs =  require('fs');
 var path = require('path');
-var exec = require('child_process').exec;
 
 var async = require('async');
 var sprintf = require('sprintf').sprintf;
@@ -25,6 +24,7 @@ var sprintf = require('sprintf').sprintf;
 var init = require('cast-agent/init');
 var dotfiles = require('util/client_dotfiles');
 var fsUtil = require('util/fs');
+var testUtil = require('util/test');
 
 
 var testFolderPath = '.tests';
@@ -137,7 +137,7 @@ exports['test_agent_init'] = function(test, assert) {
 
     // Replace the data root with a file
     function(callback) {
-      exec("touch .tests", function(err) {
+      testUtil.fileCreate('.tests', function(err) {
         assert.ifError(err);
         init.initialize(function(err) {
           assert.ok(err);
