@@ -76,6 +76,52 @@ exports['test_agent_init'] = function(test, assert) {
       });
     },
 
+    // Empty the data root, rename the remote, try again
+    function(callback) {
+      function wipe(callback) {
+        exec('rm -rf .tests/data_root', function(err) {
+          assert.ifError(err);
+          exec('mkdir -p .tests/data_root', function(err) {
+            assert.ifError(err);
+            callback();
+          });
+        });
+      }
+
+      function loadRemote(callback) {
+        dotfiles.getGlobalRemotes(callback);
+      }
+
+      function renameRemote(remotes, callback) {
+        remotes['local'].name = 'oldlocal';
+        remotes['oldlocal'] = remotes['local'];
+        delete remotes['local'];
+        callback(null, remotes);
+      }
+
+      function saveRemote(remotes, callback) {
+        dotfiles.saveGlobalRemotes(remotes, callback);
+      }
+
+      function doTest(callback) {
+        init.initialize(function(err) {
+          assert.ifError(err);
+          dotfiles.getGlobalRemotes(callback);
+        });
+      }
+
+      function checkRemotes(remotes, callback) {
+        assert.equal(remotes['local'].is_default, false);
+        assert.equal(remotes['oldlocal'].is_default, true);
+        callback();
+      }
+
+      var ops = [wipe, loadRemote, renameRemote, saveRemote, doTest,
+                  checkRemotes];
+
+      async.waterfall(ops, callback);
+    },
+
     // Nuke the data root and try again
     function(callback) {
       exec("rm -rf .tests", function(err) {
