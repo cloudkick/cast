@@ -24,6 +24,7 @@ var sprintf = require('sprintf').sprintf;
 
 var init = require('cast-agent/init');
 var dotfiles = require('util/client_dotfiles');
+var fsUtil = require('util/fs');
 
 
 var testFolderPath = '.tests';
@@ -79,7 +80,7 @@ exports['test_agent_init'] = function(test, assert) {
     // Empty the data root, rename the remote, try again
     function(callback) {
       function wipe(callback) {
-        exec('rm -rf .tests/data_root', function(err) {
+        fsUtil.rmtree('.tests/data_root', function(err) {
           assert.ifError(err);
           fs.mkdir('.tests/data_root', 0755, function(err) {
             assert.ifError(err);
@@ -124,7 +125,7 @@ exports['test_agent_init'] = function(test, assert) {
 
     // Nuke the data root and try again
     function(callback) {
-      exec("rm -rf .tests", function(err) {
+      fsUtil.rmtree('.tests', function(err) {
         assert.ifError(err);
         init.initialize(function(err) {
           assert.ok(err);
