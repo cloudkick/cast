@@ -42,7 +42,7 @@ exports['setUp'] = function(test, assert) {
   ];
 
   // Create the temporary dot_cast dir and reconfigure using new config
-  exec(sprintf('mkdir -p "%s"', dotCastRoot), function(err) {
+  fs.mkdir(dotCastRoot, 0755, function(err) {
     assert.ifError(err);
     config.setupAgent(function(err) {
       assert.ifError(err);

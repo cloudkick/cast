@@ -36,7 +36,7 @@ exports['setUp'] = function(test, assert) {
   dotfiles.setDotCastRemotesPath(path.join(dotCastRoot, 'remotes.json'));
 
   // Create the temporary dot_cast dir
-  exec(sprintf('mkdir -p "%s"', dotCastRoot), function(err) {
+  fs.mkdir(dotCastRoot, 0755, function(err) {
     assert.ifError(err);
     test.finish();
   });
@@ -81,7 +81,7 @@ exports['test_agent_init'] = function(test, assert) {
       function wipe(callback) {
         exec('rm -rf .tests/data_root', function(err) {
           assert.ifError(err);
-          exec('mkdir -p .tests/data_root', function(err) {
+          fs.mkdir('.tests/data_root', 0755, function(err) {
             assert.ifError(err);
             callback();
           });
@@ -146,6 +146,7 @@ exports['test_agent_init'] = function(test, assert) {
       });
     }
   ],
+
   function(err) {
     assert.ifError(err);
     test.finish();
