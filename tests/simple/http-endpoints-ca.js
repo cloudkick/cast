@@ -60,6 +60,17 @@ exports['test_ca_http_endpoint'] = function(test, assert) {
       });
     },
 
+    function testGetRequestDoesNotExist(callback) {
+      var req = testUtil.getReqObject('/ca/localhost/', 'GET', testConstants.API_VERSION);
+
+      assert.responseJson(getServer(), req, function(res) {
+        // At the beginning there should be no requests
+        assert.equal(res.statusCode, 404);
+        assert.match(res.body.message, /does not exist/i);
+        callback();
+      });
+    },
+
     function testAddRequestInvalidHostname(callback) {
       var req = testUtil.getReqObject('/ca/localhost.$/', 'PUT', testConstants.API_VERSION);
 
@@ -106,6 +117,19 @@ exports['test_ca_http_endpoint'] = function(test, assert) {
       });
     },
 
+    function testGetRequestDoesExists(callback) {
+      var req = testUtil.getReqObject('/ca/localhost.test/', 'GET', testConstants.API_VERSION);
+
+      assert.responseJson(getServer(), req, function(res) {
+        // At the beginning there should be no requests
+        assert.equal(res.statusCode, 200);
+        assert.match(res.body.hostname, /localhost\.test/i);
+        assert.equal(res.body.signed, false);
+        assert.match(res.body.status, /awaiting approval/i);
+        callback();
+      });
+    },
+
     function testSignRequestInvalidHostname(callback) {
       var req = testUtil.getReqObject('/ca/localhost.test.$/sign/', 'POST', testConstants.API_VERSION);
 
@@ -116,15 +140,27 @@ exports['test_ca_http_endpoint'] = function(test, assert) {
       });
     },
 
-  function testSignRequestSuccess(callback) {
-      var req = testUtil.getReqObject('/ca/localhost.test/sign/', 'POST', testConstants.API_VERSION);
+    function testSignRequestSuccess(callback) {
+        var req = testUtil.getReqObject('/ca/localhost.test/sign/', 'POST', testConstants.API_VERSION);
+
+        assert.responseJson(getServer(), req, function(res) {
+          assert.equal(res.statusCode, 200);
+          assert.match(res.body.signed, /true/i);
+          callback();
+        });
+    },
+
+    function testGetRequestIsSigned(callback) {
+      var req = testUtil.getReqObject('/ca/localhost.test/', 'GET', testConstants.API_VERSION);
 
       assert.responseJson(getServer(), req, function(res) {
+        // At the beginning there should be no requests
         assert.equal(res.statusCode, 200);
-        assert.match(res.body.signed, /true/i);
+        assert.equal(res.body.signed, true);
+        assert.match(res.body.status, /approved/i);
         callback();
       });
-    }
+    },
   ],
 
   function(err) {
