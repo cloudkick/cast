@@ -30,6 +30,19 @@ exports['test_compareVersions_b_less_than_a'] = function(test, assert) {
   test.finish();
 };
 
+exports['test_compareVersions_b_major_less_than_a'] = function(test, assert) {
+  var i, version;
+  var versionA = '2.0.0';
+  var versionsB = [ '1.1.0', '1.1.9', '1.2.0', '1.0.0' ];
+
+  for (i = 0; i < versionsB.length; i++) {
+    version = versionsB[i];
+    assert.equal(req.compareVersions(versionA, version), false);
+  }
+
+  test.finish();
+};
+
 // Test compare_versions ver_b >= ver_a
 exports['test_compareVersions_b_more_than_or_equal_a'] = function(test, assert) {
   var i, version;
