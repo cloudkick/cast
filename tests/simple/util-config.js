@@ -16,15 +16,47 @@
  */
 
 var config = require('util/config');
+var log = require('util/log');
 
-exports['test_config_get'] = function(test, assert) {
-  config.configFiles = [
-    'test.conf'
-  ];
+var async = require('async');
 
-  config.setupAgent(function(err) {
+var logWarn = log.warn;
+
+exports['test_config_get_agent_and_client'] = function(test, assert) {
+  var buffer = '';
+  log.warn = function(data) {
+    buffer += data;
+  };
+
+  async.series([
+    function testSetupAgent(callback) {
+      config.configFiles = ['test.conf'];
+
+      config.setupAgent(function(err) {
+        // No secret is provided, should emit a warning
+        assert.ifError(err);
+        assert.equal(config.get()['ssl_enabled'], false);
+        assert.match(buffer, /has been configured/);
+        callback();
+      });
+    },
+
+    function testSetupClient(callback) {
+      config.configFiles = ['test.conf'];
+      buffer = '';
+
+      config.setupClient(function(err) {
+        // client setup shouldn't emit missing secret warning
+        assert.ifError(err);
+        assert.ok(buffer.length === 0);
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
+    log.warn = logWarn;
     assert.ifError(err);
-    assert.equal(config.get()['ssl_enabled'], false);
     test.finish();
   });
 };
