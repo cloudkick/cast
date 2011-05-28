@@ -22,6 +22,7 @@ var http = require('services/http');
 var dotfiles = require('util/client_dotfiles');
 var testUtil = require('util/test');
 var testConstants = require('./../constants');
+var ca = require('security/ca');
 
 var getServer = http.getAndConfigureServer;
 var DEFAULT_REMOTE = testConstants.AVAILABLE_REMOTES['localhost_http1'];
