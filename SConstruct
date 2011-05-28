@@ -174,7 +174,7 @@ testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout %s %s --chdir '%s' -
 coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --timeout %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
                                              "--tests '%s' --coverage --coverage-reporter html --coverage-dir coverage_html " \
                                              "--coverage-encoding utf8 --coverage-exclude extern" %
-                      (timeout, chdir, assert_module_path, init_file, ' '.join(tests_to_run)))
+                      (timeout, chdir, assert_module_path, init_file, tests))
 
 
 chdir = pjoin(os.getcwd())
