@@ -17,7 +17,6 @@
 
 var path = require('path');
 var fs = require('fs');
-var exec = require('child_process').exec;
 
 var sprintf = require('sprintf').sprintf;
 var async = require('async');
@@ -64,7 +63,7 @@ function setUp(callback) {
 
     function createTestDirectories(callback) {
       async.forEachSeries(directoriesToCreate, function(directory, callback) {
-        exec(sprintf('mkdir -p "%s"', directory), function(err) {
+        fs.mkdir(directory, 0755, function(err) {
           callback();
         });
       }, callback);
