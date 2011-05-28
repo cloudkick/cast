@@ -15,11 +15,36 @@
  * limitations under the License.
  */
 
+var sys = require('sys');
+
 var log = require('util/log');
+
+var sysLog = sys.log;
 
 exports['test_trace'] = function(test, assert) {
   var trace = log.trace('test trace');
 
-  assert.match(trace, /util-log.js:21:19/);
+  assert.match(trace, /util-log.js:25:19/);
+  test.finish();
+};
+
+exports['test_setLogLevel'] = function(test, assert) {
+  var buffer = '';
+  sys.log = function(data) {
+    buffer += data;
+  };
+
+  log.setLoglevel('debug');
+  log.debug('test line');
+  assert.equal(buffer, 'debug: test line');
+
+  log.setLoglevel('nothing');
+  log.debug('test line');
+  assert.equal(buffer, 'debug: test line');
+  test.finish();
+};
+
+exports['tearDown'] = function(test, assert) {
+  sys.log = sysLog;
   test.finish();
 };
