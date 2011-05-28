@@ -26,7 +26,7 @@ var config = require('util/config');
 var dotfiles = require('util/client_dotfiles');
 var init = require('cast-agent/init');
 
-var testFolderPath = path.join(__dirname, '.tests');
+var testFolderPath = '.tests';
 var testDataRoot = path.join(testFolderPath, 'data_root');
 var dotCastRoot = path.join(testFolderPath, 'dot_cast');
 
@@ -38,7 +38,7 @@ exports['setUp'] = function(test, assert) {
 
   // Get a config with SSL enabled
   config.configFiles = [
-    path.join(__dirname, '..', 'test-ssl.conf')
+    'test-ssl.conf'
   ];
 
   // Create the temporary dot_cast dir and reconfigure using new config
@@ -52,9 +52,22 @@ exports['setUp'] = function(test, assert) {
 };
 
 
-exports['test_agent_init'] = function(test, assert) {
+exports['test_agent_init_ssl'] = function(test, assert) {
   init.initialize(function(err) {
     assert.ifError(err);
-    test.finish();
+    dotfiles.getDefaultRemote(function(err, remote) {
+      assert.ifError(err);
+      assert.equal(remote.url, 'https://0.0.0.0:49443');
+      assert.equal(remote.hostname, '0.0.0.0');
+      assert.equal(remote.port, 49443);
+      assert.equal(remote.is_default, true);
+      assert.equal(remote.global, true);
+      assert.equal(remote.name, 'local');
+      dotfiles.loadRemoteCSR(remote, function(err, csr) {
+        assert.ifError(err);
+        assert.ok(Buffer.isBuffer(csr));
+        test.finish();
+      });
+    });
   });
 };

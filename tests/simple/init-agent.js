@@ -26,7 +26,7 @@ var init = require('cast-agent/init');
 var dotfiles = require('util/client_dotfiles');
 
 
-var testFolderPath = path.join(__dirname, '.tests');
+var testFolderPath = '.tests';
 var dotCastRoot = path.join(testFolderPath, 'dot_cast');
 
 
@@ -49,7 +49,22 @@ exports['test_agent_init'] = function(test, assert) {
     function(callback) {
       init.initialize(function(err) {
         assert.ifError(err);
-        callback();
+        dotfiles.getDefaultRemote(function(err, remote) {
+          assert.ifError(err);
+          assert.deepEqual(remote, {
+            url: 'http://0.0.0.0:49443',
+            hostname: '0.0.0.0',
+            port: 49443,
+            fingerprint: null,
+            is_default: true,
+            global: true,
+            name: 'local'
+          });
+          dotfiles.loadRemoteCSR(remote, function(err, csr) {
+            assert.ok(err instanceof Error);
+            callback();
+          });
+        });
       });
     },
 
