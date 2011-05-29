@@ -30,7 +30,7 @@ var routes = {
   '/test3': {'statusCode': 202, 'body': '...<p>test 12345 content</p>...'}
 };
 
-exports['test invalid hostname'] = function(test, assert) {
+exports['test_invalid_hostname'] = function(test, assert) {
   var check = new httpCheck.HTTPCheck({'url': 'http://non.exis-te.nt.123', 'type': httpCheck.config.types.STATUS_CODE_MATCH,
                                         'match_value': 200});
 
@@ -60,7 +60,7 @@ exports['test invalid hostname'] = function(test, assert) {
   });
 };*/
 
-exports['test check status codes match'] = function(test, assert) {
+exports['test_check_status_codes_match'] = function(test, assert) {
   var port = testUtil.getPort();
 
   testUtil.runTestHttpServer('127.0.0.1', port, routes, function() {
@@ -98,7 +98,7 @@ exports['test check status codes match'] = function(test, assert) {
   });
 };
 
-exports['test check response body match'] = function(test, assert) {
+exports['test_check_response_body_match'] = function(test, assert) {
   var port = testUtil.getPort();
 
   testUtil.runTestHttpServer('127.0.0.1', port, routes, function() {
