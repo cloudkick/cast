@@ -41,8 +41,7 @@ exports['test_invalid_hostname'] = function(test, assert) {
   });
 };
 
-// @TODO: Update the test when the SSL support is added to the http streams.
-/*exports['test secure on non ssl'] = function(test, assert) {
+exports['test_secure_on_non_ssl'] = function(test, assert) {
   var port = testUtil.getPort();
 
   testUtil.runTestHttpServer('127.0.0.1', port, routes, function() {
@@ -52,13 +51,13 @@ exports['test_invalid_hostname'] = function(test, assert) {
 
     check.run(function(result) {
       assert.equal(result.status, CheckStatus.ERROR);
-      assert.match(result.details, /unknown/i);
+      assert.match(result.details, /socket hang up/i);
 
     self.close();
     test.finish();
     });
   });
-};*/
+};
 
 exports['test_check_status_codes_match'] = function(test, assert) {
   var port = testUtil.getPort();
