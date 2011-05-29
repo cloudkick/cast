@@ -36,7 +36,7 @@ var responseDictionary = {
   }
 };
 
-exports['test invalid ip address'] = function(test, assert) {
+exports['test_invalid_ip_address'] = function(test, assert) {
   var port = testUtil.getPort();
   var check = new tcpCheck.TCPCheck({'ip_address': '999.99.99.99', 'port': port, 'type': tcpCheck.config.types.CONNECTION_CHECK,
                                      'idle_timeout': 2000});
@@ -49,7 +49,7 @@ exports['test invalid ip address'] = function(test, assert) {
   });
 };
 
-exports['test check connection failure'] = function(test, assert) {
+exports['test_check_connection_failure'] = function(test, assert) {
   var port = testUtil.getPort();
   var check = new tcpCheck.TCPCheck({'ip_address': '127.0.0.1', 'port': port, 'type': tcpCheck.config.types.CONNECTION_CHECK});
 
@@ -60,7 +60,7 @@ exports['test check connection failure'] = function(test, assert) {
   });
 };
 
-exports['test check connection timeout'] = function(test, assert) {
+exports['test_check_connection_timeout'] = function(test, assert) {
   var port = testUtil.getPort();
   var check = new tcpCheck.TCPCheck({'ip_address': '74.125.39.104', 'port': port, 'type': tcpCheck.config.types.CONNECTION_CHECK,
                                       'connect_timeout': 2000});
@@ -72,7 +72,7 @@ exports['test check connection timeout'] = function(test, assert) {
   });
 };
 
-exports['test check connection success'] = function(test, assert) {
+exports['test_check_connection_success'] = function(test, assert) {
   var port = testUtil.getPort();
 
   testUtil.runTestTcpServer('127.0.0.1', port, responseDictionary, true, function() {
@@ -89,7 +89,7 @@ exports['test check connection success'] = function(test, assert) {
   });
 };
 
-exports['test check response regex match error'] = function(test, assert) {
+exports['test_check_response_regex_match_error'] = function(test, assert) {
   var port = testUtil.getPort();
 
   var tcp_server = testUtil.runTestTcpServer('127.0.0.1', port, responseDictionary, true, function() {
@@ -107,7 +107,7 @@ exports['test check response regex match error'] = function(test, assert) {
   });
 };
 
-exports['test check response regex match success 1'] = function(test, assert) {
+exports['test_check_response_regex_match_success_1'] = function(test, assert) {
   var port = testUtil.getPort();
 
   testUtil.runTestTcpServer('127.0.0.1', port, responseDictionary, true, function() {
@@ -125,7 +125,7 @@ exports['test check response regex match success 1'] = function(test, assert) {
   });
 };
 
-exports['test check response regex match success 2'] = function(test, assert) {
+exports['test_check_response_regex_match_success_2'] = function(test, assert) {
   var port = testUtil.getPort();
 
   testUtil.runTestTcpServer('127.0.0.1', port, responseDictionary, true, function() {

@@ -18,7 +18,7 @@
 var Check = require('health').Check;
 var CheckResult = require('health').CheckResult;
 
-exports['test missing required property throws exception'] = function(test, assert) {
+exports['test_missing_required_property_throws_exception'] = function(test, assert) {
   var n = 0;
 
   try {
@@ -32,7 +32,7 @@ exports['test missing required property throws exception'] = function(test, asse
   test.finish();
 };
 
-exports['test format arguments worky properly'] = function(test, assert) {
+exports['test_format_arguments_worky_properly'] = function(test, assert) {
   var requiredArguments = ['ip_address', 'port'];
   var optionalArguments = ['use_ssl'];
   var defaultValues = { 'use_ssl': true };
@@ -54,14 +54,14 @@ exports['test format arguments worky properly'] = function(test, assert) {
   test.finish();
 };
 
-exports['test class instantation'] = function(test, assert) {
+exports['test_class_instantation'] = function(test, assert) {
   var check = new Check('test check', ['option_1'], [], {'option_1': 'test'});
   assert.length(check.resultHistory, 0);
   assert.equal(check.lastRunDate, null);
   test.finish();
 };
 
-exports['test result history'] = function(test, assert) {
+exports['test_result_history'] = function(test, assert) {
   var check = new Check('test check', ['option_1'], [], {'option_1': 'test'});
   assert.length(check.resultHistory, 0);
 
