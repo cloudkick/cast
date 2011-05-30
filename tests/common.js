@@ -32,11 +32,8 @@ function setUp(callback) {
   var testFolderPath = path.join(__dirname, '.tests');
   var testDataRoot = path.join(testFolderPath, 'data_root');
   var dotCastPath = path.join(testFolderPath, '.cast');
-  var servicesPath = path.join(testDataRoot, 'services');
-  var servicesEnabledPath = path.join(testDataRoot, 'services-enabled');
 
-  var directoriesToCreate = [testFolderPath, testDataRoot, servicesPath,
-                             servicesEnabledPath, dotCastPath];
+  var directoriesToCreate = [testFolderPath, testDataRoot, dotCastPath];
 
   async.series([
     function mockDefaultRemotesPath(callback) {

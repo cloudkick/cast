@@ -33,22 +33,9 @@ var DEFAULT_REMOTE = testConstants.AVAILABLE_REMOTES['localhost_http1'];
 
 exports['test_services_http_endpoint'] = function(test, assert) {
   var servicesPath = path.join(cwd, '.tests', 'data_root', 'services');
+  var servicesEnabledPath = path.join(cwd, '.tests', 'data_root', 'services-enabled');
 
   async.series([
-    function testListServicesIsEmpty(callback) {
-      var req = testUtil.getReqObject('/services/', 'GET', testConstants.API_VERSION);
-      assert.responseJson(getServer(), req, function(res) {
-        assert.equal(res.statusCode, 200);
-        assert.deepEqual(res.body, []);
-        callback();
-      });
-    },
-
-    function deleteServicesDirectory(callback) {
-      // Delete the services test directory
-      fsUtil.rmtree(servicesPath, callback);
-    },
-
     function testListServicesReturnsError(callback) {
       // Services directory does not exist so an error should be returned
       var req = testUtil.getReqObject('/services/', 'GET', testConstants.API_VERSION);
@@ -59,8 +46,19 @@ exports['test_services_http_endpoint'] = function(test, assert) {
       });
     },
 
-    function reCreateServicesDirectory(callback) {
-      fs.mkdir(servicesPath, 0755, callback);
+    function createServicesDirectories(callback) {
+      async.forEachSeries([servicesPath, servicesEnabledPath], function(directory, callback) {
+        fs.mkdir(directory, 0755, callback);
+      }, callback);
+    },
+
+    function testListServicesIsEmpty(callback) {
+      var req = testUtil.getReqObject('/services/', 'GET', testConstants.API_VERSION);
+      assert.responseJson(getServer(), req, function(res) {
+        assert.equal(res.statusCode, 200);
+        assert.deepEqual(res.body, []);
+        callback();
+      });
     },
 
     function testGetServiceDoesNotExist(callback) {
