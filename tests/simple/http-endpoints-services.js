@@ -32,6 +32,7 @@ var cwd = process.cwd();
 var DEFAULT_REMOTE = testConstants.AVAILABLE_REMOTES['localhost_http1'];
 
 exports['test_services_http_endpoint'] = function(test, assert) {
+  // Note: This test is for runit service manager
   var servicesPath = path.join(cwd, '.tests', 'data_root', 'services');
   var servicesEnabledPath = path.join(cwd, '.tests', 'data_root', 'services-enabled');
 
@@ -65,9 +66,22 @@ exports['test_services_http_endpoint'] = function(test, assert) {
       var req = testUtil.getReqObject('/services/does-not-exist/', 'GET', testConstants.API_VERSION);
       assert.responseJson(getServer(), req, function(res) {
         assert.equal(res.statusCode, 404);
-        assert.match(res.body.message, /not found/i);
+        assert.match(res.body.message, /does not exist/i);
         callback();
       });
+    },
+
+    function testStopServiceDoesNotExist(callback) {
+      var req = testUtil.getReqObject('/services/does-not-exist/stop/', 'PUT', testConstants.API_VERSION);
+      assert.responseJson(getServer(), req, function(res) {
+        assert.equal(res.statusCode, 404);
+        assert.match(res.body.message, /does not exist/i);
+        callback();
+      });
+    },
+
+    function createTestServiceDirectory(callback) {
+      callback();
     }
   ],
 
