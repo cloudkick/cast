@@ -22,8 +22,16 @@ var sprintf = require('sprintf').sprintf;
 var async = require('async');
 
 var http = require('services/http');
+var testUtil = require('util/test');
+var agent = require('cast-agent/entry');
 
 var API_VERSION = '1.0';
+
+/*
+ * Need to mock the agent start date, because those test don't actually start
+ * the agent so this variable is null.
+ */
+agent.dateStarted = new Date();
 
 // @TODO: Verify all the routes including ones which should return 404
 var ACTIVE_ROUTES = [
@@ -51,7 +59,7 @@ var ACTIVE_ROUTES = [
 
 
   // services
-  ['/services/', 'GET'],
+  ['/services/', 'GET']
 ];
 
 /*
@@ -91,10 +99,7 @@ exports['test_routs_work_and_dont_return_404'] = function(test, assert) {
   var getServer = http.getAndConfigureServer;
 
   async.forEachSeries(ACTIVE_ROUTES, function(route, callback) {
-    req = {
-      url: sprintf('/%s%s', API_VERSION, route[0]),
-      method: route[1]
-    };
+    req = testUtil.getReqObject(route[0], route[1], API_VERSION);
 
     assert.response(getServer(), req, function(res) {
       assert.ok(res.statusCode !== 404);

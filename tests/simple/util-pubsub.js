@@ -35,6 +35,36 @@ exports['test_basic_subscription'] = function(test, assert) {
   test.finish();
 };
 
+exports['test_ensure'] = function(test, assert) {
+  var n = 0;
+  var m = 0;
+
+  // Already seen
+  ps.emit('ensure');
+  ps.ensure('ensure', function() {
+    n++;
+  });
+
+  assert.equal(n, 1, 'Events Received');
+
+  ps.emit('ensure');
+  ps.emit('ensure');
+  ps.emit('ensure');
+
+  assert.equal(n, 1, 'Events Received');
+
+  // Not seen yet
+  ps.ensure('ensure-new', function() {
+    m++;
+  });
+
+  ps.emit('ensure-new');
+  ps.emit('ensure-new');
+
+  assert.equal(m, 1, 'Events Received');
+  test.finish();
+};
+
 exports['test_once_subscription'] = function(test, assert) {
   var n = 0;
   var m = 0;
