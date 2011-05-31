@@ -23,6 +23,7 @@ var constants = require('constants');
 
 var async = require('async');
 var sprintf = require('sprintf').sprintf;
+var swiz = require('swiz');
 
 var fsutil = require('util/fs');
 var jobs = require('jobs');
@@ -30,8 +31,23 @@ var jobs = require('jobs');
 var TEST_RESOURCE_ROOT = '.tests/testresource';
 
 
+var defs = {
+  TestResource: [
+    ['name', {
+      src: 'name',
+      type: 'string'
+    }],
+    ['data', {
+      src: 'getDataText',
+      type: 'string'
+    }]
+  ]
+};
+
+
 function TestResource(name) {
   jobs.DirectoryResource.call(this, name);
+  this._serializer = new swiz.Swiz(defs);
   this.parentDir = TEST_RESOURCE_ROOT;
 }
 
@@ -40,6 +56,11 @@ sys.inherits(TestResource, jobs.DirectoryResource);
 
 TestResource.prototype.getDataPath = function() {
   return path.join(this.getRoot(), 'data.txt');
+};
+
+
+TestResource.prototype.getDataText = function(callback) {
+  fs.readFile(this.getDataPath(), 'utf8', callback);
 };
 
 
