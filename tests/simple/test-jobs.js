@@ -156,6 +156,16 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
       exec(sprintf('mkdir -p "%s"', TEST_RESOURCE_ROOT), callback);
     },
 
+    // Attempt to retrieve a nonexistant resource
+    function(callback) {
+      trManager.get('foo', function(err, result) {
+        assert.ok(err);
+        assert.equal(err.message, 'TestResource \'foo\' does not exist');
+        assert.equal(result, undefined);
+        callback();
+      });
+    },
+
     // Attempt to run an UPDATE job on a nonexistant resource
     function(callback) {
       var j = new ModifyTestResourceJob('foo', ' testing');
@@ -182,6 +192,16 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
       jobManager.run(j);
       assert.equal(j, jobManager.getJob(j.id));
       assert.ok(trManager.resources['foo']);
+    },
+
+    // Attempt to retrieve a nonexistant resource
+    function(callback) {
+      trManager.get('foo', function(err, result) {
+        assert.ok(err);
+        assert.equal(err.message, 'TestResource \'foo\' does not exist');
+        assert.equal(result, undefined);
+        callback();
+      });
     },
 
     // Queue a create then a bunch of updates on nonexistant resource
@@ -216,6 +236,15 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
         j.on('error', unexpectedJobError);
         j.on('success', jobSuccess);
         jobManager.run(j);
+      });
+
+      testJobs[1].on('start', function() {
+        trManager.get('bar', function(err, result) {
+          assert.ok(!err);
+          assert.ok(result instanceof Object);
+          assert.equal(result.name, 'bar');
+          assert.equal(result.data, 'this is bar');
+        });
       });
 
       function afterCompletion() {
