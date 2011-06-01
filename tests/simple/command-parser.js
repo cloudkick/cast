@@ -18,11 +18,16 @@
 var path = require('path');
 
 var async = require('async');
+var terminal = require('terminal');
 
+var clientUtils = require('util/client');
 var CommandParser = require('util/command_parser').CommandParser;
 var assert = require('./../assert');
 
 var COMMANDS_PATH = path.join(process.cwd(), 'data/commands');
+
+var origTerminalPuts = terminal.puts;
+var origPrintErrorAndExit = clientUtils.printErrorAndExit;
 
 exports['test_initialization'] = function(test, assert) {
   var completed = false;
@@ -337,5 +342,40 @@ exports['test_command_services_list'] = function(test, assert) {
 
   value = parser.parse(['bin', 'file', 'with_color', '--colors']);
   assert.deepEqual(value, { 'colors': true });
+  test.finish();
+};
+
+exports['test_default_command_result_handler'] = function(test, assert) {
+  // Mock terminal.puts and clientUtils.printErrorAndExit
+  var terminalPutsBuffer = '';
+  var printErrorAndExitCalled = false;
+
+  terminal.puts = function(data) {
+    terminalPutsBuffer += data;
+  };
+
+  clientUtils.printErrorAndExit = function(err) {
+    terminalPutsBuffer += err.message;
+    printErrorAndExitCalled = true;
+  };
+
+  var parser = new CommandParser(COMMANDS_PATH);
+  parser.addCommands(['error', 'success']);
+
+  parser.parse(['bin', 'file', 'success']);
+  assert.ok(!printErrorAndExitCalled);
+  assert.match(terminalPutsBuffer, /command succeeded/i);
+  terminalPutsBuffer = '';
+
+  parser.parse(['bin', 'file', 'error']);
+  assert.ok(printErrorAndExitCalled);
+  assert.match(terminalPutsBuffer, /command failed/i);
+
+  test.finish();
+};
+
+exports['tearDown'] = function(test, assert) {
+  terminal.puts = origTerminalPuts;
+  clientUtils.printErrorAndExit = origPrintErrorAndExit;
   test.finish();
 };
