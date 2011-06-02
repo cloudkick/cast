@@ -48,10 +48,14 @@ var defs = {
 function TestResource(name) {
   jobs.DirectoryResource.call(this, name);
   this._serializer = new swiz.Swiz(defs);
-  this.parentDir = TEST_RESOURCE_ROOT;
 }
 
 sys.inherits(TestResource, jobs.DirectoryResource);
+
+
+TestResource.prototype.getParentDir = function() {
+  return TEST_RESOURCE_ROOT;
+};
 
 
 TestResource.prototype.getDataPath = function() {
@@ -160,9 +164,21 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
     function(callback) {
       trManager.get('foo', function(err, result) {
         assert.ok(err);
-        assert.equal(err.message, 'TestResource \'foo\' does not exist');
+        assert.equal(err.message, 'TestResource \'foo\' does not exist.');
         assert.equal(result, undefined);
         callback();
+      });
+    },
+
+    // List all resources (should be none).
+    function(callback) {
+      trManager.list(function(err, results) {
+        assert.ok(!err);
+        assert.deepEqual(results, []);
+        process.nextTick(function() {
+          assert.deepEqual(trManager.resources, {});
+          callback();
+        });
       });
     },
 
@@ -198,9 +214,21 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
     function(callback) {
       trManager.get('foo', function(err, result) {
         assert.ok(err);
-        assert.equal(err.message, 'TestResource \'foo\' does not exist');
+        assert.equal(err.message, 'TestResource \'foo\' does not exist.');
         assert.equal(result, undefined);
         callback();
+      });
+    },
+
+    // List all resources (should be none).
+    function(callback) {
+      trManager.list(function(err, results) {
+        assert.ok(!err);
+        assert.deepEqual(results, []);
+        process.nextTick(function() {
+          assert.deepEqual(trManager.resources, {});
+          callback();
+        });
       });
     },
 
@@ -259,6 +287,20 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
       }
     },
 
+    // List all resources (should be none).
+    function(callback) {
+      trManager.list(function(err, results) {
+        assert.ok(!err);
+        assert.deepEqual(results, [{
+          name: 'bar',
+          data: 'this is bar test0 test1 test2 test3 test4 test5'
+        }]);
+        process.nextTick(function() {
+          assert.deepEqual(trManager.resources, {});
+          callback();
+        });
+      });
+    },
 
     function(callback) {
       var d0 = new DeleteTestResourceJob('bar');
