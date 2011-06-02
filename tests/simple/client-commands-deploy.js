@@ -211,6 +211,25 @@ exports['test_instance_create_and_upgrade'] = function(test, assert) {
         assert.match(err.message, /error extracting tarball/i);
         callback();
       });
+    },
+
+    function testInstanceNameIsDerivedFromApplicationname(callback) {
+      // this should work because the instance name is derived from the
+      // application name if it's not specified
+      var args3 = {
+          'apppath': testApp1DestPath,
+          'noInteractive': false
+        };
+
+      deployCmd(args3, null, function onResult(err, successMsg) {
+        // Err should be set because we have created fake bundle archive and the
+        // extraction should fail server side
+        assert.ifError(err);
+        assert.ok(successMsg);
+        assert.match(successMsg, /has been successfully deployed/i);
+        assert.match(successMsg, /instance test_cast_app has been created/i);
+        callback();
+      });
     }
   ],
 
