@@ -56,19 +56,26 @@ exports['test_manifest_file_doesnt_exist_no_interactive'] = function(test, asser
   });
 };
 
-exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
+exports['test_instance_create_and_upgrade'] = function(test, assert) {
   var testServer = null;
-  var testAppPath = path.join(cwd, 'data/test_cast_app');
-  var testAppDestPath = path.join(cwd, '.tests', 'test_cast_app-5432');
-  var testAppManifestPath = path.join(testAppDestPath, manifestConstants.MANIFEST_FILENAME);
 
-  var directoriesToCreate = [testAppDestPath, '.tests/data_root/extracted',
+  var testApp1Path = path.join(cwd, 'data/test_cast_app');
+  var testApp1DestPath = path.join(cwd, '.tests', 'test_cast_app-111');
+  var testApp2DestPath = path.join(cwd, '.tests', 'test_app_two-2222');
+  var testApp1ManifestPath = path.join(testApp1DestPath, manifestConstants.MANIFEST_FILENAME);
+  var testApp2ManifestPath = path.join(testApp2DestPath, manifestConstants.MANIFEST_FILENAME);
+  var testApp2BundlePath = path.join(testApp2DestPath, '.cast-project/tmp/test_app_two@1.1.0.tar.gz');
+
+  var directoriesToCreate = [testApp1DestPath, testApp2DestPath,
+                             path.join(testApp2DestPath, '.cast-project/'),
+                             path.join(testApp2DestPath, '.cast-project/tmp/'),
+                             '.tests/data_root/extracted',
                              '.tests/data_root/applications','.tests/data_root/services',
                              '.tests/data_root/bundles', '.tests/data_root/bundles/test_cast_app'];
 
 
   var args = {
-    'apppath': testAppDestPath,
+    'apppath': testApp1DestPath,
     'instanceName': 'foobar',
     'noInteractive': false
   };
@@ -82,7 +89,7 @@ exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
     },
 
     function writeDummyManifestFile(callback) {
-      fs.writeFile(testAppManifestPath, 'ponnies!', 'utf8', callback);
+      fs.writeFile(testApp1ManifestPath, 'ponnies!', 'utf8', callback);
     },
 
     function callDeployCommandInvalidManifest(callback) {
@@ -94,7 +101,9 @@ exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
     },
 
     function copyTestAppData(callback) {
-      fsUtil.copyTree(testAppPath, testAppDestPath, callback);
+      fsUtil.copyTree(testApp1Path, testApp1DestPath, function onCopyComplete() {
+        fsUtil.copyTree(testApp1Path, testApp2DestPath, callback);
+      });
     },
 
     function callDeployCommandConnRefused(callback) {
@@ -128,11 +137,11 @@ exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
 
     // Bump application version number so upgrade can be tested
     function bumpVersionNumber(callback) {
-      fs.readFile(testAppManifestPath, 'utf8', function(err, data) {
+      fs.readFile(testApp1ManifestPath, 'utf8', function(err, data) {
         assert.ifError(err);
 
         data = data.replace('1.0.0', '1.1.0');
-        fs.writeFile(testAppManifestPath, data, 'utf8', callback);
+        fs.writeFile(testApp1ManifestPath, data, 'utf8', callback);
       });
     },
 
@@ -151,6 +160,42 @@ exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
       // Try to deploy an app without updating the version, should throw an error
       deployCmd(args, null, function onResult(err, successMsg) {
         assert.ok(err);
+        callback();
+      });
+    },
+
+    /*
+     * Test when a bundle already exists locally so it only needs to be
+     * uploaded, not created.
+     */
+    function changeTestApptwoName(callback) {
+      fs.readFile(testApp2ManifestPath, 'utf8', function(err, data) {
+        assert.ifError(err);
+
+        data = data.replace('Test Cast App', 'Test App Two');
+        data = data.replace('1.0.0', '1.1.0');
+        fs.writeFile(testApp2ManifestPath, data, 'utf8', callback);
+      });
+    },
+
+    function corruptBundleFile(callback) {
+      testUtil.fileCreate(testApp2BundlePath, callback);
+    },
+
+    function callDeployCmdBundleExistsLocally(callback) {
+      // This time bundle should not be created because it already exists
+      // locally in .cast-project/tmp/
+      var args2 = {
+        'apppath': testApp2DestPath,
+        'instanceName': 'barfoo',
+        'noInteractive': false
+      };
+
+      deployCmd(args2, null, function onResult(err, successMsg) {
+        // Err should be set because we have created fake bundle archive and the
+        // extraction should fail server side
+        assert.ok(err);
+        assert.match(err.message, /error extracting tarball/i);
         callback();
       });
     }
