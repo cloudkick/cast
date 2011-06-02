@@ -45,13 +45,26 @@ exports['setUp'] = function(test, assert) {
 
 exports['test_manifest_file_doesnt_exist_no_interactive'] = function(test, assert) {
   var args = {
-    'insanceName': 'foobar',
+    'insanceName': 'foobar-1',
     'noInteractive': true
   };
 
   deployCmd(args, null, function onResult(err, successMsg) {
     assert.ok(err);
     assert.match(err.message, /Failed to find a manifest file/i);
+    test.finish();
+  });
+};
+
+exports['test_manifest_file_doesnt_exist_interactive'] = function(test, assert) {
+  // @TODO: Find a way to test this case without spawning a child
+  var args = {
+    'insanceName': 'foobar-2',
+    'noInteractive': false
+  };
+
+  test.skip('TODO');
+  deployCmd(args, null, function onResult(err, successMsg) {
     test.finish();
   });
 };
