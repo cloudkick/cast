@@ -119,8 +119,9 @@ exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
     function callDeployCmdCreateSuccess(callback) {
       deployCmd(args, null, function onResult(err, successMsg) {
         assert.ifError(err);
-        // @TODO: Verify successMsg content
         assert.ok(successMsg);
+        assert.match(successMsg, /has been successfully deployed/i);
+        assert.match(successMsg, /instance foobar has been created/i);
         callback();
       });
     },
@@ -139,11 +140,20 @@ exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
     function callDeployCmdUpgradeSuccess(callback) {
       deployCmd(args, null, function onResult(err, successMsg) {
         assert.ifError(err);
-        // @TODO: Verify successMsg content
         assert.ok(successMsg);
+        assert.match(successMsg, /has been successfully deployed/i);
+        assert.match(successMsg, /instance foobar has been upgraded to v1\.1\.0/i);
         callback();
       });
     },
+
+    function callDeployCmdAlreadyExists(callback) {
+      // Try to deploy an app without updating the version, should throw an error
+      deployCmd(args, null, function onResult(err, successMsg) {
+        assert.ok(err);
+        callback();
+      });
+    }
   ],
 
   function(err) {
