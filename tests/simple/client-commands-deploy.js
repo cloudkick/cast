@@ -62,6 +62,11 @@ exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
   var testAppDestPath = path.join(cwd, '.tests', 'test_cast_app-5432');
   var testAppManifestPath = path.join(testAppDestPath, manifestConstants.MANIFEST_FILENAME);
 
+  var directoriesToCreate = [testAppDestPath, '.tests/data_root/extracted',
+                             '.tests/data_root/applications','.tests/data_root/services',
+                             '.tests/data_root/bundles', '.tests/data_root/bundles/test_cast_app'];
+
+
   var args = {
     'apppath': testAppDestPath,
     'instanceName': 'foobar',
@@ -70,16 +75,11 @@ exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
 
   async.series([
     // Create necessary directories
-    async.apply(fs.mkdir, testAppDestPath, 0750),
-    async.apply(fs.mkdir, '.tests/data_root/extracted', 0750),
-    async.apply(fs.mkdir, '.tests/data_root/applications', 0750),
-    async.apply(fs.mkdir, '.tests/data_root/services', 0750),
-    async.apply(fs.mkdir, '.tests/data_root/bundles', 0750),
-    async.apply(fs.mkdir, '.tests/data_root/bundles/test_cast_app', 0750),
-
-    // Create service directory manually because runit manager insting running
-    // and this directory doesn't get created
-    async.apply(fs.mkdir, '.tests/data_root/services/foobar@1.0.0', 0750),
+    function createDirectories(callback) {
+      async.forEachSeries(directoriesToCreate, function(directory, callback) {
+        fs.mkdir(directory, 0750, callback);
+      }, callback);
+    },
 
     function writeDummyManifestFile(callback) {
       fs.writeFile(testAppManifestPath, 'ponnies!', 'utf8', callback);
@@ -115,14 +115,35 @@ exports['test_manifest_file_exists_but_is_invalid'] = function(test, assert) {
       });
     },
 
-    function callDeployCmdSuccess(callback) {
+    // Create new instance test
+    function callDeployCmdCreateSuccess(callback) {
       deployCmd(args, null, function onResult(err, successMsg) {
         assert.ifError(err);
         // @TODO: Verify successMsg content
         assert.ok(successMsg);
         callback();
       });
-    }
+    },
+
+    // Bump application version number so upgrade can be tested
+    function bumpVersionNumber(callback) {
+      fs.readFile(testAppManifestPath, 'utf8', function(err, data) {
+        assert.ifError(err);
+
+        data = data.replace('1.0.0', '1.1.0');
+        fs.writeFile(testAppManifestPath, data, 'utf8', callback);
+      });
+    },
+
+    // Upgrade an existing instance test
+    function callDeployCmdUpgradeSuccess(callback) {
+      deployCmd(args, null, function onResult(err, successMsg) {
+        assert.ifError(err);
+        // @TODO: Verify successMsg content
+        assert.ok(successMsg);
+        callback();
+      });
+    },
   ],
 
   function(err) {
