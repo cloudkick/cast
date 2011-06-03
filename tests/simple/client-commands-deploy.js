@@ -124,7 +124,7 @@ exports['test_instance_create_and_upgrade'] = function(test, assert) {
       // the upload command should fail.
       deployCmd(args, null, function onResult(err, message) {
         assert.ok(err);
-        assert.equal(err.errno, constants.ECONNREFUSED);
+        assert.ok((err.errno === constants.ECONNREFUSED || err.errno === constants.ETIMEDOUT));
         callback();
       });
     },
