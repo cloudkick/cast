@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-var sys = require('sys');
-
-var version = require('util/version');
-
 var config = {
-  shortDescription: 'Print the version',
-  longDescription: 'Print the version',
-  requiredArguments: [],
+  shortDescription: '',
+  longDescription: '',
+  requiredArguments : [],
   optionalArguments: [],
-  usesGlobalOptions: ['debug']
+  options: []
 };
 
 function handleCommand(args, parser, callback) {
-  callback(null, version.toString());
+  callback(new Error('Command failed'));
 }
 
 exports.config = config;
