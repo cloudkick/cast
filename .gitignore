@@ -13,3 +13,4 @@ dist/
 deps/
 tmp/
 coverage_html/
+gitflow
