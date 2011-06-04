@@ -117,7 +117,7 @@ exports['test_remotes'] = function(test, assert) {
 
     // Create a bundle
     function(callback) {
-      cexec(['bundles', 'create', 'v1.0'], function(err, stdout, stderr) {
+      cexec(['bundles', 'create'], function(err, stdout, stderr) {
         assert.match(stdout, /validation succeeded/);
         assert.match(stdout, /Bundle created/);
         callback();

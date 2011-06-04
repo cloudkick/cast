@@ -31,11 +31,7 @@ var cwd = process.cwd();
 function setUp(callback) {
   var testFolderPath = path.join(__dirname, '.tests');
   var testDataRoot = path.join(testFolderPath, 'data_root');
-  var certDirsPath = path.join(testDataRoot, dotfiles.CERTDIR_NAME);
-  var caPath = path.join(testDataRoot, 'ca');
-  var caOutPath = path.join(caPath, 'out');
   var dotCastPath = path.join(testFolderPath, '.cast');
-  var certsPath = path.join(dotCastPath, 'certs');
 
   var directoriesToCreate = [testFolderPath, testDataRoot, dotCastPath];
 

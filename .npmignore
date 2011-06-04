@@ -1,0 +1,15 @@
+site_scons/
+gitflow/
+node_modules/
+coverage_html/
+other/
+deps/
+dist/
+build.py
+SConstruct
+TODO
+config.log
+.lvimrc
+.deps
+.sconf_temp
+.sconsign.dblite

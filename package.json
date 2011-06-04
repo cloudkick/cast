@@ -9,8 +9,6 @@
     "type": "git",
     "url": "git://github.com/cloudkick/cast.git"
   },
-  "modules": {
-  },
   "directories": {
     "lib": "./lib",
     "bin": "./bin"
@@ -33,14 +31,13 @@
     "swiz": "= 0.1.7"
   },
   "devDependencies": {
-    "whiskey": "= 0.3.3"
+    "whiskey": "= 0.3.4"
   },
   "engines": {
     "node": ">= 0.4.0"
   },
-  "main": "./index",
+  "main": "",
   "bin": {
-    "cast": "./bin/cast",
-    "cast-agent": "./bin/cast-agent"
+    "cast": "./bin/cast"
   }
 }

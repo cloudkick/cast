@@ -6,7 +6,7 @@ var config = {
   requiredArguments : [],
   optionalArguments: [],
   options: []
-}
+};
 
 function handleCommand(arg, commandParser) {
   return 'Hello world';

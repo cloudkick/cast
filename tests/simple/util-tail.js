@@ -74,16 +74,6 @@ exports['test_tailFile_follow_file_does_not_exist'] = function(test, assert) {
   });
 };
 
-exports['test_tailFile_follow_basic'] = function(test, assert) {
-  tail.tailFile(path.join(cwd, 'data/text2.txt'), 500, true,
-                function onData(err, data, unsubscribe) {
-    assert.ifError(err);
-    assert.equal(data.length, 11);
-    unsubscribe();
-    test.finish();
-  });
-};
-
 exports['test_tailFile_follow_multiple_subscribers'] = function(test, assert) {
   var filePath = path.join(cwd, '.tests/temp-file-multisubs-test.txt');
   var writeStream = fs.createWriteStream(filePath);

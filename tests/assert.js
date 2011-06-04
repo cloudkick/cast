@@ -156,7 +156,7 @@ function assertResponse(server, req, res, msg, parseJson) {
       }
     });
   });
-};
+}
 
 assert.responseJson = function(server, req, res, msg) {
   assertResponse(server, req, res, msg, true);
@@ -164,8 +164,12 @@ assert.responseJson = function(server, req, res, msg) {
 
 assert.response = function(server, req, res, msg) {
   assertResponse(server, req, res, msg, false);
-}
+};
 
+assert.length = function(array, expectedLen) {
+  assert.ok(array instanceof Array);
+  assert.ok(array.length === expectedLen, array.length + ' !== ' + expectedLen);
+};
 
 var keys = Object.keys(assert);
 keys.forEach(function(key) {
