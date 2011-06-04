@@ -25,6 +25,7 @@ var sprintf = require('sprintf').sprintf;
 
 var testUtil = require('util/test');
 var tarball = require('util/tarball');
+var fsUtil = require('util/fs');
 var misc = require('util/misc');
 var version = require('util/version');
 var flowctrl = require('util/flow_control');
@@ -145,6 +146,18 @@ exports['test_scons_install_and_uninstall'] = function(test, assert) {
 
   function(err) {
     assert.ifError(err);
+    test.finish();
+  });
+};
+
+exports['tearDown'] = function(test, assert) {
+  var cwd = process.cwd();
+
+  async.forEach(['tmp/', 'tmp-bin/', 'tmp-install/'], function(directory, callback) {
+    fsUtil.rmtree(path.join(cwd, directory), async.apply(callback, null));
+  },
+
+  function(err) {
     test.finish();
   });
 };
