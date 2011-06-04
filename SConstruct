@@ -251,10 +251,13 @@ env.AlwaysBuild(covcmd)
 
 folder_name = 'cast-%s' % (env['version_string'])
 tarball_name = '%s.tar.gz' % (folder_name)
+tarball_path = pjoin('dist/', tarball_name)
 
 # Calculate distribution tarball md5sum
 calculate_md5sum = env.Command('.calculate_md5sum', [],
                                 'md5sum dist/%s | awk \'{gsub("dist/", "", $0); print $0}\' > dist/%s.md5sum' % (tarball_name, tarball_name))
+create_signature = env.Command('.create_signature', [], 'gpg --armor -u %(user_id)s --detach-sign %(file)s' % 
+                               {'user_id': os.environ.get('USER', None), 'file': tarball_path})
 
 copy_paths = [ 'cp -R %s build' % (path) for path in paths_to_include +
                files_to_include ]
@@ -273,13 +276,14 @@ create_distribution_commands.extend(['rm -rf build'])
 create_distribution_tarball = env.Command('.create-dist', [],
                                           ' ; '.join(create_distribution_commands))
 
-dist_targets = [ create_distribution_tarball, calculate_md5sum ]
+dist_targets = [ create_distribution_tarball, calculate_md5sum, create_signature ]
 
 if not no_deps:
   Depends(create_distribution_tarball, download_dependencies)
   dist_targets.insert(0, download_dependencies)
 
 Depends(calculate_md5sum, create_distribution_tarball)
+Depends(create_signature, create_distribution_tarball)
 
 env.Alias('download-deps', download_dependencies)
 env.Alias('dist', dist_targets)
