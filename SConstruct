@@ -55,6 +55,14 @@ AddOption(
   help = 'Don\'t download dependencies when creating a distribution tarball'
 )
 
+AddOption(
+  '--no-signature',
+  dest = 'no_signature',
+  default = False,
+  action = 'store_true',
+  help = 'Don\'t generate tarball signature'
+)
+
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
                   tools = ['default', 'packaging'])
@@ -95,6 +103,7 @@ dist_tests = env.Glob('tests/dist/*.js');
 allsource = testsource + source
 
 download_deps = GetOption('download_deps')
+no_signature = GetOption('no_signature')
 js_files = GetOption('js_files')
 if js_files:
   js_files = js_files.split(' ')
@@ -277,14 +286,17 @@ create_distribution_commands.extend(['rm -rf build'])
 create_distribution_tarball = env.Command('.create-dist', [],
                                           ' ; '.join(create_distribution_commands))
 
-dist_targets = [ create_distribution_tarball, calculate_md5sum, create_signature ]
+dist_targets = [ create_distribution_tarball, calculate_md5sum ]
 
-if not download_deps:
+if download_deps:
   Depends(create_distribution_tarball, download_dependencies)
   dist_targets.insert(0, download_dependencies)
 
+if not no_signature:
+  Depends(create_signature, create_distribution_tarball)
+  dist_targets.insert(2, create_signature)
+
 Depends(calculate_md5sum, create_distribution_tarball)
-Depends(create_signature, create_distribution_tarball)
 
 env.Alias('download-deps', download_dependencies)
 env.Alias('dist', dist_targets)

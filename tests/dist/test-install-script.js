@@ -60,7 +60,7 @@ exports['test_scons_install_and_uninstall'] = function(test, assert) {
   async.series([
     // Create distribution tarball
     function(callback) {
-      exec('scons dist --no-deps', function(err, stdout, stderr) {
+      exec('scons dist --no-signature', function(err, stdout, stderr) {
         assert.ifError(err);
         callback();
       });
