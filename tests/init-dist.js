@@ -23,7 +23,7 @@ var common = require('./common');
 
 exports['init'] = function(callback) {
   common.setUp(function() {
-    exec('rm -rf dist ; rm -rf tmp* ;' +
+    exec('rm -rf dist-tests ; rm -rf tmp* ;' +
          ' rm -rf ~/.cast/ ;' +
          ' rm /usr/local/bin/cast* ;' +
          ' mkdir tmp-bin ; mkdir tmp-settings', function(err, stdout, stderr) {
