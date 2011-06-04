@@ -48,8 +48,9 @@ AddOption(
 )
 
 AddOption(
-  '--no-deps',
-  dest = 'no_deps',
+  '--download-deps',
+  dest = 'download_deps',
+  default = False,
   action = 'store_true',
   help = 'Don\'t download dependencies when creating a distribution tarball'
 )
@@ -93,7 +94,7 @@ dist_tests = env.Glob('tests/dist/*.js');
 
 allsource = testsource + source
 
-no_deps = GetOption('no_deps')
+download_deps = GetOption('download_deps')
 js_files = GetOption('js_files')
 if js_files:
   js_files = js_files.split(' ')
@@ -278,7 +279,7 @@ create_distribution_tarball = env.Command('.create-dist', [],
 
 dist_targets = [ create_distribution_tarball, calculate_md5sum, create_signature ]
 
-if not no_deps:
+if not download_deps:
   Depends(create_distribution_tarball, download_dependencies)
   dist_targets.insert(0, download_dependencies)
 
