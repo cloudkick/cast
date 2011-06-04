@@ -255,7 +255,7 @@ tarball_path = pjoin('dist/', tarball_name)
 
 # Calculate distribution tarball md5sum
 calculate_md5sum = env.Command('.calculate_md5sum', [],
-                                'md5sum dist/%s | awk \'{gsub("dist/", "", $0); print $0}\' > dist/%s.md5sum' % (tarball_name, tarball_name))
+                                'md5sum dist/%s | awk \'{gsub("dist/", "", $0); print $0}\' > dist/%s.md5' % (tarball_name, tarball_name))
 create_signature = env.Command('.create_signature', [], 'gpg --armor -u %(user_id)s --detach-sign %(file)s' % 
                                {'user_id': os.environ.get('USER', None), 'file': tarball_path})
 
