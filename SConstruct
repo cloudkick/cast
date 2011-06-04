@@ -38,7 +38,7 @@ AddOption(
   help = 'Path where the latest API docs will be moved to'
 )
 
-AddOption(
+AddOption( 
   '--files',
   dest = 'js_files',
   action = 'store',
