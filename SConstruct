@@ -48,10 +48,27 @@ AddOption(
 )
 
 AddOption(
-  '--no-deps',
-  dest = 'no_deps',
+  '--download-deps',
+  dest = 'download_deps',
+  default = False,
   action = 'store_true',
   help = 'Don\'t download dependencies when creating a distribution tarball'
+)
+
+AddOption(
+  '--no-signature',
+  dest = 'no_signature',
+  default = False,
+  action = 'store_true',
+  help = 'Don\'t generate tarball signature'
+)
+
+AddOption(
+  '--dist-path',
+  dest = 'dist_path',
+  default = 'dist',
+  action = 'store',
+  help = 'Directory where the distribution artifacts are saved'
 )
 
 env = Environment(options=opts,
@@ -93,7 +110,9 @@ dist_tests = env.Glob('tests/dist/*.js');
 
 allsource = testsource + source
 
-no_deps = GetOption('no_deps')
+download_deps = GetOption('download_deps')
+no_signature = GetOption('no_signature')
+dist_path = GetOption('dist_path')
 js_files = GetOption('js_files')
 if js_files:
   js_files = js_files.split(' ')
@@ -251,19 +270,23 @@ env.AlwaysBuild(covcmd)
 
 folder_name = 'cast-%s' % (env['version_string'])
 tarball_name = '%s.tar.gz' % (folder_name)
+tarball_path = pjoin(dist_path, tarball_name)
 
 # Calculate distribution tarball md5sum
 calculate_md5sum = env.Command('.calculate_md5sum', [],
-                                'md5sum dist/%s | awk \'{gsub("dist/", "", $0); print $0}\' > dist/%s.md5sum' % (tarball_name, tarball_name))
+                                'md5sum %s/%s | awk \'{gsub("%s/", "", $0); print $0}\' > %s/%s.md5' %
+                               (dist_path, tarball_name, dist_path, dist_path, tarball_name))
+create_signature = env.Command('.create_signature', [], 'gpg --armor -u %(user_id)s --detach-sign %(file)s' %
+                               {'user_id': os.environ.get('USER', None), 'file': tarball_path})
 
 copy_paths = [ 'cp -R %s build' % (path) for path in paths_to_include +
                files_to_include ]
-create_tarball = '%s -zc -f dist/%s --transform \'s,^build,%s,\' %s' % (
-                  tar_bin_path, '%s' % (tarball_name),
+create_tarball = '%s -zc -f %s --transform \'s,^build,%s,\' %s' % (
+                  tar_bin_path, '%s/%s' % (dist_path, tarball_name),
                   folder_name, ' '.join(build_to_pack))
 create_distribution_commands = [
-                                 'rm -rf dist',
-                                 'mkdir dist',
+                                 'rm -rf %s' % (dist_path),
+                                 'mkdir %s' % (dist_path),
                                  'rm -rf build',
                                  'mkdir build']
 create_distribution_commands.extend(copy_paths)
@@ -275,9 +298,13 @@ create_distribution_tarball = env.Command('.create-dist', [],
 
 dist_targets = [ create_distribution_tarball, calculate_md5sum ]
 
-if not no_deps:
+if download_deps:
   Depends(create_distribution_tarball, download_dependencies)
   dist_targets.insert(0, download_dependencies)
+
+if not no_signature:
+  Depends(create_signature, create_distribution_tarball)
+  dist_targets.insert(2, create_signature)
 
 Depends(calculate_md5sum, create_distribution_tarball)
 
