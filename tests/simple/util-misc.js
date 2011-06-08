@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+var async = require('async');
+
 var misc = require('util/misc');
 
 exports['test_object_merge'] = function(test, assert) {
@@ -198,4 +200,39 @@ exports['test_isValidBundleVersion'] = function(test, assert) {
   assert.equal(misc.isValidBundleVersion('a.b.c'), true);
   assert.equal(misc.isValidBundleVersion('a.b@c'), false);
   test.finish();
+};
+
+exports['test_getExportedMember'] = function(test, assert) {
+  var modulePath = __filename;
+
+  async.parallel([
+    function testGetFailedToLoadModule(callback) {
+      misc.getExportedMember('/some/unknown/path-foo-bar', 'member', function(err, value) {
+        assert.ok(err);
+        assert.match(err.message, /failed to load module/i);
+        callback();
+      });
+    },
+
+    function testGetNull(callback) {
+      misc.getExportedMember(modulePath, 'member', function(err, value) {
+        assert.ifError(err);
+        assert.equal(value, null);
+        callback();
+      });
+    },
+
+    function testGetSuccess(callback) {
+      misc.getExportedMember(modulePath, 'test_getExportedMember', function(err, value) {
+        assert.ifError(err);
+        assert.ok((typeof value === 'function'));
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
+    assert.ifError(err);
+    test.finish();
+  });
 };
