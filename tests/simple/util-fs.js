@@ -57,5 +57,7 @@ exports['test_getMatchingFiles_error'] = function(test, assert) {
   fsUtil.getMatchingFiles('/some/invalid/path/bar/foo', '', true, function(err, files) {
     assert.ok(err);
     assert.match(err.message, /enoent/i);
+
+    test.finish();
   });
 };
