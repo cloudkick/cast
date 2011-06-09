@@ -184,7 +184,7 @@ exports['test_exclude_pattern'] = function(test, assert) {
   });
 };
 
-exports['test_ignore_file_changed_err'] = function(test, assert) {
+/*exports['test_ignore_file_changed_err'] = function(test, assert) {
   testUtil.fileDelete(tarballPath7);
   assert.equal(testUtil.fileExists(tarballPath7), false);
   extract.createTarball(dataPath, dataPath, tarballName7, {deleteIfExists: false, ignoreFileChangedError: true}, function(err) {
@@ -193,7 +193,7 @@ exports['test_ignore_file_changed_err'] = function(test, assert) {
     testUtil.fileDelete(tarballPath7);
     test.finish();
   });
-};
+};*/
 
 exports['test_excludeFile'] = function(test, assert) {
   testUtil.fileDelete(tarballPath8);
