@@ -206,7 +206,10 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
 
       // Run this job against TestResource 'foo'
       jobManager.run(j);
-      assert.equal(j, jobManager.getJob(j.id));
+      jobManager.getJob(j.id, function(err, job) {
+        assert.ifError(err);
+        assert.equal(j, job);
+      });
       assert.ok(trManager.resources['foo']);
     },
 
@@ -353,11 +356,18 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
         assert.ok(err);
         assert.match(err.message, /does not exist/);
         assert.ok(created);
-        assert.equal(c0, jobManager.getJob(c0.id));
-        assert.equal(d0, jobManager.getJob(d0.id));
-        assert.equal(d1, jobManager.getJob(d1.id));
-        testsComplete++;
-        callback();
+        async.forEachSeries([c0, d0, d1], function(item, callback) {
+          jobManager.getJob(item.id, function(err, job) {
+            assert.ifError(err);
+            assert.equal(item, job);
+            callback();
+          });
+        },
+        function(err) {
+          assert.ifError(err);
+          testsComplete++;
+          callback();
+        });
       });
 
       jobManager.run(c0);
