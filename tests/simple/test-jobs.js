@@ -170,6 +170,16 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
       });
     },
 
+    // Attempt to getLive a nonexistant resource
+    function(callback) {
+      trManager.getLive('foo', function(err, foo) {
+        assert.ok(err);
+        assert.ok(err instanceof jobs.NotFoundError);
+        assert.equal(foo, undefined);
+        callback();
+      });
+    },
+
     // List all resources (should be none).
     function(callback) {
       trManager.list(function(err, results) {
@@ -275,6 +285,13 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
           assert.ok(result instanceof Object);
           assert.equal(result.name, 'bar');
           assert.equal(result.data, 'this is bar');
+        });
+
+        trManager.getLive('bar', function(err, result) {
+          assert.ok(!err);
+          assert.ok(result instanceof jobs.DirectoryResource);
+          assert.ok(result.name, 'bar');
+          result.deref();
         });
       });
 
