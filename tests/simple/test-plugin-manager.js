@@ -26,6 +26,7 @@ exports['test_getAvailablePlugins_success'] = function(test, assert) {
     assert.ok(!err);
 
     assert.ok(Object.keys(availablePlugins).length === 1);
+    assert.ok(Object.keys(pluginManager._availablePlugins).length === 1);
     assert.ok(availablePlugins.hasOwnProperty('cast-github'));
     assert.ok(pluginManager._availablePlugins.hasOwnProperty('cast-github'));
     test.finish();
@@ -34,9 +35,8 @@ exports['test_getAvailablePlugins_success'] = function(test, assert) {
 
 exports['test_getAvailablePlugins_inexistent_directory'] = function(test,
                                                                     assert) {
-  config.currentConfig['plugins']['root'] = '/some/nonexistent/directory';
-
   var pluginManager = new manager.PluginManager();
+  config.currentConfig['plugins']['root'] = '/some/nonexistent/directory';
 
   assert.deepEqual(pluginManager._availablePlugins, {});
   pluginManager.getAvailablePlugins(function(err, availablePlugins) {
@@ -48,8 +48,29 @@ exports['test_getAvailablePlugins_inexistent_directory'] = function(test,
   });
 };
 
-exports['test_getEnabledPlugins'] = function(test, assert) {
-  test.skip();
+exports['test_getEnabledPlugins_one_enabled_plugin'] = function(test, assert) {
+  var pluginManager = new manager.PluginManager();
+
+  pluginManager.getEnabledPlugins(function(err, enabledPlugins) {
+    assert.ok(!err);
+
+    assert.ok(Object.keys(enabledPlugins).length === 1);
+    assert.ok(enabledPlugins.hasOwnProperty('cast-github'));
+    assert.deepEqual(enabledPlugins, { 'cast-github': { 'foo': 'bar' }});
+    test.finish();
+  });
+};
+
+exports['test_getEnabledPlugins_no_enabled_plugins'] = function(test, assert) {
+  var pluginManager = new manager.PluginManager();
+  config.currentConfig['plugins']['enabled'] = {};
+
+  pluginManager.getEnabledPlugins(function(err, enabledPlugins) {
+    assert.ok(!err);
+
+    assert.ok(Object.keys(enabledPlugins).length === 0);
+    test.finish();
+  });
 };
 
 exports['test_getPluginSettings'] = function(test, assert) {
