@@ -187,10 +187,10 @@ assert_module_path = pjoin(os.getcwd(), 'tests', 'assert.js')
 tests = os.environ.get('TEST_FILE') if os.environ.get('TEST_FILE') else ' '.join(tests_to_run)
 output = '--print-stdout --print-stderr' if os.environ.get('OUTPUT') else ''
 timeout = os.environ.get('TIMEOUT', 16000)
-testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout %s %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
+testcmd = env.Command('.tests_run', [], "$WHISKEY --concurrency 100 --quiet --timeout %s %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
                       (timeout, output, chdir, assert_module_path, init_file, tests))
 
-coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --timeout %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
+coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --concurrency 100 --quiet --timeout %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
                                              "--tests '%s' --coverage --coverage-reporter html --coverage-dir coverage_html " \
                                              "--coverage-encoding utf8 --coverage-exclude extern" %
                       (timeout, chdir, assert_module_path, init_file, tests))
@@ -199,7 +199,7 @@ coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --timeout %s --chdir 
 chdir = pjoin(os.getcwd())
 init_file = pjoin(os.getcwd(), 'tests', 'init-dist.js')
 dist_tests_to_run = [ test.get_path() for test in dist_tests ]
-testcmd_dist = env.Command('.tests_dist_run', [], "$WHISKEY --timeout 180000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
+testcmd_dist = env.Command('.tests_dist_run', [], "$WHISKEY --concurrency 100 --timeout 180000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
                            (chdir, init_file, ' '.join(dist_tests_to_run)))
 
 env.AlwaysBuild(testcmd)
