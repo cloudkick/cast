@@ -30,12 +30,13 @@ exports['test_config_get_agent_and_client'] = function(test, assert) {
 
   async.series([
     function testSetupAgent(callback) {
-      config.configFiles = ['test.conf'];
+      config.configFiles = ['test-no-secret.conf'];
 
       config.setupAgent(function(err) {
         // No secret is provided, should emit a warning
         assert.ifError(err);
         assert.equal(config.get()['ssl_enabled'], false);
+
         assert.match(buffer, /has been configured/);
         callback();
       });
