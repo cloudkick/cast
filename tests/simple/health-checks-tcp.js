@@ -37,6 +37,8 @@ var responseDictionary = {
 };
 
 exports['test_invalid_ip_address'] = function(test, assert) {
+  test.skip('Broken in node 0.4.9, ENOTFOUND is never thrown');
+
   var port = testUtil.getPort();
   var check = new tcpCheck.TCPCheck({'ip_address': '999.99.99.99', 'port': port, 'type': tcpCheck.config.types.CONNECTION_CHECK,
                                      'idle_timeout': 2000});
