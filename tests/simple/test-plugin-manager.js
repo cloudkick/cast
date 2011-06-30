@@ -18,8 +18,10 @@
 var path = require('path');
 
 var async = require('async');
+var sprintf = require('sprintf').sprintf;
 
 var config = require('util/config');
+var version = require('util/version');
 var manager = require('plugins').manager;
 
 function loadConfig(callback) {
@@ -145,4 +147,22 @@ exports['test_getPluginSettings_not_enabled'] = function(test, assert) {
       callback();
     });
   }, test);
+};
+
+exports['test_isSupported'] = function(test, assert) {
+  var currentVersion = sprintf('%s.%s.%s', version.MAJOR, version.MINOR,
+                                version.PATCH);
+  var constraint1 = {};
+  var constraint2 = { 'agent_version': '> 0.1.0'};
+  var constraint3 = { 'agent_version': currentVersion };
+  var constraint4 = { 'agent_version': '> 999.999.0'};
+
+  var pluginManager = new manager.PluginManager();
+
+  assert.ok(pluginManager.isSupported(constraint1));
+  assert.ok(pluginManager.isSupported(constraint2));
+  assert.ok(pluginManager.isSupported(constraint3));
+  assert.ok(!pluginManager.isSupported(constraint4));
+
+  test.finish();
 };
