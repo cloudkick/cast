@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+var config = require('util/config');
 var manager = require('plugins').manager;
 
 exports['test_getAvailablePlugins_success'] = function(test, assert) {
@@ -26,12 +27,25 @@ exports['test_getAvailablePlugins_success'] = function(test, assert) {
 
     assert.ok(Object.keys(availablePlugins).length === 1);
     assert.ok(availablePlugins.hasOwnProperty('cast-github'));
+    assert.ok(pluginManager._availablePlugins.hasOwnProperty('cast-github'));
     test.finish();
   });
 };
 
-exports['test_getAvailablePlugins_no_plugins'] = function(test, assert) {
-  test.skip();
+exports['test_getAvailablePlugins_inexistent_directory'] = function(test,
+                                                                    assert) {
+  config.currentConfig['plugins']['root'] = '/some/nonexistent/directory';
+
+  var pluginManager = new manager.PluginManager();
+
+  assert.deepEqual(pluginManager._availablePlugins, {});
+  pluginManager.getAvailablePlugins(function(err, availablePlugins) {
+    assert.ok(!err);
+
+    assert.ok(Object.keys(availablePlugins).length === 0);
+    assert.deepEqual(pluginManager._availablePlugins, {});
+    test.finish();
+  });
 };
 
 exports['test_getEnabledPlugins'] = function(test, assert) {
