@@ -16,13 +16,15 @@
  */
 
 var path = require('path');
+var constants = require('constants');
 
 var async = require('async');
 var sprintf = require('sprintf').sprintf;
 
 var config = require('util/config');
 var version = require('util/version');
-var manager = require('plugins').manager;
+
+var plugins = require('plugins');
 
 function loadConfig(callback) {
   config.configFiles = [
@@ -47,15 +49,15 @@ function runTest(testFunction, test) {
 }
 
 exports['test_getAvailablePlugins_success'] = function(test, assert) {
-  var pluginManager = new manager.PluginManager();
+  var pluginManager = new plugins.manager.PluginManager();
 
   runTest(function test(callback) {
     assert.deepEqual(pluginManager._availablePlugins, {});
     pluginManager.getAvailablePlugins(function(err, availablePlugins) {
       assert.ifError(err);
 
-      assert.ok(Object.keys(availablePlugins).length === 1);
-      assert.ok(Object.keys(pluginManager._availablePlugins).length === 1);
+      assert.ok(Object.keys(availablePlugins).length === 2);
+      assert.ok(Object.keys(pluginManager._availablePlugins).length === 2);
       assert.ok(availablePlugins.hasOwnProperty('cast-github'));
       assert.ok(pluginManager._availablePlugins.hasOwnProperty('cast-github'));
       callback();
@@ -65,7 +67,7 @@ exports['test_getAvailablePlugins_success'] = function(test, assert) {
 
 exports['test_getAvailablePlugins_inexistent_directory'] = function(test,
                                                                     assert) {
-  var pluginManager = new manager.PluginManager();
+  var pluginManager = new plugins.manager.PluginManager();
 
   runTest(function test(callback) {
     config.currentConfig['plugins']['root'] = '/some/nonexistent/directory';
@@ -82,7 +84,7 @@ exports['test_getAvailablePlugins_inexistent_directory'] = function(test,
 };
 
 exports['test_getEnabledPlugins_one_enabled_plugin'] = function(test, assert) {
-  var pluginManager = new manager.PluginManager();
+  var pluginManager = new plugins.manager.PluginManager();
 
   runTest(function test(callback) {
     pluginManager.getEnabledPlugins(function(err, enabledPlugins) {
@@ -97,7 +99,7 @@ exports['test_getEnabledPlugins_one_enabled_plugin'] = function(test, assert) {
 };
 
 exports['test_getEnabledPlugins_no_enabled_plugins'] = function(test, assert) {
-  var pluginManager = new manager.PluginManager();
+  var pluginManager = new plugins.manager.PluginManager();
 
   runTest(function test(callback) {
     config.currentConfig['plugins']['enabled'] = {};
@@ -112,7 +114,7 @@ exports['test_getEnabledPlugins_no_enabled_plugins'] = function(test, assert) {
 };
 
 exports['test_getPluginManifest_plugin_does_not_exist'] = function(test, assert) {
-  var pluginManager = new manager.PluginManager();
+  var pluginManager = new plugins.manager.PluginManager();
 
   runTest(function test(callback) {
     pluginManager.getPluginManifest('inexistent-plugin', function(err,
@@ -125,7 +127,7 @@ exports['test_getPluginManifest_plugin_does_not_exist'] = function(test, assert)
 };
 
 exports['test_getPluginSettings_success'] = function(test, assert) {
-  var pluginManager = new manager.PluginManager();
+  var pluginManager = new plugins.manager.PluginManager();
 
   runTest(function test(callback) {
     pluginManager.getPluginSettings('cast-github', function(err, pluginSettings) {
@@ -137,7 +139,7 @@ exports['test_getPluginSettings_success'] = function(test, assert) {
 };
 
 exports['test_getPluginSettings_not_enabled'] = function(test, assert) {
-  var pluginManager = new manager.PluginManager();
+  var pluginManager = new plugins.manager.PluginManager();
 
   runTest(function test(callback) {
     pluginManager.getPluginSettings('some-not-enabled-plugins', function(err,
@@ -157,7 +159,7 @@ exports['test_isSupported'] = function(test, assert) {
   var constraint3 = { 'agent_version': currentVersion };
   var constraint4 = { 'agent_version': '> 999.999.0'};
 
-  var pluginManager = new manager.PluginManager();
+  var pluginManager = new plugins.manager.PluginManager();
 
   assert.ok(pluginManager.isSupported(constraint1));
   assert.ok(pluginManager.isSupported(constraint2));
@@ -166,3 +168,35 @@ exports['test_isSupported'] = function(test, assert) {
 
   test.finish();
 };
+
+exports['test_discoverServices_inexistent_plugins_directory'] = function(test,
+                                                                         assert) {
+  plugins.services.discoverServices('/some/inexistent/dir', function(err,
+                                                                     services) {
+    assert.ok(err);
+    assert.ok(err.errno, constants.ENOENT);
+    test.finish();
+  });
+};
+
+exports['test_discoverServices_inexistent_services_directory'] = function(test,
+                                                                          assert) {
+  var pluginPath = path.join(__dirname, '../data/plugins/cast-broken');
+
+  plugins.services.discoverServices(pluginPath, function(err, services) {
+    assert.ifError(err);
+    assert.ok(services, []);
+    test.finish();
+  });
+};
+
+exports['test_discoverServices_success'] = function(test, assert) {
+  var pluginPath = path.join(__dirname, '../data/plugins/cast-github');
+
+  plugins.services.discoverServices(pluginPath, function(err, services) {
+    assert.ifError(err);
+    assert.ok(services.hasOwnProperty('foo'));
+    test.finish();
+  });
+};
+
