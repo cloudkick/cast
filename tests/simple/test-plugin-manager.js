@@ -83,15 +83,25 @@ exports['test_getEnabledPlugins_no_enabled_plugins'] = function(test, assert) {
   });
 };
 
-exports['test_getPluginSettings_success'] = function(test, assert) {
+exports['test_getPluginManifest_plugin_does_not_exist'] = function(test, assert) {
+  var pluginManager = new manager.PluginManager();
+
+  pluginManager.getPluginManifest('inexistent-plugin', function(err,
+                                                                pluginManifest) {
+    assert.ok(err);
+    assert.match(err.message, /does not exist/);
+    test.finish();
+  });
+};
+
+/*exports['test_getPluginSettings_success'] = function(test, assert) {
   var pluginManager = new manager.PluginManager();
 
   pluginManager.getPluginSettings('cast-github', function(err, pluginSettings) {
-    console.log(err);
     assert.ifError(err);
     assert.ok(!err);
 
     assert.deepEqual(pluginSettings, { 'foo': 'bar' });
     test.finish();
   });
-};
+};*/
