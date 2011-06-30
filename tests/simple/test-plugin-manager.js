@@ -23,7 +23,7 @@ exports['test_getAvailablePlugins_success'] = function(test, assert) {
 
   assert.deepEqual(pluginManager._availablePlugins, {});
   pluginManager.getAvailablePlugins(function(err, availablePlugins) {
-    assert.ok(!err);
+    assert.ifError(err);
 
     assert.ok(Object.keys(availablePlugins).length === 1);
     assert.ok(Object.keys(pluginManager._availablePlugins).length === 1);
@@ -40,7 +40,7 @@ exports['test_getAvailablePlugins_inexistent_directory'] = function(test,
 
   assert.deepEqual(pluginManager._availablePlugins, {});
   pluginManager.getAvailablePlugins(function(err, availablePlugins) {
-    assert.ok(!err);
+    assert.ifError(err);
 
     assert.ok(Object.keys(availablePlugins).length === 0);
     assert.deepEqual(pluginManager._availablePlugins, {});
@@ -52,7 +52,7 @@ exports['test_getEnabledPlugins_one_enabled_plugin'] = function(test, assert) {
   var pluginManager = new manager.PluginManager();
 
   pluginManager.getEnabledPlugins(function(err, enabledPlugins) {
-    assert.ok(!err);
+    assert.ifError(err);
 
     assert.ok(Object.keys(enabledPlugins).length === 1);
     assert.ok(enabledPlugins.hasOwnProperty('cast-github'));
@@ -66,13 +66,22 @@ exports['test_getEnabledPlugins_no_enabled_plugins'] = function(test, assert) {
   config.currentConfig['plugins']['enabled'] = {};
 
   pluginManager.getEnabledPlugins(function(err, enabledPlugins) {
-    assert.ok(!err);
+    assert.ifError(err);
 
     assert.ok(Object.keys(enabledPlugins).length === 0);
     test.finish();
   });
 };
 
-exports['test_getPluginSettings'] = function(test, assert) {
-  test.skip();
+exports['test_getPluginSettings_success'] = function(test, assert) {
+  var pluginManager = new manager.PluginManager();
+
+  pluginManager.getPluginSettings('cast-github', function(err, pluginSettings) {
+    console.log(err);
+    assert.ifError(err);
+    assert.ok(!err);
+
+    assert.deepEqual(pluginSettings, { 'foo': 'bar' });
+    test.finish();
+  });
 };
