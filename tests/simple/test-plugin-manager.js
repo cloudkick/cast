@@ -15,8 +15,18 @@
  * limitations under the License.
  */
 
+var path = require('path');
+
 var config = require('util/config');
 var manager = require('plugins').manager;
+
+exports['setUp'] = function(test, assert) {
+  config.configFiles = [
+    path.join(__dirname, '../test.conf')
+  ];
+
+  config.setupAgent(test.finish);
+};
 
 exports['test_getAvailablePlugins_success'] = function(test, assert) {
   var pluginManager = new manager.PluginManager();
