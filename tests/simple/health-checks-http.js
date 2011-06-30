@@ -31,8 +31,6 @@ var routes = {
 };
 
 exports['test_invalid_hostname'] = function(test, assert) {
-  test.skip('Broken in node 0.4.9, ENOTFOUND is never thrown');
-
   var check = new httpCheck.HTTPCheck({'url': 'http://non.exis-te.nt.123', 'type': httpCheck.config.types.STATUS_CODE_MATCH,
                                         'match_value': 200});
 
