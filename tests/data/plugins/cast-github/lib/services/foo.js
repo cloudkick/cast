@@ -1,0 +1,1 @@
+exports.instance = 'it works!';
