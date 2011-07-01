@@ -35,6 +35,14 @@ exports['test_validator_functions'] = function(test, assert) {
       'valid': [1, 100, Number(100), new Number('10')],
       'invalid': ['a', {'a': 'b'}, ['1', 2], Array(), new String('foobar'), String('foobar')]
     },
+    'valid_object': {
+      'valid': [{}, {1: 2}, {'foo': 'bar'}],
+      'invalid': ['a', 1, null, undefined]
+    },
+    'valid_array': {
+      'valid': [[], [1, 2, 3], new Array(), Array()],
+      'invalid': ['a', 1, null, undefined]
+    },
     'valid_port': {
       'valid': [1, 65535, 1024],
       'invalid': [-1, 65536, 'a']
