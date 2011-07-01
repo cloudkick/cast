@@ -232,3 +232,59 @@ exports['test_discoverEndpoints_success'] = function(test, assert) {
     test.finish();
   });
 };
+
+exports['test_validatePluginSettings'] = function(test, assert) {
+  var pluginManager = new plugins.manager.PluginManager();
+
+  var manifest = {
+    'settings': {
+      'username': {
+        'type': 'string'
+      },
+
+      'retry_delay': {
+        'type': 'number'
+      }
+    }
+  };
+
+  var validSettings = [
+    { 'username': 'foobar',
+      'retry_delay': 100 },
+    { 'username': 'foobar',
+      'retry_delay': new Number(100) }
+  ];
+
+  var invalidSettings = [
+    { 'username': 1111,
+      'retry_delay': 100 },
+    { 'username': [],
+      'retry_delay': 100 },
+    { 'username': 'test',
+      'retry_delay': {} },
+  ];
+
+  async.parallel([
+    function testValidSettings(callback) {
+      async.forEach(validSettings, function(settings, callback) {
+        pluginManager.validatePluginSettings(manifest, settings, function(err) {
+          assert.ifError(err);
+          callback();
+        });
+      }, callback);
+    },
+
+    function testInvalidSettings(callback) {
+      async.forEach(invalidSettings, function(settings, callback) {
+        pluginManager.validatePluginSettings(manifest, settings, function(err) {
+          assert.ok(err);
+          callback();
+        });
+      }, callback);
+    }
+  ],
+
+  function(err) {
+    test.finish();
+  });
+};
