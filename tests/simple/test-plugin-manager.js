@@ -25,6 +25,8 @@ var config = require('util/config');
 var version = require('util/version');
 
 var plugins = require('plugins');
+var httpServerService = require('services/http').instance;
+var mocks = require('../mocks');
 
 function loadConfig(callback) {
   config.configFiles = [
@@ -285,6 +287,89 @@ exports['test_validatePluginSettings'] = function(test, assert) {
   ],
 
   function(err) {
+    test.finish();
+  });
+};
+
+exports['test_enablePlugin_already_enabled'] = function(test, assert) {
+  var pluginManager = new plugins.manager.PluginManager();
+
+  pluginManager._enabledPlugins = { 'foobar': {} };
+  pluginManager.enablePlugin('foobar', function(err) {
+    assert.ok(err);
+    assert.match(err.message, /already enabled/i);
+    test.finish();
+  });
+};
+
+exports['test_enablePlugin_plugin_does_not_exist'] = function(test, assert) {
+  var pluginManager = new plugins.manager.PluginManager();
+
+  pluginManager.enablePlugin('barfoodoesntexist', function(err) {
+    assert.ok(err);
+    assert.match(err.message, /is not enabled/i);
+    test.finish();
+  });
+};
+
+exports['test_enablePlugin_with_endpoints_and_services_success'] =
+                                                       function(test, assert) {
+  test.skip('todo');
+  var pluginManager = new plugins.manager.PluginManager();
+
+  pluginManager.enablePlugin('cast-github', function(err) {
+    console.log('err: ' + err);
+    console.log(pluginManager._enabledPlugins);
+    test.finish();
+  });
+
+  test.finish();
+};
+
+exports['test__registerPluginEndpoints'] = function(test, assert) {
+  var httpServerRegisteredPaths = [];
+  var expectedRegisteredPaths = [
+    path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar1'),
+    path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar2'),
+    path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar3'),
+  ];
+
+  function middleware(next) {
+    next();
+  }
+
+  function handler(path, req, res) {
+    res.writeHead(200, {});
+    res.end(path);
+  }
+
+  function registerHandler(path, middleware, handler) {
+    httpServerRegisteredPaths.push(path[0]);
+  }
+
+  httpServerService._server = mocks.getMockHttpServer(registerHandler);
+
+  var routes = [
+    [''], // Invalid route, should be ignored
+    ['get', '/foo/bar1', async.apply('/foo/bar1') ],
+    ['get', '/foo/bar2', async.apply('/foo/bar2') ],
+    // route with middleware
+    ['get', '/foo/bar3', middleware, async.apply('/foo/bar3') ]
+  ];
+
+  var pluginManager = new plugins.manager.PluginManager();
+  var registeredPaths = pluginManager._registerPluginEndpoints(routes);
+  assert.deepEqual(registeredPaths, expectedRegisteredPaths);
+
+  test.finish();
+};
+
+exports['test_disablePlugin_plugin_does_not_exist'] = function(test, assert) {
+  var pluginManager = new plugins.manager.PluginManager();
+
+  pluginManager.disablePlugin('barfoodoesntexist', function(err) {
+    assert.ok(err);
+    assert.match(err.message, /is not enabled/i);
     test.finish();
   });
 };
