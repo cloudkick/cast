@@ -185,7 +185,7 @@ exports['test_discoverServices_inexistent_services_directory'] = function(test,
 
   plugins.services.discoverServices(pluginPath, function(err, services) {
     assert.ifError(err);
-    assert.ok(services, []);
+    assert.deepEqual(services, {});
     test.finish();
   });
 };
@@ -200,3 +200,35 @@ exports['test_discoverServices_success'] = function(test, assert) {
   });
 };
 
+exports['test_discoverEndpoints_inexistent_plugins_directory'] = function(test,
+                                                                        assert) {
+  plugins.http.discoverEndpoints('/some/inexistent/dir', function(err,
+                                                                  routes) {
+    assert.ok(err);
+    assert.ok(err.errno, constants.ENOENT);
+    test.finish();
+  });
+};
+
+exports['test_discoverEndpoints_inexistent_services_directory'] = function(test,
+                                                                           assert) {
+  var pluginPath = path.join(__dirname, '../data/plugins/cast-broken');
+
+  plugins.http.discoverEndpoints(pluginPath, function(err, routes) {
+    assert.ifError(err);
+    assert.deepEqual(routes, {});
+    test.finish();
+  });
+};
+
+exports['test_discoverEndpoints_success'] = function(test, assert) {
+  var pluginPath = path.join(__dirname, '../data/plugins/cast-github');
+
+  plugins.http.discoverEndpoints(pluginPath, function(err, routes) {
+    assert.ifError(err);
+    assert.ok(routes.hasOwnProperty('route1'));
+    assert.equal(routes['route1'].length, 1);
+    assert.equal(routes['route1'][0].length, 3); // Each route must be a triple
+    test.finish();
+  });
+};
