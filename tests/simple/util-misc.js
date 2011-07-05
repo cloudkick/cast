@@ -228,6 +228,14 @@ exports['test_getExportedMember'] = function(test, assert) {
         assert.ok((typeof value === 'function'));
         callback();
       });
+    },
+
+    function testGetRelativePath(callback) {
+      misc.getExportedMember('simple/util-misc.js', 'test_getExportedMember', function(err, value) {
+        assert.ifError(err);
+        assert.ok((typeof value === 'function'));
+        callback();
+      });
     }
   ],
 
