@@ -314,12 +314,15 @@ exports['test_enablePlugin_plugin_does_not_exist'] = function(test, assert) {
 
 exports['test_enablePlugin_with_endpoints_and_services_success'] =
                                                        function(test, assert) {
-  test.skip('todo');
   var pluginManager = new plugins.manager.PluginManager();
 
+  assert.ok(!pluginManager._enabledPlugins.hasOwnProperty('cast-github'));
   pluginManager.enablePlugin('cast-github', function(err) {
-    console.log('err: ' + err);
-    console.log(pluginManager._enabledPlugins);
+    assert.ifError(err);
+    assert.ok(pluginManager._enabledPlugins.hasOwnProperty('cast-github'));
+    assert.equal(pluginManager._enabledPlugins.endpoints.length, 1);
+    assert.equal(pluginManager._enabledPlugins.services.length, 1);
+    console.log(pluginManager._enabledPlugins)
     test.finish();
   });
 
@@ -370,6 +373,15 @@ exports['test_disablePlugin_plugin_does_not_exist'] = function(test, assert) {
   pluginManager.disablePlugin('barfoodoesntexist', function(err) {
     assert.ok(err);
     assert.match(err.message, /is not enabled/i);
+    test.finish();
+  });
+};
+
+exports['_test_disablePlugin_success'] = function(test, assert) {
+  var pluginManager = new plugins.manager.PluginManager();
+
+  pluginManager.disablePlugin('cast-github', function(err) {
+    assert.ifError(err);
     test.finish();
   });
 };
