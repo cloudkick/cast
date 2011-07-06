@@ -161,7 +161,8 @@ env.Depends(uploaddocscmd, docscmd)
 
 IGNORED_TESTS = [ 'tests/assert.js', 'tests/init.js', 'tests/init-dist.js',
                   'tests/common.js', 'tests/constants.js', 'tests/helpers.js',
-                  'tests/data/', 'tests/dist/' ];
+                  'tests/data/', 'tests/dist/', 'tests/endpoints/',
+                  'tests/client-commands' ];
 tests = sorted(testsource)
 
 test_files = []
