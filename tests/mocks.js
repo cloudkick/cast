@@ -31,7 +31,7 @@ function getMockHttpServer(registerHandler, removeHandler) {
 
   methods.forEach(function(method) {
     var obj = mockHttpServer[method] = function() {
-      return registerHandler;
+      return registerHandler.apply(null, arguments);
     };
 
     obj.remove = removeHandler || function() {};

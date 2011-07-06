@@ -331,7 +331,8 @@ exports['test_enablePlugin_with_endpoints_and_services_success'] =
 };
 
 exports['test__registerPluginEndpoints'] = function(test, assert) {
-  var httpServerRegisteredPaths = [];
+  var httpServerArgumentsCounts = [];
+
   var expectedRegisteredPaths = [
     { 'path': path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar1'),
        'method': 'get'
@@ -344,33 +345,34 @@ exports['test__registerPluginEndpoints'] = function(test, assert) {
       'method': 'get'
     }
   ];
+  var expectedArgumentsCounts = [ 2, 3, 4 ];
 
-  function middleware(next) {
+  function middleware1(next) {
     next();
   }
 
-  function handler(path, req, res) {
-    res.writeHead(200, {});
-    res.end(path);
+  function middleware2(next) {
+    next();
+  }
+
+  function registerHandler() {
+    httpServerArgumentsCounts.push(arguments.length);
   }
 
   httpServerService._server = mocks.getMockHttpServer(registerHandler);
 
-  function registerHandler(path, middleware, handler) {
-    httpServerRegisteredPaths.push(path[0]);
-  }
-
   var routes = [
     [''], // Invalid route, should be ignored
     ['get', '/foo/bar1', async.apply('/foo/bar1') ],
-    ['post', '/foo/bar2', async.apply('/foo/bar2') ],
+    ['post', '/foo/bar2', middleware1, async.apply('/foo/bar2') ],
     // route with middleware
-    ['get', '/foo/bar3', middleware, async.apply('/foo/bar3') ]
+    ['get', '/foo/bar3', middleware1, middleware2, async.apply('/foo/bar3') ]
   ];
 
   var pluginManager = new plugins.manager.PluginManager();
   var registeredPaths = pluginManager._registerPluginEndpoints(routes);
   assert.deepEqual(registeredPaths, expectedRegisteredPaths);
+  assert.deepEqual(httpServerArgumentsCounts, expectedArgumentsCounts);
 
   test.finish();
 };
