@@ -354,11 +354,11 @@ exports['test__registerPluginEndpoints'] = function(test, assert) {
     res.end(path);
   }
 
+  httpServerService._server = mocks.getMockHttpServer(registerHandler);
+
   function registerHandler(path, middleware, handler) {
     httpServerRegisteredPaths.push(path[0]);
   }
-
-  httpServerService._server = mocks.getMockHttpServer(registerHandler);
 
   var routes = [
     [''], // Invalid route, should be ignored
@@ -385,11 +385,39 @@ exports['test_disablePlugin_plugin_does_not_exist'] = function(test, assert) {
   });
 };
 
-exports['_test_disablePlugin_success'] = function(test, assert) {
+exports['test_disablePlugin_success'] = function(test, assert) {
   var pluginManager = new plugins.manager.PluginManager();
+  var removedPaths = [];
+  var expectedRemovedPaths = [
+    path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foobar')
+  ];
 
-  pluginManager.disablePlugin('cast-github', function(err) {
-    assert.ifError(err);
+  function registerHandler(req, res) {
+  }
+
+  function removeHandler(removedPath) {
+    removedPaths.push(removedPath);
+  }
+
+  httpServerService._server = mocks.getMockHttpServer(registerHandler,
+                                                      removeHandler);
+
+  async.series([
+    function enablePlugin(callback) {
+      pluginManager.enablePlugin('cast-github', callback);
+    },
+
+    function disablePlugin(callback) {
+      assert.deepEqual(removedPaths, []);
+      pluginManager.disablePlugin('cast-github', function(err) {
+        assert.ifError(err);
+        assert.deepEqual(removedPaths, expectedRemovedPaths);
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
     test.finish();
   });
 };

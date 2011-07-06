@@ -20,15 +20,21 @@
  * interface.
  *
  * @param {Function} registerHandler A function which is called for each
+ * @param {Function} removeHandler A function which is called when the route is
+ *                                 removed.
  * registration with (path, middleware, handler)
  */
-function getMockHttpServer(registerHandler) {
+function getMockHttpServer(registerHandler, removeHandler) {
   var methods = [ 'get', 'post', 'delete', 'put', 'head' ];
 
   var mockHttpServer = {};
 
   methods.forEach(function(method) {
-    mockHttpServer[method] = registerHandler;
+    var obj = mockHttpServer[method] = function() {
+      return registerHandler;
+    };
+
+    obj.remove = removeHandler || function() {};
   });
 
   return mockHttpServer;
