@@ -320,9 +320,10 @@ exports['test_enablePlugin_with_endpoints_and_services_success'] =
   pluginManager.enablePlugin('cast-github', function(err) {
     assert.ifError(err);
     assert.ok(pluginManager._enabledPlugins.hasOwnProperty('cast-github'));
-    assert.equal(pluginManager._enabledPlugins.endpoints.length, 1);
-    assert.equal(pluginManager._enabledPlugins.services.length, 1);
-    console.log(pluginManager._enabledPlugins)
+    assert.equal(pluginManager._enabledPlugins['cast-github'].endpoints.length,
+                 1);
+    assert.equal(pluginManager._enabledPlugins['cast-github'].services.length,
+                 1);
     test.finish();
   });
 
