@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "async": "= 0.1.4",
-    "express": "= 2.3.11",
+    "express": "= 2.4.0",
     "optparse": "= 1.0.1",
     "sprintf": "= 0.1.1",
     "nodelint": "= 0.4.0",
