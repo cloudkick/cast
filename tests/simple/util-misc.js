@@ -244,3 +244,23 @@ exports['test_getExportedMember'] = function(test, assert) {
     test.finish();
   });
 };
+
+exports['test_filterObjectValues'] = function(test, assert) {
+  var obj = {
+    'foo': 'bar',
+    'bar': null,
+    'bar1': undefined,
+    'bar2': '',
+    'bar3': 3
+  };
+
+  var expectedObj = {
+    'foo': 'bar',
+    'bar2': '',
+    'bar3': 3
+  };
+
+  assert.deepEqual(misc.filterObjectValues(obj, [null, undefined]),
+                   expectedObj);
+  test.finish();
+};
