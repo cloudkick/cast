@@ -333,9 +333,16 @@ exports['test_enablePlugin_with_endpoints_and_services_success'] =
 exports['test__registerPluginEndpoints'] = function(test, assert) {
   var httpServerRegisteredPaths = [];
   var expectedRegisteredPaths = [
-    path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar1'),
-    path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar2'),
-    path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar3'),
+    { 'path': path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar1'),
+       'method': 'get'
+    },
+    { 'path': path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar2'),
+      'method': 'post'
+    },
+    {
+      'path': path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar3'),
+      'method': 'get'
+    }
   ];
 
   function middleware(next) {
@@ -356,7 +363,7 @@ exports['test__registerPluginEndpoints'] = function(test, assert) {
   var routes = [
     [''], // Invalid route, should be ignored
     ['get', '/foo/bar1', async.apply('/foo/bar1') ],
-    ['get', '/foo/bar2', async.apply('/foo/bar2') ],
+    ['post', '/foo/bar2', async.apply('/foo/bar2') ],
     // route with middleware
     ['get', '/foo/bar3', middleware, async.apply('/foo/bar3') ]
   ];
