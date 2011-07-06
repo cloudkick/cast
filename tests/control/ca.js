@@ -24,32 +24,35 @@ var sprintf = require('sprintf').sprintf;
 
 var ca = require('security/ca');
 var certgen = require('security/certgen');
+var managers = require('cast-agent/managers');
+var control = require('control');
 
 
 var TMPDIR = path.join('.tests', 'tmp');
-var requestManager = null;
 
 
 exports['setUp'] = function(test, assert) {
   exec(sprintf('mkdir -p "%s"', TMPDIR), function(err) {
     assert.ifError(err);
-    requestManager = new ca.SigningRequestManager();
-    requestManager.init(function(err) {
+    managers.initManagers(function(err) {
       assert.ifError(err);
       test.finish();
     });
   });
 };
 
-exports['test_ca_basic_use'] = function(test, assert) {
+
+exports['test_control_ca'] = function(test, assert) {
   var reqHost = 'test.example.com';
   var badReqHost = 'bogushost.example.com';
   var keyPath = path.join(TMPDIR, 'test.key');
   var reqPath = path.join(TMPDIR, 'test.csr');
-  var certPath = path.join(TMPDIR, 'test.crt');
+  var certPath = path.join('.tests', 'data_root', 'ca', 'out', reqHost,
+                            'client.crt');
   var badReqText = '------BEGIN CERTIFICATE REQUEST------\n' +
                    'THISREQUESTISRIDICULOUSLYINVALIDSOHAA\n' +
                    '------END CERTIFICATE REQUEST------\n';
+  var certText = null;
   var reqOpts = {
     hostname: reqHost,
     email: 'foo@example.com'
@@ -73,75 +76,98 @@ exports['test_ca_basic_use'] = function(test, assert) {
 
     // Add Request to CA
     function(callback) {
-      var req = new ca.SigningRequest(reqHost);
-      req.create(reqText, function(err) {
-        assert.ifError(err);
-        callback();
-      });
+      var j = control.ca.createRequest(reqHost, reqText);
+      j.on('success', callback);
+      j.on('error', assert.fail.bind(assert));
     },
 
     // Try adding a bogus request
     function(callback) {
-      var req = new ca.SigningRequest(badReqHost);
-      req.create(badReqText, function(err) {
-        assert.ok(err);
-        assert.match(err.message, /Invalid CSR received/);
+      var j = control.ca.createRequest(badReqHost, badReqText);
+      j.on('error', function(err) {
+        assert.equal(err.message, 'Invalid CSR received');
+        callback();
+      });
+      j.on('success', assert.fail.bind(assert));
+    },
+
+    // List requests (should be one unsigned request)
+    function(callback) {
+      control.ca.listRequests(function(err, requests) {
+        assert.ifError(err);
+        assert.equal(requests.length, 1);
+        assert.deepEqual(requests[0], {
+          name: reqHost,
+          csr: reqText,
+          cert: null
+        });
         callback();
       });
     },
 
-    /*
-    // List requests (should be one unsigned request)
+    // Retrieve the existing request directly
     function(callback) {
-      testCA.listRequests(function(err, requests) {
+      control.ca.getRequest(reqHost, function(err, request) {
         assert.ifError(err);
-        assert.equal(requests.length, 1);
-        assert.equal(requests[0].hostname, reqHost);
-        assert.equal(requests[0].signed, false);
+        assert.deepEqual(request, {
+          name: reqHost,
+          csr: reqText,
+          cert: null
+        });
         callback();
       });
     },
-    */
+
+    // Try to retrieve a nonexistant request
+    function(callback) {
+      control.ca.getRequest(badReqHost, function(err, request) {
+        var msg = 'SigningRequest \'' + badReqHost + '\' does not exist.';
+        assert.equal(err.message, msg);
+        callback();
+      });
+    },
 
     // Sign the request
     function(callback) {
-      var req = new ca.SigningRequest(reqHost);
-      req.sign(false, function(err) {
-        assert.ifError(err);
-        callback();
-      });
+      var j = control.ca.signRequest(reqHost);
+      j.on('success', callback);
+      j.on('error', assert.fail.bind(assert));
     },
 
-    /*
     // List requests (should be one signed request)
     function(callback) {
-      testCA.listRequests(function(err, requests) {
+      fs.readFile(certPath, 'utf8', function(err, text) {
+        certText = text;
         assert.ifError(err);
-        assert.equal(requests.length, 1);
-        assert.equal(requests[0].hostname, reqHost);
-        assert.equal(requests[0].signed, true);
-        callback();
+        control.ca.listRequests(function(err, requests) {
+          assert.ifError(err);
+          assert.equal(requests.length, 1);
+          assert.deepEqual(requests[0], {
+            name: reqHost,
+            csr: reqText,
+            cert: certText
+          });
+          callback();
+        });
       });
     },
 
-    // Re-add the request to get the certificate text, save it
+    // Try to re-add the request
     function(callback) {
-      testCA.addRequest(reqHost, reqText, function(err, reqStatus) {
-        assert.ifError(err);
-        assert.ok(reqStatus);
-        assert.equal(reqStatus.hostname, reqHost);
-        assert.equal(reqStatus.signed, true);
-        assert.ok(reqStatus.cert);
-        fs.writeFile(certPath, reqStatus.cert, callback);
+      var j = control.ca.createRequest(reqHost, reqText);
+      var msg = 'SigningRequest \'' + reqHost + '\' already exists.';
+      j.on('error', function(err) {
+        assert.equal(err.message, msg);
+        callback();
       });
+      j.on('success', assert.fail.bind(assert));
     },
-    */
 
     // Verify the client cert
     function(callback) {
-      var req = new ca.SigningRequest(reqHost);
       var cmdpat = 'openssl verify -CAfile %s -verbose %s';
-      exec(sprintf(cmdpat, requestManager.cert, req.getCRTPath()), function(err, stdout, stderr) {
+      var caCertPath = managers.getManager('SigningRequestManager').cert;
+      exec(sprintf(cmdpat, caCertPath, certPath), function(err, stdout, stderr) {
         assert.ifError(err);
         assert.ok(!stderr);
         assert.match(stdout, /OK/);
@@ -151,33 +177,39 @@ exports['test_ca_basic_use'] = function(test, assert) {
 
     // Delete a non-existant request
     function(callback) {
-      var req = new ca.SigningRequest(badReqHost);
-      req.destroy(function(err) {
-        assert.ok(err);
+      var j = control.ca.deleteRequest(badReqHost);
+      var msg = 'SigningRequest \'' + badReqHost + '\' does not exist.';
+      j.on('error', function(err) {
+        assert.equal(err.message, msg);
         callback();
       });
+      j.on('success', assert.fail.bind(assert));
     },
 
     // Try to delete the signed requests
     function(callback) {
-      var req = new ca.SigningRequest(reqHost);
-      req.destroy(function(err) {
-        assert.ok(err);
-        assert.match(err.message, /Certificate already exists/);
+      var j = control.ca.deleteRequest(reqHost);
+      var msg = 'Certificate already exists for ' + reqHost;
+      j.on('error', function(err) {
+        assert.equal(err.message, msg);
         callback();
       });
+      j.on('success', assert.fail.bind(assert));
     },
 
-    /**
-    // List requests should be one
+    // List requests - should be one
     function(callback) {
-      testCA.listRequests(function(err, requests) {
+      control.ca.listRequests(function(err, requests) {
         assert.ifError(err);
-        assert.equal(requests.length, 0);
+        assert.equal(requests.length, 1);
+        assert.deepEqual(requests[0], {
+          name: reqHost,
+          csr: reqText,
+          cert: certText
+        });
         callback();
       });
     }
-    */
   ],
   function(err) {
     assert.ifError(err);
