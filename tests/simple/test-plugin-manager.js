@@ -25,6 +25,7 @@ var config = require('util/config');
 var version = require('util/version');
 
 var plugins = require('plugins');
+var httpConstants = require('http/constants');
 var httpServerService = require('services/http').instance;
 var mocks = require('../mocks');
 
@@ -351,17 +352,24 @@ exports['test_enablePlugin_with_endpoints_and_services_success'] =
 };
 
 exports['test__registerPluginEndpoints'] = function(test, assert) {
+  var pluginName = 'test-plugin';
   var httpServerArgumentsCounts = [];
 
   var expectedRegisteredPaths = [
-    { 'path': path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar1'),
+    { 'path': '/' + path.join(httpConstants.CURRENT_API_VERSION,
+                              plugins.constants.HTTP_ENDPOINT_PREFIX, pluginName,
+                              '/foo/bar1'),
        'method': 'get'
     },
-    { 'path': path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar2'),
+    { 'path': '/' + path.join(httpConstants.CURRENT_API_VERSION,
+                              plugins.constants.HTTP_ENDPOINT_PREFIX, pluginName,
+                              '/foo/bar2'),
       'method': 'post'
     },
     {
-      'path': path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foo/bar3'),
+      'path': '/' + path.join(httpConstants.CURRENT_API_VERSION,
+                              plugins.constants.HTTP_ENDPOINT_PREFIX, pluginName,
+                              '/foo/bar3'),
       'method': 'get'
     }
   ];
@@ -390,7 +398,8 @@ exports['test__registerPluginEndpoints'] = function(test, assert) {
   ];
 
   var pluginManager = new plugins.manager.PluginManager();
-  var registeredPaths = pluginManager._registerPluginEndpoints(routes);
+  var registeredPaths = pluginManager._registerPluginEndpoints(pluginName,
+                                                               routes);
   assert.deepEqual(registeredPaths, expectedRegisteredPaths);
   assert.deepEqual(httpServerArgumentsCounts, expectedArgumentsCounts);
 
@@ -411,7 +420,9 @@ exports['test_disablePlugin_success'] = function(test, assert) {
   var pluginManager = new plugins.manager.PluginManager();
   var removedPaths = [];
   var expectedRemovedPaths = [
-    path.join(plugins.constants.HTTP_ENDPOINT_PREFIX, '/foobar')
+    '/' + path.join(httpConstants.CURRENT_API_VERSION,
+                    plugins.constants.HTTP_ENDPOINT_PREFIX,
+                    '/cast-github/foobar')
   ];
 
   function registerHandler(req, res) {
