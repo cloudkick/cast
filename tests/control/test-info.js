@@ -29,7 +29,7 @@ exports['setUp'] = function(test, assert) {
 };
 
 
-exports['test_facts'] = function(test, assert) {
+exports['test_info'] = function(test, assert) {
   // Set a delay so the agent will have some uptime
   setTimeout(function() {
     control.info.getInfo(function(err, info) {
