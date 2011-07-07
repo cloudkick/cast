@@ -135,7 +135,7 @@ exports['test_getPluginManifest_success'] = function(test, assert) {
     pluginManager.getPluginManifest('cast-github', function(err,
                                                             pluginManifest) {
       assert.ifError(err);
-      assert.ok(typeof(pluginManifest) === 'object')
+      assert.ok(typeof(pluginManifest) === 'object');
       callback();
     });
   }, test);
