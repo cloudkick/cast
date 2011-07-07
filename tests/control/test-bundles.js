@@ -22,19 +22,15 @@ var exec = require('child_process').exec;
 var async = require('async');
 var sprintf = require('sprintf').sprintf;
 
+var hashedstream = require('util/hashedstream');
 var managers = require('cast-agent/managers');
 var control = require('control');
 
-var TMPDIR = path.join('.tests', 'tmp');
-
 
 exports['setUp'] = function(test, assert) {
-  exec(sprintf('mkdir -p "%s"', TMPDIR), function(err) {
+  managers.initManagers(function(err) {
     assert.ifError(err);
-    managers.initManagers(function(err) {
-      assert.ifError(err);
-      test.finish();
-    });
+    test.finish();
   });
 };
 
@@ -243,20 +239,16 @@ exports['test_bundles'] = function(test, assert) {
 
     // Retrieve a bundle stream for an existing bundle
     function(callback) {
-      var fpath = path.join(TMPDIR, 'fooapp@1.5.tar.gz');
-      var fstream = fs.createWriteStream(fpath);
+      var hs = new hashedstream.HashedStream('sha1');
       control.bundles.getBundle(appName, '1.0', function(err, oStream) {
-        oStream.pipe(fstream);
+        oStream.pipe(hs);
         oStream.on('error', function(err) {
           assert.ifError(err);
           assert.fail();
         });
-        fstream.on('close', function() {
-          exec(sprintf('md5sum %s', fpath), function(err, stdout) {
-            assert.ifError(err);
-            assert.equal(stdout.split(' ')[0], '7c730980cb710e040ff0cb70153b6c63');
-            callback();
-          });
+        hs.on('hash', function(sha1) {
+          assert.equal(sha1.digest('base64'), expected);
+          callback();
         });
       });
     },
