@@ -246,13 +246,20 @@ exports['test_validatePluginSettings'] = function(test, assert) {
 
       'retry_delay': {
         'type': 'number'
+      },
+
+      'some_value': {
+        'type': 'function'
       }
     }
   };
 
   var validSettings = [
     { 'username': 'foobar',
-      'retry_delay': 100 },
+      'retry_delay': 100,
+      'some_value': function() {},
+      'foobar': 'bar' // should pass because no validator is specified
+    },
     { 'username': 'foobar',
       'retry_delay': new Number(100) }
   ];
