@@ -15,9 +15,16 @@
  * limitations under the License.
  */
 
+var async = require('async');
+
 var managers = require('cast-agent/managers');
 var control = require('control');
 var jobs = require('jobs');
+
+var health = require('services/health');
+var Health = health.health;
+var ScheduledCheck = health.ScheduledCheck;
+var HTTPCheck = require('health/checks/http').HTTPCheck;
 
 
 exports['setUp'] = function(test, assert) {
@@ -47,6 +54,61 @@ exports['test_getCheck_not_found'] = function(test, assert) {
   control.health.getCheck('some-id-inexistent-id', function(err, checks) {
     assert.ok(err);
     assert.ok(err instanceof jobs.NotFoundError);
+    test.finish();
+  });
+};
+
+exports['test_resumeCheck_does_not_exist'] = function(test, assert) {
+  control.health.resumeCheck('some-inexistent-id', function(err) {
+    assert.ok(err);
+    test.finish();
+  });
+};
+
+exports['test_pauseCheck_does_not_exist'] = function(test, assert) {
+  control.health.pauseCheck('some-inexistent-id', function(err) {
+    assert.ok(err);
+    test.finish();
+  });
+};
+
+exports['test_addCheck_removeCheck'] = function(test, assert) {
+  var check = new HTTPCheck({'url': 'http://127.0.0.1/c1', 'type': 0,
+                             'match_value': 1});
+  var scheduledCheck = new ScheduledCheck(check, 10000000);
+
+  async.series([
+    function addCheck(callback) {
+      control.health.addCheck(scheduledCheck, false, callback);
+    },
+
+    function listChecks(callback) {
+      control.health.listChecks(function(err, checks) {
+        assert.equal(checks.length, 1);
+        assert.equal(checks[0].id, scheduledCheck.id);
+        assert.ok(!checks[0].isScheduled);
+        callback();
+      });
+    },
+
+    function removeCheck(callback) {
+      control.health.removeCheck(scheduledCheck.id, function(err, removed) {
+        assert.ifError(err);
+        assert.ok(removed);
+        callback();
+      });
+    },
+
+    function listChecks(callback) {
+      control.health.listChecks(function(err, checks) {
+        assert.equal(checks.length, 0);
+        callback();
+      });
+    },
+  ],
+
+  function(err) {
+    assert.ifError(err);
     test.finish();
   });
 };
