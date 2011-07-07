@@ -38,7 +38,7 @@ exports['setUp'] = function(test, assert) {
 };
 
 
-exports['test_deployment'] = function(test, assert) {
+exports['test_instances'] = function(test, assert) {
   async.series([
     async.apply(exec, 'mkdir -p .tests/data_root/services'),
     async.apply(exec, 'mkdir -p .tests/data_root/services-enabled'),
