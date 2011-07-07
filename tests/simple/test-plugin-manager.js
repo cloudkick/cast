@@ -128,6 +128,19 @@ exports['test_getPluginManifest_plugin_does_not_exist'] = function(test, assert)
   }, test);
 };
 
+exports['test_getPluginManifest_success'] = function(test, assert) {
+  var pluginManager = new plugins.manager.PluginManager();
+
+  runTest(function test(callback) {
+    pluginManager.getPluginManifest('cast-github', function(err,
+                                                            pluginManifest) {
+      assert.ifError(err);
+      assert.ok(typeof(pluginManifest) === 'object')
+      callback();
+    });
+  }, test);
+};
+
 exports['test_getPluginSettings_success'] = function(test, assert) {
   var pluginManager = new plugins.manager.PluginManager();
 
