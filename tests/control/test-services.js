@@ -107,6 +107,15 @@ exports['test_services'] = function(test, assert) {
       });
     },
 
+    // getService
+    function getService(callback) {
+      control.services.getService(function(err, service) {
+        assert.ifError(err);
+        assert.equal(service.name, 'foo@1.0');
+        callback();
+      });
+    },
+
     // Enable service
     testUtil.runJobMethod.bind(null, control.services.enableService, null,
                               [instanceName], assert),
