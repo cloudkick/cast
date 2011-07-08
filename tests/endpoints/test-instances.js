@@ -53,6 +53,8 @@ var instanceList = [
   }
 ];
 
+var enabled = false;
+var started = false;
 
 control.instances = {
   listInstances: function(callback) {
@@ -81,6 +83,44 @@ control.instances = {
     } else {
       return new mockjobs.ResourceExistsJob('Instance', name);
     }
+  },
+
+  upgradeInstance: function(name, bundleVersion) {
+    if (name === 'baz') {
+      return new mockjobs.SuccessfulJob({
+        name: name,
+        bundleVersion: bundleVersion
+      });
+    } else {
+      return new mockjobs.ResourceNotFoundJob('Instance', name);
+    }
+  },
+
+  deleteInstance: function(name) {
+    if (name === 'baz') {
+      return new mockjobs.SuccessfulJob({
+        name: name
+      });
+    } else {
+      return new mockjobs.ResourceNotFoundJob('Instance', name);
+    }
+  }
+};
+
+
+control.services = {
+  enableService: function(name) {
+    enabled = true;
+    return new mockjobs.SuccessfulJob({
+      name: name
+    });
+  },
+
+  startService: function(name) {
+    started = true;
+    return new mockjobs.SuccessfulJob({
+      name: name
+    });
   }
 };
 
@@ -122,7 +162,6 @@ exports['test_create_success'] = function(test, assert) {
   };
   var req = testUtil.getReqObject('/instances/baz/', 'PUT', params);
   assert.responseJson(getServer(), req, function(res) {
-    console.log(res.body);
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.body, {
       id: 'this-is-a-mock-job',
@@ -137,6 +176,31 @@ exports['test_create_success'] = function(test, assert) {
 };
 
 
+exports['test_create_enable_success'] = function(test, assert) {
+  var params = {
+    'bundle_name': 'fooapp',
+    'bundle_version': '1.0',
+    'enable_service': 'true'
+  };
+  var req = testUtil.getReqObject('/instances/baz/', 'PUT', params);
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 200);
+    assert.deepEqual(res.body, {
+      id: 'this-is-a-mock-job',
+      cparams: {
+        name: 'baz',
+        bundleName: 'fooapp',
+        bundleVersion: '1.0'
+      }
+    });
+
+    assert.ok(enabled);
+    assert.ok(started);
+    test.finish();
+  });
+};
+
+
 exports['test_create_409'] = function(test, assert) {
   var params = {
     'bundle_name': 'fooapp',
@@ -144,10 +208,68 @@ exports['test_create_409'] = function(test, assert) {
   };
   var req = testUtil.getReqObject('/instances/foo/', 'PUT', params);
   assert.responseJson(getServer(), req, function(res) {
-    console.log(res.body);
     assert.equal(res.statusCode, 409);
     var msg = 'Instance \'foo\' already exists.';
     assert.equal(res.body.message, msg);
+    test.finish();
+  });
+};
+
+
+exports['test_upgrade_success'] = function(test, assert) {
+  var params = {
+    'bundle_version': '2.0'
+  };
+  var req = testUtil.getReqObject('/instances/baz/upgrade/', 'POST', params);
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 200);
+    assert.deepEqual(res.body, {
+      id: 'this-is-a-mock-job',
+      cparams: {
+        name: 'baz',
+        bundleVersion: '2.0'
+      }
+    });
+    test.finish();
+  });
+};
+
+
+exports['test_upgrade_404'] = function(test, assert) {
+  var params = {
+    'bundle_version': '2.0'
+  };
+  var req = testUtil.getReqObject('/instances/foo/upgrade/', 'POST', params);
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 404);
+    var msg = 'Instance \'foo\' does not exist.';
+    assert.deepEqual(res.body.message, msg);
+    test.finish();
+  });
+};
+
+
+exports['test_delete_success'] = function(test, assert) {
+  var req = testUtil.getReqObject('/instances/baz/', 'DELETE');
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 200);
+    assert.deepEqual(res.body, {
+      id: 'this-is-a-mock-job',
+      cparams: {
+        name: 'baz'
+      }
+    });
+    test.finish();
+  });
+};
+
+
+exports['test_delete_404'] = function(test, assert) {
+  var req = testUtil.getReqObject('/instances/foo/', 'DELETE');
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 404);
+    var msg = 'Instance \'foo\' does not exist.';
+    assert.deepEqual(res.body.message, msg);
     test.finish();
   });
 };
