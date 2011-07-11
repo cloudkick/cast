@@ -88,6 +88,14 @@ function assertResponse(server, req, res, msg, parseJson) {
       if (data) request.write(data);
 
       request.addListener('response', function(response) {
+        if (req.streamResponse) {
+          response.addListener('end', function(){
+            --server.__pending || server.close();
+            if (timer) clearTimeout(timer);
+          });
+          callback(response);
+          return;
+        }
         response.body = '';
         response.setEncoding('utf8');
         response.addListener('data', function(chunk){ response.body += chunk; });

@@ -27,7 +27,8 @@
     "node-uuid": "= 1.1.0",
     "corrector": "= 0.1.0",
     "rate-limiter": "= 0.1.0",
-    "terminal": "= 0.1.1"
+    "terminal": "= 0.1.1",
+    "swiz": "= 0.1.7"
   },
   "devDependencies": {
     "whiskey": "= 0.4.1"
