@@ -104,6 +104,40 @@ control.services = {
     return new mockjobs.SuccessfulJob({
       name: name
     });
+  },
+
+  tailServiceLog: function(name, bytes, follow, callback) {
+    var i, id;
+    var initial = '';
+    var errorLater = false;
+  
+    function unsubscribe() {
+      clearInterval(id);
+    }
+
+    if (name === 'baz') {
+      errorLater = true;
+    }
+
+    if (name === 'bar') {
+      callback(new jobs.NotFoundError('Instance', name));
+    } else {
+      for (i = 0; i < bytes; i++) {
+        initial += i % 10;
+      }
+
+      if (follow) {
+        callback(null, initial, unsubscribe);
+        id = setInterval(function() {
+          callback(null, 'abcd\n', unsubscribe);
+          if (errorLater) {
+            callback(new Error('file is gone, etc'));
+          }
+        }, 10);
+      } else {
+        callback(null, initial);
+      }
+    }
   }
 };
 
@@ -228,6 +262,102 @@ exports['test_restart_success'] = function(test, assert) {
     });
 
     assert.ok(restarted);
+    test.finish();
+  });
+};
+
+
+exports['test_tail_success'] = function(test, assert) {
+  var req = testUtil.getReqObject('/services/foo/tail/10/', 'GET');
+  assert.response(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body, '0123456789');
+    test.finish();
+  });
+};
+
+
+exports['test_tail_invalidnumber'] = function(test, assert) {
+  var req = testUtil.getReqObject('/services/foo/tail/helloworld/', 'GET');
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.body.message, 'Invalid byte length');
+    test.finish();
+  });
+};
+
+
+exports['test_tail_404'] = function(test, assert) {
+  var req = testUtil.getReqObject('/services/bar/tail/10/', 'GET');
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 404);
+    assert.equal(res.body.message, 'Instance \'bar\' does not exist.');
+    test.finish();
+  });
+};
+
+
+exports['test_tail_follow_success'] = function(test, assert) {
+  var req = testUtil.getReqObject('/services/foo/tail/10/follow/', 'GET');
+  var received = 0;
+  var series = ['a', 'b', 'c', 'd', '\n'];
+  req.streamResponse = true;
+
+  function verifyByte(b) {
+    if (received < 10) {
+      assert.equal(received, parseInt(b));
+    } else {
+      assert.equal(series[(received - 10) % 5], b);
+    }
+    received++;
+  }
+
+  assert.response(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 200);
+    res.setEncoding('utf8');
+
+    res.on('data', function(chunk) {
+      for (var i = 0; i < chunk.length; i++) {
+        verifyByte(chunk.charAt(i));
+
+        if (received === 20) {
+          res.destroy();
+          res.emit('end');
+          test.finish();
+        }
+      }
+    });
+  });
+};
+
+
+exports['test_tail_follow_invalidnumber'] = function(test, assert) {
+  var req = testUtil.getReqObject('/services/foo/tail/helloworld/follow/', 'GET');
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.body.message, 'Invalid byte length');
+    test.finish();
+  });
+};
+
+
+exports['test_tail_follow_404'] = function(test, assert) {
+  var req = testUtil.getReqObject('/services/bar/tail/10/follow/', 'GET');
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 404);
+    assert.equal(res.body.message, 'Instance \'bar\' does not exist.');
+    test.finish();
+  });
+};
+
+
+exports['test_tail_follow_errlater'] = function(test, assert) {
+  var req = testUtil.getReqObject('/services/baz/tail/10/follow/', 'GET');
+
+
+  assert.response(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body, '0123456789abcd\n');
     test.finish();
   });
 };
