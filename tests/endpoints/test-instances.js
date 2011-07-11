@@ -273,3 +273,6 @@ exports['test_delete_404'] = function(test, assert) {
     test.finish();
   });
 };
+
+exports.controlInstances = control.instances;
+exports.instanceList = instanceList;
