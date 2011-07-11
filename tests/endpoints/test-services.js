@@ -147,7 +147,8 @@ exports['test_enable_success'] = function(test, assert) {
       id: 'this-is-a-mock-job',
       cparams: {
         name: 'foo',
-      }
+      },
+      last_emitted: 'ready'
     });
 
     assert.ok(enabled);
@@ -165,7 +166,8 @@ exports['test_disable_success'] = function(test, assert) {
       id: 'this-is-a-mock-job',
       cparams: {
         name: 'foo',
-      }
+      },
+      last_emitted: 'ready'
     });
 
     assert.ok(disabled);
@@ -183,7 +185,8 @@ exports['test_start_success'] = function(test, assert) {
       id: 'this-is-a-mock-job',
       cparams: {
         name: 'foo',
-      }
+      },
+      last_emitted: 'ready'
     });
 
     assert.ok(started);
@@ -201,7 +204,8 @@ exports['test_stop_success'] = function(test, assert) {
       id: 'this-is-a-mock-job',
       cparams: {
         name: 'foo',
-      }
+      },
+      last_emitted: 'ready'
     });
 
     assert.ok(stopped);
@@ -219,7 +223,8 @@ exports['test_restart_success'] = function(test, assert) {
       id: 'this-is-a-mock-job',
       cparams: {
         name: 'foo',
-      }
+      },
+      last_emitted: 'ready'
     });
 
     assert.ok(restarted);
