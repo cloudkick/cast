@@ -137,7 +137,8 @@ exports['test_delete_success'] = function(test, assert) {
       id: 'this-is-a-mock-job',
       cparams: {
         name: 'localhost'
-      }
+      },
+      last_emitted: 'ready'
     });
     test.finish();
   });
