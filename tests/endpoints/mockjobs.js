@@ -29,7 +29,8 @@ var agentManagers = require('cast-agent/managers');
 agentManagers.registerSerializerDefs({
   'Job': [
     ['id', {src: 'id', type: 'string'}],
-    ['cparams', {src: 'cparams', type: 'map<string,string>'}]
+    ['cparams', {src: 'cparams', type: 'map<string,string>'}],
+    ['last_emitted', {src: 'lastEmitted', type: 'string'}]
   ]
 });
 
@@ -41,15 +42,18 @@ function MockJob(sequence) {
   events.EventEmitter.call(this);
   this.id = 'this-is-a-mock-job';
   this.cparams = null;
+  this.lastEmitted = null;
 
   function emitEvent(event, callback) {
     process.nextTick(function() {
+      self.lastEmitted = event[0];
       self.emit.apply(self, event);
+      callback();
     });
   }
 
   process.nextTick(function() {
-    async.forEachSeries(sequence, emitEvent);
+    async.forEachSeries(sequence, emitEvent, function() {});
   });
 }
 
@@ -64,7 +68,8 @@ MockJob.prototype.getSerializerType = function() {
 // A SuccessfulJob emits a 'ready' event
 function SuccessfulJob(cparams) {
   MockJob.call(this, [
-    ['ready']
+    ['ready'],
+    ['success']
   ]);
   this.cparams = cparams;
 }
@@ -92,7 +97,18 @@ function ResourceExistsJob(type, name) {
 util.inherits(ResourceExistsJob, MockJob);
 
 
+// An EventuallyFailingJob emits 'ready', then later emits an error with msg
+function EventuallyFailingJob(msg) {
+  MockJob.call(this, [
+    ['ready'],
+    ['error', new Error(msg)]
+  ]);
+};
+
+util.inherits(EventuallyFailingJob, MockJob);
+
 exports.MockJob = MockJob;
 exports.SuccessfulJob = SuccessfulJob;
 exports.ResourceNotFoundJob = ResourceNotFoundJob;
 exports.ResourceExistsJob = ResourceExistsJob;
+exports.EventuallyFailingJob = EventuallyFailingJob;
