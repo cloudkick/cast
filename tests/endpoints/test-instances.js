@@ -126,7 +126,7 @@ control.services = {
 
 
 exports['test_list'] = function(test, assert) {
-  var req = testUtil.getReqObject('/instances/', 'GET', testConstants.API_VERSION);
+  var req = testUtil.getReqObject('/instances/', 'GET');
   assert.responseJson(getServer(), req, function(res) {
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.body, instanceList);
@@ -136,7 +136,7 @@ exports['test_list'] = function(test, assert) {
 
 
 exports['test_get_success'] = function(test, assert) {
-  var req = testUtil.getReqObject('/instances/foo/', 'GET', testConstants.API_VERSION);
+  var req = testUtil.getReqObject('/instances/foo/', 'GET');
   assert.responseJson(getServer(), req, function(res) {
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.body, instanceList[0]);
@@ -146,7 +146,7 @@ exports['test_get_success'] = function(test, assert) {
 
 
 exports['test_get_404'] = function(test, assert) {
-  var req = testUtil.getReqObject('/instances/baz/', 'GET', testConstants.API_VERSION);
+  var req = testUtil.getReqObject('/instances/baz/', 'GET');
   assert.responseJson(getServer(), req, function(res) {
     assert.equal(res.statusCode, 404);
     assert.equal(res.body.message, 'Instance \'baz\' does not exist.');
