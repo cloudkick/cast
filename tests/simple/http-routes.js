@@ -25,8 +25,6 @@ var http = require('services/http');
 var testUtil = require('util/test');
 var agent = require('cast-agent/entry');
 
-var API_VERSION = '1.0';
-
 /*
  * Need to mock the agent start date, because those test don't actually start
  * the agent so this variable is null.
@@ -99,7 +97,7 @@ exports['test_routs_work_and_dont_return_404'] = function(test, assert) {
   var getServer = http.getAndConfigureServer;
 
   async.forEachSeries(ACTIVE_ROUTES, function(route, callback) {
-    req = testUtil.getReqObject(route[0], route[1], API_VERSION);
+    req = testUtil.getReqObject(route[0], route[1]);
 
     assert.response(getServer(), req, function(res) {
       assert.ok(res.statusCode !== 404);
