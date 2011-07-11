@@ -169,7 +169,8 @@ exports['test_create_success'] = function(test, assert) {
         name: 'baz',
         bundleName: 'fooapp',
         bundleVersion: '1.0'
-      }
+      },
+      last_emitted: 'ready'
     });
     test.finish();
   });
@@ -191,7 +192,8 @@ exports['test_create_enable_success'] = function(test, assert) {
         name: 'baz',
         bundleName: 'fooapp',
         bundleVersion: '1.0'
-      }
+      },
+      last_emitted: 'ready'
     });
 
     assert.ok(enabled);
@@ -228,7 +230,8 @@ exports['test_upgrade_success'] = function(test, assert) {
       cparams: {
         name: 'baz',
         bundleVersion: '2.0'
-      }
+      },
+      last_emitted: 'ready'
     });
     test.finish();
   });
@@ -257,7 +260,8 @@ exports['test_delete_success'] = function(test, assert) {
       id: 'this-is-a-mock-job',
       cparams: {
         name: 'baz'
-      }
+      },
+      last_emitted: 'ready'
     });
     test.finish();
   });
