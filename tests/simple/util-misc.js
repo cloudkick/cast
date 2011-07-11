@@ -199,3 +199,27 @@ exports['test_isValidBundleVersion'] = function(test, assert) {
   assert.equal(misc.isValidBundleVersion('a.b@c'), false);
   test.finish();
 };
+
+exports['test_filterList'] = function(test, assert) {
+  var i, len, item;
+  var values = [
+    [
+      [ {'a': 1}, {'a': 1}, {'c': 2}, {'d': '1'}, {'a': '1'} ],
+      [ {'a': 1}, {'a': 1} ],
+      [ 'a', 1]
+    ],
+    [
+      [ {'a': 'a'}, {'a': 'b'}, {'a': 2}],
+      [ {'a': 'a'} ],
+      [ 'a', 'a' ]
+    ]
+  ];
+
+  for (i = 0, len = values.length; i < len; i++) {
+    item = values[i];
+    assert.deepEqual(misc.filterList(item[0], item[2][0], item[2][1]),
+                     item[1]);
+  }
+
+  test.finish();
+};
