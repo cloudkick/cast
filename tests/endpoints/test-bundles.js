@@ -264,6 +264,24 @@ exports['test_add_bundle_invalid'] = function(test, assert) {
 };
 
 
+exports['test_add_bundle_sha1trailer_missing'] = function(test, assert) {
+  var tbpath = path.join(process.cwd(), 'data/fooserv.tar.gz');
+  var req = testUtil.getReqObject('/bundles/foo/foo@3.0.tar.gz', 'PUT');
+  req.streamer = function(request) {
+    var tbStream = fs.createReadStream(tbpath);
+    tbStream.pipe(request);
+  };
+  req.headers = {
+    'trailer': 'x-content-sha1'
+  };
+  assert.responseJson(getServer(), req, function(res) {
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.body.message, 'Missing x-content-sha1 trailer');
+    test.finish();
+  });
+};
+
+
 exports['test_get_bundle_success'] = function(test, assert) {
   var req = testUtil.getReqObject('/bundles/foo/foo@3.0.tar.gz', 'GET');
   req.streamResponse = true;
