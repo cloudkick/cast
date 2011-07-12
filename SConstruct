@@ -71,6 +71,9 @@ AddOption(
   help = 'Directory where the distribution artifacts are saved'
 )
 
+DEFAULT_TESTS_TIMEOUT = 16000
+DEFAULT_COVERAGE_TIMEOUT = 20000
+
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
                   tools = ['default', 'packaging'])
@@ -187,14 +190,16 @@ assert_module_path = pjoin(os.getcwd(), 'tests', 'assert.js')
 tests = os.environ.get('TEST_FILE') if os.environ.get('TEST_FILE') else ' '.join(tests_to_run)
 output = '' if os.environ.get('OUTPUT') else ' --quiet'
 debug = '--debug' if os.environ.get('DEBUG') else ''
-timeout = os.environ.get('TIMEOUT', 18000)
+tests_timeout = os.environ.get('TIMEOUT', DEFAULT_TESTS_TIMEOUT)
+coverage_timeout  = os.environ.get('TIMEOUT', DEFAULT_COVERAGE_TIMEOUT)
+
 testcmd = env.Command('.tests_run', [], "$WHISKEY %s --concurrency 1 --timeout %s %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
-                      (debug, timeout, output, chdir, assert_module_path, init_file, tests))
+                      (debug, tests_timeout, output, chdir, assert_module_path, init_file, tests))
 
 coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --concurrency 1 --quiet --timeout %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
                                              "--tests '%s' --coverage --coverage-reporter html --coverage-dir coverage_html " \
                                              "--coverage-encoding utf8 --coverage-exclude extern" %
-                      (timeout, chdir, assert_module_path, init_file, tests))
+                      (coverage_timeout, chdir, assert_module_path, init_file, tests))
 
 
 chdir = pjoin(os.getcwd())
