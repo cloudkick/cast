@@ -31,10 +31,14 @@ function getMockHttpServer(registerHandler, removeHandler) {
 
   methods.forEach(function(method) {
     var obj = mockHttpServer[method] = function() {
-      return registerHandler.apply(null, arguments);
-    };
+      var obj = function() {
+        return registerHandler.apply(null, arguments);
+      };
 
-    obj.remove = removeHandler || function() {};
+      obj.remove = removeHandler || function() {};
+      obj.apply(null, arguments);
+      return obj;
+    };
   });
 
   return mockHttpServer;

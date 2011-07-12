@@ -418,7 +418,7 @@ exports['test_disablePlugin_plugin_does_not_exist'] = function(test, assert) {
 
 exports['test_disablePlugin_success'] = function(test, assert) {
   var pluginManager = new plugins.manager.PluginManager();
-  var removedPaths = [];
+  var removedCallCount = 0;
   var expectedRemovedPaths = [
     '/' + path.join(httpConstants.CURRENT_API_VERSION,
                     plugins.constants.HTTP_ENDPOINT_PREFIX,
@@ -429,7 +429,7 @@ exports['test_disablePlugin_success'] = function(test, assert) {
   }
 
   function removeHandler(removedPath) {
-    removedPaths.push(removedPath);
+    removedCallCount++;
   }
 
   httpServerService._server = mocks.getMockHttpServer(registerHandler,
@@ -441,10 +441,10 @@ exports['test_disablePlugin_success'] = function(test, assert) {
     },
 
     function disablePlugin(callback) {
-      assert.deepEqual(removedPaths, []);
+      assert.equal(removedCallCount, 0);
       pluginManager.disablePlugin('cast-github', function(err) {
         assert.ifError(err);
-        assert.deepEqual(removedPaths, expectedRemovedPaths);
+        assert.equal(removedCallCount, 1);
         callback();
       });
     }
