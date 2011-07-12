@@ -94,8 +94,14 @@ exports['test_getApiResponse'] = function(test, assert) {
           httpUtil.returnJson(res, 200, req.body);
         }
 
+        function reqHandlerMalformedJson(req, res) {
+          httpUtil.returnText(res, 200, null, "{'foo 1: ");
+        }
+
+
         server_.get('/1.0/test-url', reqHandlerError);
         server_.get('/1.0/test-url-body', reqHandlerBody);
+        server_.get('/1.0/test-url-malformed-json', reqHandlerMalformedJson);
         http.configureErrorHandlers(server_);
 
         server = server_;
@@ -139,6 +145,16 @@ exports['test_getApiResponse'] = function(test, assert) {
         // @TODO @FIXME: Figure out why body parser middleware doesn't seem to
         // be working properly
         //assert.deepEqual(response.body, { 'foo': 'bar'});
+        callback();
+      });
+    },
+
+    function testMalformedJson(callback) {
+      options.parseJson = true;
+      httpUtil.getApiResponse('/test-url-malformed-json', 'GET', options,
+                              function onResponse(err, response) {
+        assert.ok(err);
+        assert.equal(err.type, 'unexpected_token');
         callback();
       });
     },
