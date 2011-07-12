@@ -72,7 +72,7 @@ AddOption(
 )
 
 DEFAULT_TESTS_TIMEOUT = 16000
-DEFAULT_COVERAGE_TIMEOUT = 20000
+DEFAULT_COVERAGE_TIMEOUT = 22000
 
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
