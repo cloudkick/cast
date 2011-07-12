@@ -262,6 +262,7 @@ exports['test_filterObjectValues'] = function(test, assert) {
 
   assert.deepEqual(misc.filterObjectValues(obj, [null, undefined]),
                    expectedObj);
+  test.finish();
 };
 
 exports['test_filterList'] = function(test, assert) {
