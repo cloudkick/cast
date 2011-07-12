@@ -433,6 +433,14 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
 
       jobManager.run(fc0);
       jobManager.run(u0);
+    },
+
+    // Run a job that will fail, but don't listen for an 'error' event on the
+    // job.
+    function(callback) {
+      var fc0 = new FailCreateTestResourceJob('bam');
+      jobManager.run(fc0);
+      setTimeout(callback, 50);
     }
   ],
   function(err) {
