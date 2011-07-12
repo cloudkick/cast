@@ -187,7 +187,7 @@ assert_module_path = pjoin(os.getcwd(), 'tests', 'assert.js')
 tests = os.environ.get('TEST_FILE') if os.environ.get('TEST_FILE') else ' '.join(tests_to_run)
 output = '' if os.environ.get('OUTPUT') else ' --quiet'
 debug = '--debug' if os.environ.get('DEBUG') else ''
-timeout = os.environ.get('TIMEOUT', 16000)
+timeout = os.environ.get('TIMEOUT', 18000)
 testcmd = env.Command('.tests_run', [], "$WHISKEY %s --concurrency 1 --timeout %s %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
                       (debug, timeout, output, chdir, assert_module_path, init_file, tests))
 
