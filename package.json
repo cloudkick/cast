@@ -29,9 +29,10 @@
     "rate-limiter": "= 0.1.0",
     "terminal": "= 0.1.1",
     "semver": "= 1.0.8"
+    "swiz": "= 0.1.7"
   },
   "devDependencies": {
-    "whiskey": "= 0.4.0"
+    "whiskey": "= 0.4.1"
   },
   "engines": {
     "node": ">= 0.4.0"

@@ -87,7 +87,7 @@ exports['test_getApiResponse'] = function(test, assert) {
     function startTestServer(callback) {
       testUtil.getTestHttpServer(REMOTE['port'], '127.0.0.1', function(server_) {
         function reqHandlerError(req, res) {
-          httpUtil.returnError(res, 500, 'Test error message');
+          httpUtil.returnError(res, new Error('Test error message'));
         }
 
         function reqHandlerBody(req, res) {
