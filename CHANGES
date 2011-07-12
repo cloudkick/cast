@@ -1,3 +1,17 @@
+12.07.2011 - v0.2.0 (stable, checkpoint):
+ * Added new job execution framework.
+ * Minor REST API cleanup. Returned JSON is now in a more standard format,
+   and most PUT and POST methods create jobs which are completed
+   asynchronously.
+ * Improved locking of resources, including those that don't use jobs (ie,
+   bundles).
+ * Added experimental plugin interface.
+ * Client cleanup and improvements.
+ * New 'deploy' command that intelligently uploads bundles and creates or
+   upgrades instances.
+ * Added '--debug' option to client and agent. When set on both, stack traces
+   are returned to the client and shown with error messages.
+
 20.05.2011 - v0.1.2 (hotfix):
  * Fix a bug with invalid handling of the symlinks in the Cast bundles
 
