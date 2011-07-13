@@ -1,0 +1,11 @@
+{
+  "name": "Test Cast App",
+  "description": "Just a test.",
+  "version": "1.0.0",
+
+  "type": "nodejs",
+  "entry_file": "server.js",
+
+  "template_files": [],
+  "data_files": []
+}

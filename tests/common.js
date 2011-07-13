@@ -17,25 +17,61 @@
 
 var path = require('path');
 var fs = require('fs');
-var exec = require('child_process').exec;
 
 var sprintf = require('sprintf').sprintf;
+var async = require('async');
 
 var config = require('util/config');
 var fsUtil = require('util/fs');
+var dotfiles = require('util/client_dotfiles');
+var ca = require('security/ca');
+
+var cwd = process.cwd();
 
 function setUp(callback) {
   var testFolderPath = path.join(__dirname, '.tests');
   var testDataRoot = path.join(testFolderPath, 'data_root');
+  var dotCastPath = path.join(testFolderPath, '.cast');
 
-  config.configFiles = [
-    path.join(__dirname, 'test.conf')
-  ];
+  var directoriesToCreate = [testFolderPath, testDataRoot, dotCastPath];
 
-  fsUtil.rmtree(testFolderPath, function(err) {
-    exec(sprintf('mkdir -p "%s"', testDataRoot), function(err) {
+  async.series([
+    function mockDefaultRemotesPath(callback) {
+      // Mock the dotCast and default remotes path
+      dotfiles.setDotCastPath(dotCastPath);
+      dotfiles.setDotCastRemotesPath(path.join(cwd, 'data/remotes.json'));
+      callback();
+    },
+
+    function setConfigFiles(callback) {
+      config.configFiles = [
+        path.join(__dirname, 'test.conf')
+      ];
+
+      callback();
+    },
+
+    function removeTestDirectories(callback) {
+      fsUtil.rmtree(testFolderPath, function(err) {
+        callback();
+      });
+    },
+
+    function createTestDirectories(callback) {
+      async.forEachSeries(directoriesToCreate, function(directory, callback) {
+        fs.mkdir(directory, 0755, function(err) {
+          callback();
+        });
+      }, callback);
+    },
+
+    function setUpAgentConfig(callback) {
       config.setupAgent(callback);
-    });
+    }
+  ],
+
+  function(err) {
+    callback();
   });
 }
 

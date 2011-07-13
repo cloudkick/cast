@@ -16,7 +16,6 @@
 */
 
 var fs = require('fs');
-var assert = require('assert');
 var path = require('path');
 
 var sprintf = require('sprintf').sprintf;
@@ -37,10 +36,10 @@ var sprintf = require('sprintf').sprintf;
  * that pointed to by 'target'. After a 'null' type is verified we make
  * sure that 'path' and 'target' are the same path - we cannot check the
  * inode because 'path' does not exist.
- *
+ * @param {Object} assert An assert object for the test being run
  * @param {Object} statObj The object described above.
  */
-function checkPath(statObj) {
+function checkPath(assert, statObj) {
   var types = statObj.type.split('.');
   var stats;
   var type = types[0];
@@ -57,7 +56,7 @@ function checkPath(statObj) {
   if (type === 'symlink') {
     assert.ok(stats.isSymbolicLink(), msg('not a symlink'));
     if (types.length > 1) {
-      checkPath({
+      checkPath(assert, {
         path: fs.readlinkSync(statObj.path),
         type: types.slice(1).join('.'),
         target: statObj.target

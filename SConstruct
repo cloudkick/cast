@@ -48,11 +48,31 @@ AddOption(
 )
 
 AddOption(
-  '--no-deps',
-  dest = 'no_deps',
+  '--download-deps',
+  dest = 'download_deps',
+  default = False,
   action = 'store_true',
   help = 'Don\'t download dependencies when creating a distribution tarball'
 )
+
+AddOption(
+  '--no-signature',
+  dest = 'no_signature',
+  default = False,
+  action = 'store_true',
+  help = 'Don\'t generate tarball signature'
+)
+
+AddOption(
+  '--dist-path',
+  dest = 'dist_path',
+  default = 'dist',
+  action = 'store',
+  help = 'Directory where the distribution artifacts are saved'
+)
+
+DEFAULT_TESTS_TIMEOUT = 16000
+DEFAULT_COVERAGE_TIMEOUT = 22000
 
 env = Environment(options=opts,
                   ENV = os.environ.copy(),
@@ -93,7 +113,9 @@ dist_tests = env.Glob('tests/dist/*.js');
 
 allsource = testsource + source
 
-no_deps = GetOption('no_deps')
+download_deps = GetOption('download_deps')
+no_signature = GetOption('no_signature')
+dist_path = GetOption('dist_path')
 js_files = GetOption('js_files')
 if js_files:
   js_files = js_files.split(' ')
@@ -141,8 +163,8 @@ env.Alias('build-docs', [ docscmd, uploaddocscmd ])
 env.Depends(uploaddocscmd, docscmd)
 
 IGNORED_TESTS = [ 'tests/assert.js', 'tests/init.js', 'tests/init-dist.js',
-                  'tests/common.js', 'tests/helpers.js', 'tests/data/',
-                  'tests/dist/' ];
+                  'tests/common.js', 'tests/constants.js', 'tests/helpers.js',
+                  'tests/mocks.js', 'tests/data/', 'tests/dist/' ];
 tests = sorted(testsource)
 
 test_files = []
@@ -165,19 +187,25 @@ else:
 chdir = pjoin(os.getcwd(), 'tests')
 init_file = pjoin(os.getcwd(), 'tests', 'init.js')
 assert_module_path = pjoin(os.getcwd(), 'tests', 'assert.js')
-testcmd = env.Command('.tests_run', [], "$WHISKEY --timeout 10000 --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
-                      (chdir, assert_module_path, init_file, ' '.join(tests_to_run)))
+tests = os.environ.get('TEST_FILE') if os.environ.get('TEST_FILE') else ' '.join(tests_to_run)
+output = '' if os.environ.get('OUTPUT') else ' --quiet'
+debug = '--debug' if os.environ.get('DEBUG') else ''
+tests_timeout = os.environ.get('TIMEOUT', DEFAULT_TESTS_TIMEOUT)
+coverage_timeout  = os.environ.get('TIMEOUT', DEFAULT_COVERAGE_TIMEOUT)
 
-coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --timeout 10000 --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
+testcmd = env.Command('.tests_run', [], "$WHISKEY %s --concurrency 1 --timeout %s %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' --tests '%s'" %
+                      (debug, tests_timeout, output, chdir, assert_module_path, init_file, tests))
+
+coveragecmd = env.Command('.tests_coverage', [], "$WHISKEY --concurrency 1 --quiet --timeout %s --chdir '%s' --custom-assert-module '%s' --test-init-file '%s' " \
                                              "--tests '%s' --coverage --coverage-reporter html --coverage-dir coverage_html " \
                                              "--coverage-encoding utf8 --coverage-exclude extern" %
-                      (chdir, assert_module_path, init_file, ' '.join(tests_to_run)))
+                      (coverage_timeout, chdir, assert_module_path, init_file, tests))
 
 
 chdir = pjoin(os.getcwd())
 init_file = pjoin(os.getcwd(), 'tests', 'init-dist.js')
 dist_tests_to_run = [ test.get_path() for test in dist_tests ]
-testcmd_dist = env.Command('.tests_dist_run', [], "$WHISKEY --timeout 180000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
+testcmd_dist = env.Command('.tests_dist_run', [], "$WHISKEY --concurrency 100 --timeout 180000 --chdir '%s' --test-init-file '%s' --tests '%s'" %
                            (chdir, init_file, ' '.join(dist_tests_to_run)))
 
 env.AlwaysBuild(testcmd)
@@ -248,19 +276,23 @@ env.AlwaysBuild(covcmd)
 
 folder_name = 'cast-%s' % (env['version_string'])
 tarball_name = '%s.tar.gz' % (folder_name)
+tarball_path = pjoin(dist_path, tarball_name)
 
 # Calculate distribution tarball md5sum
 calculate_md5sum = env.Command('.calculate_md5sum', [],
-                                'md5sum dist/%s | awk \'{gsub("dist/", "", $0); print $0}\' > dist/%s.md5sum' % (tarball_name, tarball_name))
+                                'md5sum %s/%s | awk \'{gsub("%s/", "", $0); print $0}\' > %s/%s.md5' %
+                               (dist_path, tarball_name, dist_path, dist_path, tarball_name))
+create_signature = env.Command('.create_signature', [], 'gpg --armor -u %(user_id)s --detach-sign %(file)s' %
+                               {'user_id': os.environ.get('USER', None), 'file': tarball_path})
 
 copy_paths = [ 'cp -R %s build' % (path) for path in paths_to_include +
                files_to_include ]
-create_tarball = '%s -zc -f dist/%s --transform \'s,^build,%s,\' %s' % (
-                  tar_bin_path, '%s' % (tarball_name),
+create_tarball = '%s -zc -f %s --transform \'s,^build,%s,\' %s' % (
+                  tar_bin_path, '%s/%s' % (dist_path, tarball_name),
                   folder_name, ' '.join(build_to_pack))
 create_distribution_commands = [
-                                 'rm -rf dist',
-                                 'mkdir dist',
+                                 'rm -rf %s' % (dist_path),
+                                 'mkdir %s' % (dist_path),
                                  'rm -rf build',
                                  'mkdir build']
 create_distribution_commands.extend(copy_paths)
@@ -272,9 +304,13 @@ create_distribution_tarball = env.Command('.create-dist', [],
 
 dist_targets = [ create_distribution_tarball, calculate_md5sum ]
 
-if not no_deps:
+if download_deps:
   Depends(create_distribution_tarball, download_dependencies)
   dist_targets.insert(0, download_dependencies)
+
+if not no_signature:
+  Depends(create_signature, create_distribution_tarball)
+  dist_targets.insert(2, create_signature)
 
 Depends(calculate_md5sum, create_distribution_tarball)
 

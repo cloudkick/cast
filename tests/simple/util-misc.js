@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+var async = require('async');
+
 var misc = require('util/misc');
 
 exports['test_object_merge'] = function(test, assert) {
@@ -197,5 +199,92 @@ exports['test_isValidBundleVersion'] = function(test, assert) {
   assert.equal(misc.isValidBundleVersion('1.0'), true);
   assert.equal(misc.isValidBundleVersion('a.b.c'), true);
   assert.equal(misc.isValidBundleVersion('a.b@c'), false);
+  test.finish();
+};
+
+exports['test_getExportedMember'] = function(test, assert) {
+  var modulePath = __filename;
+
+  async.parallel([
+    function testGetFailedToLoadModule(callback) {
+      misc.getExportedMember('/some/unknown/path-foo-bar', 'member', function(err, value) {
+        assert.ok(err);
+        assert.match(err.message, /failed to load module/i);
+        callback();
+      });
+    },
+
+    function testGetNull(callback) {
+      misc.getExportedMember(modulePath, 'member', function(err, value) {
+        assert.ifError(err);
+        assert.equal(value, null);
+        callback();
+      });
+    },
+
+    function testGetSuccess(callback) {
+      misc.getExportedMember(modulePath, 'test_getExportedMember', function(err, value) {
+        assert.ifError(err);
+        assert.ok((typeof value === 'function'));
+        callback();
+      });
+    },
+
+    function testGetRelativePath(callback) {
+      misc.getExportedMember('simple/util-misc.js', 'test_getExportedMember', function(err, value) {
+        assert.ifError(err);
+        assert.ok((typeof value === 'function'));
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
+    assert.ifError(err);
+    test.finish();
+  });
+};
+
+exports['test_filterObjectValues'] = function(test, assert) {
+  var obj = {
+    'foo': 'bar',
+    'bar': null,
+    'bar1': undefined,
+    'bar2': '',
+    'bar3': 3
+  };
+
+  var expectedObj = {
+    'foo': 'bar',
+    'bar2': '',
+    'bar3': 3
+  };
+
+  assert.deepEqual(misc.filterObjectValues(obj, [null, undefined]),
+                   expectedObj);
+  test.finish();
+};
+
+exports['test_filterList'] = function(test, assert) {
+  var i, len, item;
+  var values = [
+    [
+      [ {'a': 1}, {'a': 1}, {'c': 2}, {'d': '1'}, {'a': '1'} ],
+      [ {'a': 1}, {'a': 1} ],
+      [ 'a', 1]
+    ],
+    [
+      [ {'a': 'a'}, {'a': 'b'}, {'a': 2}],
+      [ {'a': 'a'} ],
+      [ 'a', 'a' ]
+    ]
+  ];
+
+  for (i = 0, len = values.length; i < len; i++) {
+    item = values[i];
+    assert.deepEqual(misc.filterList(item[0], item[2][0], item[2][1]),
+                     item[1]);
+  }
+
   test.finish();
 };

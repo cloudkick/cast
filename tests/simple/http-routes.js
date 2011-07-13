@@ -19,6 +19,46 @@ var fs = require('fs');
 var path = require('path');
 
 var sprintf = require('sprintf').sprintf;
+var async = require('async');
+
+var http = require('services/http');
+var testUtil = require('util/test');
+var agent = require('cast-agent/entry');
+
+/*
+ * Need to mock the agent start date, because those test don't actually start
+ * the agent so this variable is null.
+ */
+agent.dateStarted = new Date();
+
+// @TODO: Verify all the routes including ones which should return 404
+var ACTIVE_ROUTES = [
+  // bundles
+  ['/bundles/', 'GET'],
+
+  // ca
+  ['/ca/', 'GET'],
+
+  // endpoints
+  ['/endpoints/', 'GET'],
+
+  // facts
+  ['/facts/', 'GET'],
+
+  // health
+  ['/health/', 'GET'],
+  ['/health/scheduled/', 'GET'],
+
+  // info
+  ['/info/', 'GET'],
+
+  // instances
+  ['/instances/', 'GET'],
+
+
+  // services
+  ['/services/', 'GET']
+];
 
 /*
  * A test which verified that all the http modules export the "urls" variable.
@@ -45,6 +85,28 @@ exports['test_all_http_modules_export_register_function'] = function(test, asser
       assert.ok(typeof module.register === 'function');
     }
 
+    test.finish();
+  });
+};
+
+/**
+ * Test none of the active routes returns 404.
+ */
+exports['test_routs_work_and_dont_return_404'] = function(test, assert) {
+  var i, len, route, url, version, req;
+  var getServer = http.getAndConfigureServer;
+
+  async.forEachSeries(ACTIVE_ROUTES, function(route, callback) {
+    req = testUtil.getReqObject(route[0], route[1]);
+
+    assert.response(getServer(), req, function(res) {
+      assert.ok(res.statusCode !== 404);
+      callback();
+    });
+  },
+
+  function(err) {
+    assert.ifError(err);
     test.finish();
   });
 };

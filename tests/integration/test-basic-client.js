@@ -98,6 +98,15 @@ exports['test_remotes'] = function(test, assert) {
       });
     },
 
+    // Try to set an inexistent remote as a default
+    function(callback) {
+      cexec(['remotes', 'set-default', 'test-inexistent'], false, function(err, stdout, stderr) {
+        assert.ok(err);
+        assert.equal(err.code, 1);
+        callback();
+      });
+    },
+
     // List remotes again to check the default
     function(callback) {
       cexec(['remotes', 'list'], function(err, stdout, stderr) {
@@ -108,7 +117,7 @@ exports['test_remotes'] = function(test, assert) {
 
     // Create a bundle
     function(callback) {
-      cexec(['bundles', 'create', 'v1.0'], function(err, stdout, stderr) {
+      cexec(['bundles', 'create'], function(err, stdout, stderr) {
         assert.match(stdout, /validation succeeded/);
         assert.match(stdout, /Bundle created/);
         callback();

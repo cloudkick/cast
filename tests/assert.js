@@ -25,7 +25,7 @@ var utilHttp = require('util/http');
 
 var startPort = parseInt((Math.random() * (65500 - 2000) + 2000), 10);
 
-assert.response = function(server, req, res, msg) {
+function assertResponse(server, req, res, msg, parseJson) {
   // Callback as third or fourth arg
   var callback = typeof res === 'function'
       ? res
@@ -88,6 +88,14 @@ assert.response = function(server, req, res, msg) {
       if (data) request.write(data);
 
       request.addListener('response', function(response) {
+        if (req.streamResponse) {
+          response.addListener('end', function(){
+            --server.__pending || server.close();
+            if (timer) clearTimeout(timer);
+          });
+          callback(response);
+          return;
+        }
         response.body = '';
         response.setEncoding('utf8');
         response.addListener('data', function(chunk){ response.body += chunk; });
@@ -134,6 +142,17 @@ assert.response = function(server, req, res, msg) {
             }
           }
 
+          if (parseJson) {
+            // Parse body as JSON
+            try {
+              response.body = JSON.parse(response.body);
+            }
+            catch (err) {
+              assert.fail('Could not parse response body as json, body: ' +
+                          response.body + ', error: '+ err.message);
+            }
+          }
+
           // Callback
           callback(response);
         });
@@ -145,6 +164,19 @@ assert.response = function(server, req, res, msg) {
       }
     });
   });
+}
+
+assert.responseJson = function(server, req, res, msg) {
+  assertResponse(server, req, res, msg, true);
+};
+
+assert.response = function(server, req, res, msg) {
+  assertResponse(server, req, res, msg, false);
+};
+
+assert.length = function(array, expectedLen) {
+  assert.ok(array instanceof Array);
+  assert.ok(array.length === expectedLen, array.length + ' !== ' + expectedLen);
 };
 
 var keys = Object.keys(assert);

@@ -23,6 +23,7 @@ var constants = require('constants');
 
 var async = require('async');
 var sprintf = require('sprintf').sprintf;
+var swiz = require('swiz');
 
 var fsutil = require('util/fs');
 var jobs = require('jobs');
@@ -30,16 +31,40 @@ var jobs = require('jobs');
 var TEST_RESOURCE_ROOT = '.tests/testresource';
 
 
+var defs = {
+  TestResource: [
+    ['name', {
+      src: 'name',
+      type: 'string'
+    }],
+    ['data', {
+      src: 'getDataText',
+      type: 'string'
+    }]
+  ]
+};
+
+
 function TestResource(name) {
   jobs.DirectoryResource.call(this, name);
-  this.parentDir = TEST_RESOURCE_ROOT;
+  this._serializer = new swiz.Swiz(defs);
 }
 
 sys.inherits(TestResource, jobs.DirectoryResource);
 
 
+TestResource.prototype.getParentDir = function() {
+  return TEST_RESOURCE_ROOT;
+};
+
+
 TestResource.prototype.getDataPath = function() {
   return path.join(this.getRoot(), 'data.txt');
+};
+
+
+TestResource.prototype.getDataText = function(callback) {
+  fs.readFile(this.getDataPath(), 'utf8', callback);
 };
 
 
@@ -124,7 +149,8 @@ ModifyTestResourceJob.prototype.run = function(testResource, text, callback) {
 
 exports['test_directory_resource_queueing'] = function(test, assert) {
   var jobManager = new jobs.JobManager();
-  jobManager.registerResourceManager(new TestResourceManager());
+  var trManager = new TestResourceManager();
+  jobManager.registerResourceManager(trManager);
 
   var testsComplete = 0;
 
@@ -132,6 +158,38 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
     // Create the TestResource root
     function(callback) {
       exec(sprintf('mkdir -p "%s"', TEST_RESOURCE_ROOT), callback);
+    },
+
+    // Attempt to retrieve a nonexistant resource
+    function(callback) {
+      trManager.get('foo', function(err, result) {
+        assert.ok(err);
+        assert.equal(err.message, 'TestResource \'foo\' does not exist.');
+        assert.equal(result, undefined);
+        callback();
+      });
+    },
+
+    // Attempt to getLive a nonexistant resource
+    function(callback) {
+      trManager.getLive('foo', function(err, foo) {
+        assert.ok(err);
+        assert.ok(err instanceof jobs.NotFoundError);
+        assert.equal(foo, undefined);
+        callback();
+      });
+    },
+
+    // List all resources (should be none).
+    function(callback) {
+      trManager.list(function(err, results) {
+        assert.ok(!err);
+        assert.deepEqual(results, []);
+        process.nextTick(function() {
+          assert.deepEqual(trManager.resources, {});
+          callback();
+        });
+      });
     },
 
     // Attempt to run an UPDATE job on a nonexistant resource
@@ -150,12 +208,41 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
         assert.ok(err);
         assert.match(err.message, /TestResource \'foo\' does not exist/);
         testsComplete++;
-        callback();
+        process.nextTick(function() {
+          assert.ok(!trManager.resources['foo']);
+          callback();
+        });
       });
 
       // Run this job against TestResource 'foo'
       jobManager.run(j);
-      assert.equal(j, jobManager.getJob(j.id));
+      jobManager.getJob(j.id, function(err, job) {
+        assert.ifError(err);
+        assert.equal(j, job);
+      });
+      assert.ok(trManager.resources['foo']);
+    },
+
+    // Attempt to retrieve a nonexistant resource
+    function(callback) {
+      trManager.get('foo', function(err, result) {
+        assert.ok(err);
+        assert.equal(err.message, 'TestResource \'foo\' does not exist.');
+        assert.equal(result, undefined);
+        callback();
+      });
+    },
+
+    // List all resources (should be none).
+    function(callback) {
+      trManager.list(function(err, results) {
+        assert.ok(!err);
+        assert.deepEqual(results, []);
+        process.nextTick(function() {
+          assert.deepEqual(trManager.resources, {});
+          callback();
+        });
+      });
     },
 
     // Queue a create then a bunch of updates on nonexistant resource
@@ -192,17 +279,48 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
         jobManager.run(j);
       });
 
+      testJobs[1].on('start', function() {
+        trManager.get('bar', function(err, result) {
+          assert.ok(!err);
+          assert.ok(result instanceof Object);
+          assert.equal(result.name, 'bar');
+          assert.equal(result.data, 'this is bar');
+        });
+
+        trManager.getLive('bar', function(err, result) {
+          assert.ok(!err);
+          assert.ok(result instanceof jobs.DirectoryResource);
+          assert.ok(result.name, 'bar');
+          result.deref();
+        });
+      });
+
       function afterCompletion() {
         var dp = path.join(TEST_RESOURCE_ROOT, 'bar', 'data.txt');
         fs.readFile(dp, 'utf8', function(err, text) {
           assert.ifError(err);
           assert.equal(text, 'this is bar test0 test1 test2 test3 test4 test5');
+          assert.ok(!trManager['bar']);
           testsComplete++;
           callback();
         });
       }
     },
 
+    // List all resources (should be none).
+    function(callback) {
+      trManager.list(function(err, results) {
+        assert.ok(!err);
+        assert.deepEqual(results, [{
+          name: 'bar',
+          data: 'this is bar test0 test1 test2 test3 test4 test5'
+        }]);
+        process.nextTick(function() {
+          assert.deepEqual(trManager.resources, {});
+          callback();
+        });
+      });
+    },
 
     function(callback) {
       var d0 = new DeleteTestResourceJob('bar');
@@ -255,11 +373,18 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
         assert.ok(err);
         assert.match(err.message, /does not exist/);
         assert.ok(created);
-        assert.equal(c0, jobManager.getJob(c0.id));
-        assert.equal(d0, jobManager.getJob(d0.id));
-        assert.equal(d1, jobManager.getJob(d1.id));
-        testsComplete++;
-        callback();
+        async.forEachSeries([c0, d0, d1], function(item, callback) {
+          jobManager.getJob(item.id, function(err, job) {
+            assert.ifError(err);
+            assert.equal(item, job);
+            callback();
+          });
+        },
+        function(err) {
+          assert.ifError(err);
+          testsComplete++;
+          callback();
+        });
       });
 
       jobManager.run(c0);
@@ -297,6 +422,7 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
         assert.ok(createQueued);
         assert.ok(createFailed);
         assert.ok(updateQueued);
+        assert.ok(!trManager['bam']);
         testsComplete++;
         callback();
       });
@@ -307,6 +433,14 @@ exports['test_directory_resource_queueing'] = function(test, assert) {
 
       jobManager.run(fc0);
       jobManager.run(u0);
+    },
+
+    // Run a job that will fail, but don't listen for an 'error' event on the
+    // job.
+    function(callback) {
+      var fc0 = new FailCreateTestResourceJob('bam');
+      jobManager.run(fc0);
+      setTimeout(callback, 50);
     }
   ],
   function(err) {
