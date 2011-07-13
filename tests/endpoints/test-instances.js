@@ -56,7 +56,7 @@ var instanceList = [
 var enabled = false;
 var started = false;
 
-control.instances = {
+exports.mock = control.instances = {
   listInstances: function(callback) {
     callback(null, instanceList);
   },

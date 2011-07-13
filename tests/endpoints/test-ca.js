@@ -43,7 +43,7 @@ var reqList = [
   }
 ];
 
-control.ca = {
+exports.mock = control.ca = {
   listRequests: function(callback) {
     callback(null, reqList);
   },

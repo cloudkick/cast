@@ -26,7 +26,7 @@ var getServer = http.getAndConfigureServer;
 var listed = false;
 
 
-control.jobs = {
+exports.mock = control.jobs = {
   listJobs: function(callback) {
     if (!listed) {
       var j = new mockjobs.SuccessfulJob({});

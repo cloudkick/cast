@@ -52,7 +52,7 @@ var started = false;
 var stopped = false;
 var restarted = false;
 
-control.services = {
+exports.mock = control.services = {
   listServices: function(callback) {
     callback(null, serviceList);
   },

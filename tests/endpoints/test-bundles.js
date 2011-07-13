@@ -47,7 +47,7 @@ var applications = [
 ];
 
 
-control.bundles = {
+exports.mock = control.bundles = {
   listApplications: function(callback) {
     callback(null, applications);
   },
