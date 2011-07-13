@@ -261,6 +261,15 @@ exports['test_bundles'] = function(test, assert) {
       });
     },
 
+    // Attempt to delete the same bundle again
+    function(callback) {
+      control.bundles.removeBundle(appName, '1.5', function(err) {
+        var msg = 'Bundle \'' + appName + '@1.5\' does not exist.';
+        assert.equal(err.message, msg);
+        callback();
+      });
+    },
+
     // List applications (should be two now)
     function(callback) {
       control.bundles.listApplications(function(err, apps) {
