@@ -1,7 +1,7 @@
 {
   "name": "cast",
   "description": "A framework for deploying, managing and running applications and services.",
-  "version": "0.1.0-dev",
+  "version": "0.2.1",
   "author": "Cloudkick, Inc. http://www.cloudkick.com",
   "keywords": [ "cast", "deployment", "deploying", "hosting", "service management" ],
   "homepage": "http://www.cast-project.org",
