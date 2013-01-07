@@ -10,6 +10,9 @@ Cast's internals are structured around building RESTful APIs for all
 operations, so that all tasks can be scripted and more powerful tools
 can be built on top.
 
+**Note: This project has been deprecated in favor of other projects we are 
+currently working on at Rackspace (Cloud Monitoring, Service Registry, etc.) 
+and we don't guarantee any support for it anymore.**
 
 Contributing to cast
 ====================
